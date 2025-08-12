@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { Res } from '@nestjs/common';
 import { TimeWorkedService } from './timeworked.service';
 
-@Controller('timeworked')
+@Controller('api/timeworked')
 export class TimeWorkedController {
   @Get('/health')
   health(@Res() res: Response) {

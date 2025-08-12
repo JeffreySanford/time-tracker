@@ -1,7 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-@Controller()
+@Controller('api')
 export class HealthController {
   @Get('health')
   health(@Res() res: Response) {
