@@ -1,0 +1,44 @@
+<div class="home-container">
+  <header class="home-header">
+    <h1>Today ({{ todayString }}) <span class="total-time">6h 42m</span></h1>
+  </header>
+  <section class="timer-section">
+  <button class="timer-btn" (click)="startTimer()" [disabled]="timerActive">●</button>
+  <span class="timer-display">{{ timerDisplay }}</span>
+  <button class="stop-btn" (click)="stopTimer()" [disabled]="!timerActive">Stop</button>
+  </section>
+  <section class="project-section">
+    <span>Project:</span>
+    <span class="project-name">▸ True North</span>
+    <button class="change-project">Change</button>
+    <div class="tags">
+      <span class="tag">billable</span>
+      <span class="tag">feature</span>
+    </div>
+  </section>
+  <section class="coding-summary">
+    <div class="coding-time">Coding: 4h12m</div>
+    <div class="languages">
+      <span>▸ TS 2h01m</span>
+      <span>▸ Kotlin 1h15m</span>
+    </div>
+    <div class="editors">
+      <span>▸ VS Code 3h02m</span>
+      <span>▸ AS 1h10m</span>
+    </div>
+  </section>
+  <button class="manual-entry-btn">Quick Add Manual Entry</button>
+
+  <footer class="sticker-footer">
+    <div class="footer-content">
+      <span class="footer-sticker">Time Forge</span>
+      <span class="footer-status" 
+            [ngClass]="{ 'connected': isConnected, 'disconnected': !isConnected }"
+            (mouseenter)="pingServer()"
+            [title]="pingTime ? 'Ping: ' + pingTime + ' ms' : (isConnected ? 'Connected' : 'Disconnected')">
+        <span class="status-icon"></span>
+        <span class="status-label">{{ isConnected ? 'Online' : 'Offline' }}</span>
+      </span>
+    </div>
+  </footer>
+</div>
