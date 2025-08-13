@@ -22,10 +22,10 @@ export class TimeWorkedService {
     return from(session.save());
   }
 
-  stopSession(id: string, endedAt?: Date): Observable<TimeWorked | null> {
+  stopSession(id: string, endedAt?: Date): Observable<TimeWorked> {
     return from(
       this.timeWorkedModel.findById(id).then(session => {
-        if (!session) return null;
+        if (!session) throw new Error('Session not found');
         session.endedAt = endedAt || new Date();
         session.duration = Math.floor((session.endedAt.getTime() - session.startedAt.getTime()) / 1000);
         return session.save();
