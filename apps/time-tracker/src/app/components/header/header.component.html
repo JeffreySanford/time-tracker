@@ -1,0 +1,56 @@
+<header class="home-header">
+  <div class="header-content">
+    <div class="header-left">
+      <h1 class="app-title">⚡ TrackForge</h1>
+      <div class="date-range-compact">
+        <select class="range-dropdown" [(ngModel)]="selectedRange" (change)="onRangeChange()">
+          <option value="1">Today</option>
+          <option value="3">3 Days</option>
+          <option value="7">Week</option>
+          <option value="15">2 Weeks</option>
+          <option value="30">Month</option>
+        </select>
+        <span class="current-date">{{ currentDateDisplay }}</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="total-time">{{ totalTimeDisplay }}</span>
+      <button class="icon-btn message-btn" [title]="'Messages'">
+        💬
+        <span class="notification-badge" *ngIf="unreadMessages > 0">{{ unreadMessages }}</span>
+      </button>
+      <div class="user-menu" [class.active]="showUserMenu">
+        <button class="icon-btn user-btn" (click)="toggleUserMenu()" [title]="'User Menu'">
+          👤
+        </button>
+        <div class="user-dropdown" *ngIf="showUserMenu">
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">👤</span>
+            User Profile
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">📊</span>
+            Reports
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">⚙️</span>
+            Settings
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">📈</span>
+            Analytics
+          </a>
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">🎯</span>
+            Goals
+          </a>
+          <hr class="dropdown-divider">
+          <a href="#" class="dropdown-item">
+            <span class="dropdown-icon">🚪</span>
+            Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,5 +1,28 @@
-# System Architecture (Mermaid)
+# System Architecture (Current Implementation)
 
+## Current State (Phase 1)
+```mermaid
+flowchart LR
+  UI[Angular Frontend\n(Timer UI)] -->|HTTP REST| API[NestJS API\n(Express + Mongoose)]
+  API --> DB[(MongoDB\nTimeWorked Collection)]
+  UI -->|Start/Stop Timer| API
+  API -->|Session Data| DB
+  API -->|Health Check| UI
+  
+  subgraph "Frontend Features"
+    UI --> TIMER[Timer Display]
+    UI --> BUTTONS[Start/Stop Buttons]
+    UI --> STATUS[Connection Status]
+  end
+  
+  subgraph "Backend Services"
+    API --> HEALTH[Health Controller]
+    API --> TIMEWORK[TimeWorked Controller]
+    API --> SERVICE[TimeWorked Service]
+  end
+```
+
+## Future Architecture (Target State)
 ```mermaid
 flowchart LR
   A[IDE Plugins\n(VS Code, JetBrains, Android Studio)] -->|heartbeat| G[/HTTP POST /heartbeats/]
@@ -15,7 +38,35 @@ flowchart LR
 
 ---
 
-# Client Flow (Mermaid Sequence Diagram)
+# Client Flow (Current Implementation)
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant UI as Angular UI
+  participant API as NestJS API
+  participant DB as MongoDB
+
+  U->>UI: Click Start Timer
+  UI->>API: POST /api/timeworked/start
+  API->>DB: Create new session document
+  DB-->>API: Return session with _id
+  API-->>UI: Session data with sessionId
+  UI->>UI: Start local timer display
+  
+  Note over UI: Timer runs locally, updates display every second
+  
+  U->>UI: Click Stop Timer
+  UI->>API: PATCH /api/timeworked/stop/:sessionId
+  API->>DB: Update session with endedAt
+  API->>API: Calculate duration in seconds
+  API->>DB: Save updated session
+  DB-->>API: Confirm update
+  API-->>UI: Updated session with duration
+  UI->>UI: Stop local timer, reset display
+```
+
+# Future Client Flow (Target State)
 
 ```mermaid
 sequenceDiagram

@@ -1,0 +1,286 @@
+<div class="planning-container">
+  <!-- Planning Header -->
+  <div class="planning-header">
+    <div class="header-content">
+      <h1 class="page-title">📋 Planning</h1>
+      <div class="header-controls">
+        <!-- View Toggle -->
+        <button 
+          class="view-toggle" 
+          (click)="toggleView()"
+          [class.kanban]="viewMode === 'kanban'"
+          [class.list]="viewMode === 'list'">
+          <span class="toggle-icon">{{ viewMode === 'kanban' ? '⊞' : '☰' }}</span>
+          {{ viewMode === 'kanban' ? 'Kanban' : 'List' }}
+        </button>
+
+        <!-- Project Selector -->
+        <div class="project-selector">
+          <button 
+            class="project-selector-btn" 
+            (click)="toggleProjectSelector()"
+            [class.active]="selectedProject">
+            <span class="project-icon">🎯</span>
+            {{ selectedProject ? selectedProject.name.substring(2) : 'Select Project' }}
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          
+          <div class="project-dropdown" *ngIf="showProjectSelector">
+            <button 
+              class="project-option" 
+              *ngFor="let project of projects"
+              (click)="selectProject(project)"
+              [style.border-left-color]="project.color">
+              <span class="option-icon" [style.background]="project.color">
+                {{ project.name.charAt(0) }}
+              </span>
+              {{ project.name.substring(2) }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Add Task Button -->
+        <button 
+          class="add-task-btn" 
+          (click)="toggleTaskForm()"
+          [disabled]="!selectedProject">
+          <span class="btn-icon">➕</span>
+          Add Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Info -->
+  <div class="project-info" *ngIf="selectedProject">
+    <div class="project-details">
+      <span class="project-icon-large" [style.background]="selectedProject.color">
+        {{ selectedProject.name.charAt(0) }}
+      </span>
+      <div class="project-text">
+        <h2 class="project-name" [style.color]="selectedProject.color">
+          {{ selectedProject.name.substring(2) }}
+        </h2>
+        <p class="project-description">{{ selectedProject.description }}</p>
+      </div>
+    </div>
+    <div class="task-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ filteredTasks.length }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-item active">
+        <span class="stat-value">{{ kanbanColumns[0].tasks.length }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat-item completed">
+        <span class="stat-value">{{ kanbanColumns[2].tasks.length }}</span>
+        <span class="stat-label">Done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Form Modal -->
+  <div class="task-form-overlay" *ngIf="showTaskForm" 
+       (click)="toggleTaskForm()" 
+       (keydown.escape)="toggleTaskForm()"
+       tabindex="-1">
+    <div class="task-form" 
+         (click)="$event.stopPropagation()" 
+         (keydown)="$event.stopPropagation()"
+         tabindex="0">
+      <div class="form-header">
+        <h3>Create New Task</h3>
+        <button class="close-btn" (click)="toggleTaskForm()" type="button">✕</button>
+      </div>
+      
+      <div class="form-content">
+        <div class="form-group">
+          <label for="task-title">Task Title</label>
+          <input 
+            id="task-title"
+            type="text" 
+            [(ngModel)]="newTask.title" 
+            placeholder="Enter task title..."
+            class="form-input">
+        </div>
+        
+        <div class="form-group">
+          <label for="task-description">Description</label>
+          <textarea 
+            id="task-description"
+            [(ngModel)]="newTask.description" 
+            placeholder="Task description (optional)..."
+            class="form-textarea"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="task-priority">Priority</label>
+            <select id="task-priority" [(ngModel)]="newTask.priority" class="form-select">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="task-time">Estimated Time</label>
+            <select id="task-time" [(ngModel)]="newTask.estimatedTime" class="form-select">
+              <option [value]="1800">30 minutes</option>
+              <option [value]="3600">1 hour</option>
+              <option [value]="7200">2 hours</option>
+              <option [value]="14400">4 hours</option>
+              <option [value]="28800">8 hours</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="toggleTaskForm()" type="button">Cancel</button>
+          <button 
+            class="create-btn" 
+            (click)="createTask()"
+            [disabled]="!newTask.title?.trim()"
+            type="button">
+            Create Task
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="content-area" *ngIf="selectedProject">
+    <!-- Kanban View -->
+    <div class="kanban-view" *ngIf="viewMode === 'kanban'">
+      <div class="kanban-board">
+        <div 
+          class="kanban-column" 
+          *ngFor="let column of kanbanColumns"
+          (dragover)="onDragOver($event)"
+          (drop)="onDrop($event, column.id)">
+          <div class="column-header" [style.border-color]="column.color">
+            <h3 [style.color]="column.color">{{ column.title }}</h3>
+            <span class="task-count">{{ column.tasks.length }}</span>
+          </div>
+          
+          <div class="column-content">
+            <div 
+              class="task-card" 
+              *ngFor="let task of column.tasks"
+              draggable="true"
+              (dragstart)="onDragStart($event, task)">
+              <div class="task-header">
+                <div class="task-priority" [style.background]="getPriorityColor(task.priority || 'medium')"></div>
+                <button class="task-menu" (click)="deleteTask(task.id)">⋯</button>
+              </div>
+              
+              <h4 class="task-title">{{ task.title }}</h4>
+              <p class="task-description" *ngIf="task.description">{{ task.description }}</p>
+              
+              <div class="task-tags" *ngIf="task.tags.length > 0">
+                <span 
+                  class="task-tag" 
+                  *ngFor="let tag of task.tags"
+                  [style.background]="getProjectColor(task.project)">
+                  {{ tag }}
+                </span>
+              </div>
+              
+              <div class="task-footer">
+                <span class="time-spent">{{ formatTime(task.timeSpent) }}</span>
+                <span class="estimated-time" *ngIf="task.estimatedTime">
+                  / {{ formatTime(task.estimatedTime) }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Empty Column -->
+            <div class="empty-column" *ngIf="column.tasks.length === 0">
+              <p>No {{ column.title.toLowerCase() }} tasks</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div class="list-view" *ngIf="viewMode === 'list'">
+      <div class="task-list">
+        <div class="list-header">
+          <div class="col-title">Task</div>
+          <div class="col-priority">Priority</div>
+          <div class="col-status">Status</div>
+          <div class="col-time">Time</div>
+          <div class="col-actions">Actions</div>
+        </div>
+        
+        <div 
+          class="task-row" 
+          *ngFor="let task of filteredTasks">
+          <div class="col-title">
+            <h4 class="task-title">{{ task.title }}</h4>
+            <p class="task-description" *ngIf="task.description">{{ task.description }}</p>
+            <div class="task-tags" *ngIf="task.tags.length > 0">
+              <span 
+                class="task-tag" 
+                *ngFor="let tag of task.tags"
+                [style.background]="getProjectColor(task.project)">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="col-priority">
+            <span 
+              class="priority-badge" 
+              [style.background]="getPriorityColor(task.priority || 'medium')">
+              {{ task.priority || 'medium' }}
+            </span>
+          </div>
+          
+          <div class="col-status">
+            <button 
+              class="status-btn" 
+              [class]="'status-' + task.status"
+              (click)="updateTaskStatus(task, task.status === 'active' ? 'completed' : 'active')">
+              {{ task.status }}
+            </button>
+          </div>
+          
+          <div class="col-time">
+            <div class="time-info">
+              <span class="time-spent">{{ formatTime(task.timeSpent) }}</span>
+              <span class="estimated-time" *ngIf="task.estimatedTime">
+                / {{ formatTime(task.estimatedTime) }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="col-actions">
+            <button class="action-btn pause" (click)="updateTaskStatus(task, 'paused')" title="Pause">⏸</button>
+            <button class="action-btn delete" (click)="deleteTask(task.id)" title="Delete">🗑️</button>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredTasks.length === 0">
+          <div class="empty-icon">📋</div>
+          <h3>No tasks found</h3>
+          <p>Create your first task to get started with planning</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Selection State -->
+  <div class="no-project-state" *ngIf="!selectedProject">
+    <div class="state-icon">🎯</div>
+    <h2>Select a Project</h2>
+    <p>Choose a project to view and manage its tasks</p>
+    <button class="select-project-btn" (click)="toggleProjectSelector()">
+      Select Project
+    </button>
+  </div>
+</div>

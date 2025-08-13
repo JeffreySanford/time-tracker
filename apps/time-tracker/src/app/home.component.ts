@@ -1,6 +1,33 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject, Subscription } from 'rxjs';
+
+interface ProjectTag {
+  name: string;
+  color: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  color: string;
+  bgColor: string;
+  description: string;
+  suggestedTags: ProjectTag[];
+}
+
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  project: string;
+  tags: string[];
+  status: 'active' | 'completed' | 'paused';
+  timeSpent: number; // in seconds
+  startTime?: Date;
+  endTime?: Date;
+  createdAt: Date;
+}
 
 @Component({
   selector: 'app-home',
@@ -9,16 +36,46 @@ import { Subject, Subscription } from 'rxjs';
   // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnDestroy, OnChanges {
+  // Inputs from parent
+  @Input() projects: Project[] = [];
+  @Input() allTasks: Task[] = [];
+  @Input() selectedProject!: Project; // Will always be provided by parent
+  
+  // Outputs to parent
+  @Output() projectChange = new EventEmitter<Project>();
+  @Output() taskUpdate = new EventEmitter<Task>();
+  @Output() taskDelete = new EventEmitter<string>();
+
   todayString: string;
   isConnected = true;
   pingTime: number | null = null;
 
+  // Timer properties
   timerActive = false;
   timerDisplay = '00:00:00';
   timerInterval: ReturnType<typeof setInterval> | null = null;
   timerStart = 0;
   timerSessionId: string | null = null;
+  isPaused = false;
+  pausedTime = 0;
+
+  // Header properties
+  selectedRange = '1';
+  currentDateDisplay: string;
+  totalTimeDisplay = '8h 42m';
+  unreadMessages = 3;
+  showUserMenu = false;
+
+  // Task properties
+  currentTaskDescription = '';
+  currentProject = 'time-forge';
+  currentTags: string[] = [];
+  showProjectSelector = false;
+  
+  // Task management
+  tasks: Task[] = []; // Filtered tasks for current project
+  displayedColumns: string[] = ['title', 'tags', 'timeSpent', 'status', 'actions'];
 
   startSubject = new Subject<void>();
   stopSubject = new Subject<void>();
@@ -31,6 +88,11 @@ export class HomeComponent implements OnDestroy {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     this.todayString = today.toLocaleDateString(undefined, options);
+    this.currentDateDisplay = today.toLocaleDateString(undefined, { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
 
     this.subscriptions.push(
       this.startSubject.subscribe(() => {
@@ -99,23 +161,184 @@ export class HomeComponent implements OnDestroy {
     );
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['allTasks'] && this.allTasks) {
+      this.filterTasksForProject(this.currentProject);
+    }
+    
+    if (changes['selectedProject'] && this.selectedProject) {
+      this.currentProject = this.selectedProject.id;
+      this.filterTasksForProject(this.currentProject);
+    }
+  }
+
   startTimer() {
-    this.startSubject.next();
+    if (this.isPaused) {
+      // Resume from pause
+      this.isPaused = false;
+      this.timerStart = Date.now() - this.pausedTime;
+      this.timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - this.timerStart) / 1000);
+        this.timerDisplay = this.formatTime(elapsed);
+      }, 1000);
+    } else {
+      // Start new session
+      this.startSubject.next();
+    }
+  }
+
+  pauseTimer() {
+    if (this.timerActive && !this.isPaused) {
+      this.isPaused = true;
+      this.pausedTime = Date.now() - this.timerStart;
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+    }
   }
 
   stopTimer() {
+    this.isPaused = false;
+    this.pausedTime = 0;
     this.stopSubject.next();
   }
 
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
+  toggleProjectSelector() {
+    this.showProjectSelector = !this.showProjectSelector;
+  }
+
+  selectProject(project: Project) {
+    this.selectedProject = project;
+    this.currentProject = project.id;
+    this.currentTags = []; // Clear current tags when switching projects
+    this.showProjectSelector = false;
+    this.filterTasksForProject(project.id);
+    this.projectChange.emit(project);
+  }
+
+  addTag(tag: ProjectTag) {
+    if (!this.currentTags.includes(tag.name)) {
+      this.currentTags.push(tag.name);
+    }
+  }
+
+  removeTag(tag: string): void {
+    this.currentTags = this.currentTags.filter(t => t !== tag);
+  }
+
+  getTagColor(tagName: string): string {
+    // Default color scheme for tags
+    const tagColors: { [key: string]: string } = {
+      'frontend': '#06b6d4',
+      'backend': '#84cc16',
+      'angular': '#dd0031',
+      'nestjs': '#e0234e',
+      'design': '#ec4899',
+      'api': '#f59e0b'
+    };
+    
+    const cleanTag = tagName.replace('#', '');
+    return tagColors[cleanTag] || (this.selectedProject?.color ?? '#667eea');
+  }
+
+  // Task management methods
+  filterTasksForProject(projectId: string): void {
+    this.tasks = this.allTasks.filter(task => task.project === projectId);
+  }
+
+  loadTasksForProject(projectId: string): void {
+    // This method is kept for backward compatibility and API calls in the future
+    // For now, it just calls the filter method
+    this.filterTasksForProject(projectId);
+  }
+
+  createTaskFromCurrentSession() {
+    if (this.currentTaskDescription.trim()) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        title: this.currentTaskDescription,
+        description: '',
+        project: this.currentProject,
+        tags: [...this.currentTags],
+        status: 'active',
+        timeSpent: 0,
+        createdAt: new Date()
+      };
+      
+      // Emit task update to parent (parent manages the task arrays)
+      this.taskUpdate.emit(newTask);
+      // Add to current filtered tasks for immediate UI update
+      this.tasks.push(newTask);
+      this.currentTaskDescription = '';
+      this.currentTags = [];
+    }
+  }
+
   formatTime(seconds: number): string {
-    const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  }
+
+  trackProject(index: number, project: Project): string {
+    return project.id;
+  }
+
+  onRangeChange() {
+    // Update date display based on selected range
+    const today = new Date();
+    const days = parseInt(this.selectedRange);
+    
+    if (days === 1) {
+      this.currentDateDisplay = today.toLocaleDateString(undefined, { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    } else {
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - (days - 1));
+      this.currentDateDisplay = `${startDate.toLocaleDateString(undefined, { 
+        month: 'short', 
+        day: 'numeric' 
+      })} - ${today.toLocaleDateString(undefined, { 
+        month: 'short', 
+        day: 'numeric' 
+      })}`;
+    }
+
+    // TODO: Fetch data for the selected range
+    console.log(`Fetching data for ${days} days`);
   }
 
   pingServer() {
     this.pingSubject.next();
+  }
+
+  toggleTaskStatus(task: Task): void {
+    const statuses: ('active' | 'completed' | 'paused')[] = ['active', 'paused', 'completed'];
+    const currentIndex = statuses.indexOf(task.status);
+    const nextIndex = (currentIndex + 1) % statuses.length;
+    task.status = statuses[nextIndex];
+    this.taskUpdate.emit(task);
+  }
+
+  deleteTask(taskId: string): void {
+    this.tasks = this.tasks.filter(task => task.id !== taskId);
+    this.taskDelete.emit(taskId);
   }
 
   ngOnDestroy() {

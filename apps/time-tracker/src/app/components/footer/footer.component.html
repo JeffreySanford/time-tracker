@@ -1,0 +1,12 @@
+<footer class="sticker-footer">
+  <div class="footer-content">
+    <span class="footer-sticker">Time Forge</span>
+    <span class="footer-status" 
+          [ngClass]="{ 'connected': isConnected, 'disconnected': !isConnected }"
+          (mouseenter)="onPingServer()"
+          [title]="pingTime ? 'Ping: ' + pingTime + ' ms' : (isConnected ? 'Connected' : 'Disconnected')">
+      <span class="status-icon"></span>
+      <span class="status-label">{{ isConnected ? 'Online' : 'Offline' }}</span>
+    </span>
+  </div>
+</footer>

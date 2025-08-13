@@ -1,0 +1,379 @@
+// Reports Component Styles - Mobile First
+.reports-container {
+  padding: 1rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #333;
+}
+
+// Reports Header
+.reports-header {
+  margin-bottom: 1.5rem;
+  
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    .page-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .header-controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      
+      .period-selector {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+      }
+      
+      .project-filter {
+        position: relative;
+        
+        .project-filter-btn {
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 12px;
+          padding: 0.75rem 1rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #374151;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+          
+          &.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+          }
+          
+          .filter-icon {
+            font-size: 1rem;
+          }
+          
+          .dropdown-arrow {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+          }
+        }
+        
+        .project-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          z-index: 100;
+          margin-top: 0.5rem;
+          overflow: hidden;
+          
+          .project-option {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              background: rgba(102, 126, 234, 0.1);
+            }
+            
+            .option-icon {
+              width: 24px;
+              height: 24px;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 0.75rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Summary Cards
+.summary-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  
+  .summary-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .card-icon {
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .card-content {
+      flex: 1;
+      
+      h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin: 0 0 0.25rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      
+      .card-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Project Breakdown
+.project-breakdown {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+  
+  .breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    .breakdown-item {
+      .project-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        
+        .project-dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+        }
+        
+        .project-name {
+          font-weight: 600;
+          color: #374151;
+        }
+      }
+      
+      .time-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        
+        .time-spent {
+          font-weight: 700;
+          color: #1f2937;
+        }
+        
+        .percentage {
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 3px;
+        overflow: hidden;
+        
+        .progress-fill {
+          height: 100%;
+          border-radius: 3px;
+          transition: width 0.3s ease;
+        }
+      }
+    }
+  }
+}
+
+// Time Entries Section
+.time-entries-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+  }
+  
+  .entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    .entry-item {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      
+      .entry-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+        
+        .project-indicator {
+          width: 4px;
+          height: 40px;
+          border-radius: 2px;
+        }
+        
+        .entry-info {
+          flex: 1;
+          
+          .entry-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+          }
+          
+          .entry-date {
+            font-size: 0.875rem;
+            color: #6b7280;
+          }
+        }
+        
+        .entry-time {
+          font-weight: 700;
+          color: #374151;
+          font-size: 1rem;
+        }
+      }
+      
+      .entry-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-left: 1.5rem;
+        font-style: italic;
+      }
+    }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    p {
+      color: #6b7280;
+      margin: 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  .reports-header {
+    .header-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      
+      .header-controls {
+        justify-content: flex-end;
+      }
+    }
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

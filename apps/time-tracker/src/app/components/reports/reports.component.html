@@ -1,0 +1,134 @@
+<div class="reports-container">
+  <!-- Reports Header -->
+  <div class="reports-header">
+    <div class="header-content">
+      <h1 class="page-title">📊 Reports</h1>
+      <div class="header-controls">
+        <!-- Time Period Selector -->
+        <select 
+          class="period-selector" 
+          [(ngModel)]="reportPeriod" 
+          (ngModelChange)="onPeriodChange()">
+          <option value="1">Today</option>
+          <option value="7">This Week</option>
+          <option value="30">This Month</option>
+          <option value="90">Last 3 Months</option>
+        </select>
+
+        <!-- Project Filter -->
+        <div class="project-filter">
+          <button 
+            class="project-filter-btn" 
+            (click)="toggleProjectSelector()"
+            [class.active]="selectedProject">
+            <span class="filter-icon">🎯</span>
+            {{ selectedProject ? selectedProject.name.substring(2) : 'All Projects' }}
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          
+          <div class="project-dropdown" *ngIf="showProjectSelector">
+            <button 
+              class="project-option" 
+              *ngFor="let project of projects"
+              (click)="selectProject(project)"
+              [style.border-left-color]="project.color">
+              <span class="option-icon" [style.background]="project.color">
+                {{ project.name.charAt(0) }}
+              </span>
+              {{ project.name.substring(2) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card total-time">
+      <div class="card-icon">⏱️</div>
+      <div class="card-content">
+        <h3>Total Time</h3>
+        <div class="card-value">{{ formatTime(totalTimeSpent) }}</div>
+      </div>
+    </div>
+
+    <div class="summary-card average-time">
+      <div class="card-icon">📈</div>
+      <div class="card-content">
+        <h3>Daily Average</h3>
+        <div class="card-value">{{ formatTime(averageTimePerDay) }}</div>
+      </div>
+    </div>
+
+    <div class="summary-card entries-count">
+      <div class="card-icon">📝</div>
+      <div class="card-content">
+        <h3>Time Entries</h3>
+        <div class="card-value">{{ filteredTimeEntries.length }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Breakdown -->
+  <div class="project-breakdown" *ngIf="!selectedProject && projectBreakdown.length > 1">
+    <h2 class="section-title">Project Breakdown</h2>
+    <div class="breakdown-list">
+      <div 
+        class="breakdown-item" 
+        *ngFor="let item of projectBreakdown">
+        <div class="project-info">
+          <span 
+            class="project-dot" 
+            [style.background]="getProjectColor(item.project)">
+          </span>
+          <span class="project-name">{{ getProjectName(item.project) }}</span>
+        </div>
+        <div class="time-info">
+          <span class="time-spent">{{ formatTime(item.time) }}</span>
+          <span class="percentage">({{ item.percentage.toFixed(1) }}%)</span>
+        </div>
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="item.percentage"
+            [style.background]="getProjectColor(item.project)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Entries List -->
+  <div class="time-entries-section">
+    <h2 class="section-title">Time Entries</h2>
+    
+    <div class="entries-list" *ngIf="filteredTimeEntries.length > 0">
+      <div 
+        class="entry-item" 
+        *ngFor="let entry of filteredTimeEntries">
+        <div class="entry-header">
+          <span 
+            class="project-indicator" 
+            [style.background]="getProjectColor(entry.project)">
+          </span>
+          <div class="entry-info">
+            <div class="entry-title">{{ getProjectName(entry.project) }}</div>
+            <div class="entry-date">{{ formatDate(entry.date) }}</div>
+          </div>
+          <div class="entry-time">{{ formatTime(entry.timeSpent) }}</div>
+        </div>
+        <div class="entry-description" *ngIf="entry.description">
+          {{ entry.description }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredTimeEntries.length === 0">
+      <div class="empty-icon">📊</div>
+      <h3>No time entries found</h3>
+      <p>Start tracking time to see your reports here</p>
+    </div>
+  </div>
+</div>

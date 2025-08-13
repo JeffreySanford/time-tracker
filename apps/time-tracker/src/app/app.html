@@ -1,1 +1,89 @@
-<router-outlet></router-outlet>
+<div class="app-container" 
+     (touchstart)="onTouchStart($event)"
+     (touchmove)="onTouchMove($event)" 
+     (touchend)="onTouchEnd()">
+  
+  <!-- Navigation Arrows (Desktop Only) -->
+  <div class="nav-arrows">
+    <button 
+      class="nav-arrow left" 
+      *ngIf="showLeftArrow"
+      (click)="handleLeftClick()"
+      [attr.aria-label]="currentView === 'home' ? 'Go to Planning' : 'Go to Home'">
+      ←
+    </button>
+    
+    <button 
+      class="nav-arrow right" 
+      *ngIf="showRightArrow"
+      (click)="handleRightClick()"
+      [attr.aria-label]="currentView === 'home' ? 'Go to Reports' : 'Go to Home'">
+      →
+    </button>
+  </div>
+
+  <!-- Swipeable View Container -->
+  <div class="view-container" [attr.data-view]="currentView">
+    
+    <!-- Reports View -->
+    <div class="view-panel reports" [class.active]="currentView === 'reports'">
+      <app-reports
+        [projects]="projects"
+        [tasks]="allTasks"
+        [selectedProject]="selectedProject"
+        (projectChange)="onProjectChange($event)">
+      </app-reports>
+    </div>
+    
+    <!-- Home View -->
+    <div class="view-panel home" [class.active]="currentView === 'home'">
+      <app-home
+        [projects]="projects"
+        [allTasks]="allTasks"
+        [selectedProject]="selectedProject"
+        (projectChange)="onProjectChange($event)"
+        (taskUpdate)="onTaskUpdate($event)"
+        (taskDelete)="onTaskDelete($event)">
+      </app-home>
+    </div>
+    
+    <!-- Planning View -->
+    <div class="view-panel planning" [class.active]="currentView === 'planning'">
+      <app-planning
+        [projects]="projects"
+        [allTasks]="allTasks"
+        [selectedProject]="selectedProject"
+        (projectChange)="onProjectChange($event)"
+        (taskUpdate)="onTaskUpdate($event)"
+        (taskDelete)="onTaskDelete($event)">
+      </app-planning>
+    </div>
+    
+  </div>
+
+  <!-- View Indicator Dots (Mobile) -->
+  <div class="view-indicators">
+    <button 
+      class="indicator" 
+      [class.active]="currentView === 'reports'"
+      (click)="navigateToReports()"
+      aria-label="Reports">
+      📊
+    </button>
+    <button 
+      class="indicator" 
+      [class.active]="currentView === 'home'"
+      (click)="navigateToHome()"
+      aria-label="Home">
+      🏠
+    </button>
+    <button 
+      class="indicator" 
+      [class.active]="currentView === 'planning'"
+      (click)="navigateToPlanning()"
+      aria-label="Planning">
+      📋
+    </button>
+  </div>
+
+</div>
