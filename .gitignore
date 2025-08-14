@@ -47,3 +47,67 @@ Thumbs.db
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+# Capacitor Mobile Development
+# iOS
+ios/App/App.xcarchive
+ios/App/build/
+ios/App/Pods/
+ios/App/public/
+ios/App/Podfile.lock
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/capacitor-cordova-ios-plugins/
+
+# Android
+android/app/build/
+android/app/src/main/assets/public/
+android/build/
+android/.gradle/
+android/gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/src/main/assets/capacitor.config.json
+android/capacitor-cordova-android-plugins/build/
+
+# Generated Capacitor files
+.capacitor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+error.log
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Build artifacts
+*.apk
+*.ipa
+*.app
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test coverage
+coverage/
+.jest/
+
+# Cache directories
+.eslintcache
+.prettiercache
+.stylelintcache
