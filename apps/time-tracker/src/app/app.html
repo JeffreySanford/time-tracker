@@ -3,6 +3,16 @@
      (touchmove)="onTouchMove($event)" 
      (touchend)="onTouchEnd()">
   
+  <app-header 
+    [selectedRange]="selectedRange"
+    [currentDateDisplay]="currentDateDisplay"
+    [totalTimeDisplay]="totalTimeDisplay"
+    [unreadMessages]="unreadMessages"
+    [showUserMenu]="showUserMenu"
+    (rangeChange)="onRangeChange()"
+    (userMenuToggle)="toggleUserMenu()">
+  </app-header>
+  
   <!-- Navigation Arrows (Desktop Only) -->
   <div class="nav-arrows">
     <button 
@@ -85,5 +95,11 @@
       📋
     </button>
   </div>
+
+  <app-footer 
+    [isConnected]="isConnected"
+    [pingTime]="pingTime"
+    (pingServer)="pingServer()">
+  </app-footer>
 
 </div>

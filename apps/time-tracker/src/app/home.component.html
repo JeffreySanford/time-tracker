@@ -1,14 +1,4 @@
 <div class="home-container">
-  <app-header 
-    [selectedRange]="selectedRange"
-    [currentDateDisplay]="currentDateDisplay"
-    [totalTimeDisplay]="totalTimeDisplay"
-    [unreadMessages]="unreadMessages"
-    [showUserMenu]="showUserMenu"
-    (rangeChange)="onRangeChange()"
-    (userMenuToggle)="toggleUserMenu()">
-  </app-header>
-  
   <section class="work-session-container">
     <div class="session-card">
       <!-- Timer & Project Row -->
@@ -210,10 +200,4 @@
   </section>
   
   <button class="manual-entry-btn">Quick Add Manual Entry</button>
-
-  <app-footer 
-    [isConnected]="isConnected"
-    [pingTime]="pingTime"
-    (pingServer)="pingServer()">
-  </app-footer>
 </div>

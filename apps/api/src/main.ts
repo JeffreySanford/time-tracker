@@ -14,6 +14,14 @@ async function bootstrap() {
       console.log(`[MongoDB] Using persistent MongoDB at: ${mongoUri}`);
     }
     const app = await NestFactory.create(AppModule);
+    
+    // Enable CORS for frontend development
+    app.enableCors({
+      origin: ['http://localhost:4200'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      credentials: true,
+    });
+    
     await app.listen(3000);
     console.log(`[NestJS] Server started on http://localhost:3000`);
   } catch (err) {

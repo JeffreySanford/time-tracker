@@ -48,8 +48,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
   @Output() taskDelete = new EventEmitter<string>();
 
   todayString: string;
-  isConnected = true;
-  pingTime: number | null = null;
 
   // Timer properties
   timerActive = false;
@@ -59,13 +57,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
   timerSessionId: string | null = null;
   isPaused = false;
   pausedTime = 0;
-
-  // Header properties
-  selectedRange = '1';
-  currentDateDisplay: string;
-  totalTimeDisplay = '8h 42m';
-  unreadMessages = 3;
-  showUserMenu = false;
 
   // Task properties
   currentTaskDescription = '';
@@ -79,7 +70,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
 
   startSubject = new Subject<void>();
   stopSubject = new Subject<void>();
-  pingSubject = new Subject<void>();
   subscriptions: Subscription[] = [];
 
   http = inject(HttpClient);
@@ -88,11 +78,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     this.todayString = today.toLocaleDateString(undefined, options);
-    this.currentDateDisplay = today.toLocaleDateString(undefined, { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
 
     this.subscriptions.push(
       this.startSubject.subscribe(() => {
@@ -141,24 +126,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
         }
       })
     );
-
-    this.subscriptions.push(
-      this.pingSubject.subscribe(() => {
-        const start = performance.now();
-        const sub = this.http.get('/api/health', { observe: 'response' })
-          .subscribe({
-            next: (response) => {
-              this.isConnected = response.status === 200;
-              this.pingTime = Math.round(performance.now() - start);
-            },
-            error: () => {
-              this.isConnected = false;
-              this.pingTime = Math.round(performance.now() - start);
-            }
-          });
-        this.subscriptions.push(sub);
-      })
-    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -202,10 +169,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
     this.isPaused = false;
     this.pausedTime = 0;
     this.stopSubject.next();
-  }
-
-  toggleUserMenu() {
-    this.showUserMenu = !this.showUserMenu;
   }
 
   toggleProjectSelector() {
@@ -295,37 +258,6 @@ export class HomeComponent implements OnDestroy, OnChanges {
 
   trackProject(index: number, project: Project): string {
     return project.id;
-  }
-
-  onRangeChange() {
-    // Update date display based on selected range
-    const today = new Date();
-    const days = parseInt(this.selectedRange);
-    
-    if (days === 1) {
-      this.currentDateDisplay = today.toLocaleDateString(undefined, { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric' 
-      });
-    } else {
-      const startDate = new Date(today);
-      startDate.setDate(today.getDate() - (days - 1));
-      this.currentDateDisplay = `${startDate.toLocaleDateString(undefined, { 
-        month: 'short', 
-        day: 'numeric' 
-      })} - ${today.toLocaleDateString(undefined, { 
-        month: 'short', 
-        day: 'numeric' 
-      })}`;
-    }
-
-    // TODO: Fetch data for the selected range
-    console.log(`Fetching data for ${days} days`);
-  }
-
-  pingServer() {
-    this.pingSubject.next();
   }
 
   toggleTaskStatus(task: Task): void {

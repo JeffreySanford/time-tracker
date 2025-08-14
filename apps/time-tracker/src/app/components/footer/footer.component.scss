@@ -1,14 +1,14 @@
 // Footer Styles
 .sticker-footer {
   position: fixed;
-  left: 0;
+  left: 1em;
   bottom: 0;
-  width: 100vw;
+  width: calc(100% - 2em);
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   box-shadow: 0 -2px 12px rgba(102, 126, 234, 0.2);
   padding: 0.7rem 0;
-  z-index: 100;
+  z-index: 1001;
   animation: slideUp 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
@@ -69,6 +69,51 @@
 @keyframes slideUp {
   from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+.footer-sticker {
+  font-size: 1.2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.footer-status {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.footer-status.connected .status-icon {
+  background: #48bb78;
+  box-shadow: 0 0 8px #48bb78;
+}
+
+.footer-status.disconnected .status-icon {
+  background: #e53e3e;
+  box-shadow: 0 0 8px #e53e3e;
+}
+
+.status-icon {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  transition: background 0.3s, box-shadow 0.3s;
+  animation: statusPulse 1.2s infinite;
+}
+
+.status-label {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+@keyframes statusPulse {
+  0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
 }
 
 // Responsive Design

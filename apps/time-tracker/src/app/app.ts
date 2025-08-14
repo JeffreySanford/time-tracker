@@ -54,6 +54,17 @@ export class App implements OnInit {
   showLeftArrow = false;
   showRightArrow = false;
   
+  // Header properties
+  selectedRange = '1';
+  currentDateDisplay = '';
+  totalTimeDisplay = '8h 42m';
+  unreadMessages = 3;
+  showUserMenu = false;
+  
+  // Footer properties
+  isConnected = true;
+  pingTime: number | null = null;
+  
   // Shared data between components
   projects: Project[] = [
     {
@@ -113,6 +124,18 @@ export class App implements OnInit {
     // Initialize with Time Forge project
     this.selectedProject = this.projects.find(p => p.id === 'time-forge') || this.projects[3];
     this.initializeSampleTasks();
+    
+    // Initialize current date display
+    const today = new Date();
+    this.currentDateDisplay = today.toLocaleDateString(undefined, { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    
+    // Test initial connection
+    this.pingServer();
   }
 
   private initializeSampleTasks(): void {
@@ -367,5 +390,50 @@ export class App implements OnInit {
 
   onTaskDelete(taskId: string) {
     this.allTasks = this.allTasks.filter(task => task.id !== taskId);
+  }
+
+  // Header methods
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
+  onRangeChange() {
+    console.log('Range changed to:', this.selectedRange);
+    
+    const days = parseInt(this.selectedRange);
+    const today = new Date();
+    
+    if (days === 1) {
+      this.currentDateDisplay = today.toLocaleDateString(undefined, { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } else {
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - days + 1);
+      
+      this.currentDateDisplay = `${startDate.toLocaleDateString(undefined, { 
+        month: 'short', 
+        day: 'numeric' 
+      })} - ${today.toLocaleDateString(undefined, { 
+        month: 'short', 
+        day: 'numeric' 
+      })}`;
+    }
+  }
+
+  // Footer methods
+  async pingServer() {
+    const start = performance.now();
+    try {
+      const response = await fetch('http://localhost:3000/api/health');
+      this.isConnected = response.status === 200;
+      this.pingTime = Math.round(performance.now() - start);
+    } catch {
+      this.isConnected = false;
+      this.pingTime = Math.round(performance.now() - start);
+    }
   }
 }
