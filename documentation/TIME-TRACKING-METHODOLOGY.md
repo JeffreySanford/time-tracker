@@ -1,5 +1,7 @@
 # Time Tracking Methodology & Theory
 
+Last updated: 2025-08-15
+
 ## 🎯 Core Philosophy
 
 ### The Science of Time Awareness

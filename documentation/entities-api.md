@@ -1,6 +1,9 @@
 # Current Entities (Implemented)
 
+Last updated: 2025-08-15
+
 ## TimeWorked Schema
+
 ```typescript
 interface TimeWorked {
   _id: ObjectId;          // MongoDB generated unique identifier
@@ -15,6 +18,7 @@ interface TimeWorked {
 ## Current API Endpoints (Implemented)
 
 ### Timer Management
+
 - `POST /api/timeworked/start` → Start new timer session
   ```json
   Request: { "userId": "demo-user" }

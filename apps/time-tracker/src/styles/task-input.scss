@@ -1,0 +1,56 @@
+// Task input row styles
+@use 'buttons' as *;
+
+.task-input-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  // Make more compact on mobile
+  @media (max-width: 768px) {
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .task-input-compact {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: #1f2937;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      background: white;
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    @media (max-width: 768px) {
+      padding: 0.375rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+    }
+  }
+
+  .add-task-btn-compact {
+    @include base-btn();
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    @media (max-width: 768px) {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+  }
+}

@@ -1,0 +1,99 @@
+/*
+  Legacy content captured from `styles.scss` before refactor.
+  Keep this for reference while we split styles into smaller partials.
+
+  When ready, remove this file.
+*/
+
+/* Global mobile-first fixes for Android WebView and single-page swipe UI.
+   - Adds safe-area support, dynamic viewport height, and overflow guards
+   - Provides fluid type scale with clamp()
+   - Utility container-query example and debugging helpers
+   - NOTE: Remove temporary overflow-x hidden after you fix the real offender(s)
+*/
+
+:root {
+  :root {
+    /* dynamic viewport height for mobile browsers (100dvh accounts for browser chrome) */
+    --page-min: 100dvh;
+
+    /* Fluid type scale */
+    --step--1: clamp(0.82rem, 0.7rem + 0.5vw, 0.95rem);
+    --step-0: clamp(0.9rem, 0.8rem + 0.7vw, 1.05rem);
+    --step-1: clamp(1.1rem, 0.9rem + 1vw, 1.25rem);
+    --metrics: clamp(1.6rem, 1.2rem + 3vw, 2.4rem);
+  }
+
+  html,
+  body {
+    height: 100%;
+    min-height: var(--page-min);
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* TEMP while debugging horizontal overflow on mobile, remove when done */
+    overflow-x: hidden;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+
+  /* Constrain media to avoid overflow */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Tame long tokens (hashes/URLs) */
+  .text,
+  p,
+  span {
+    overflow-wrap: anywhere;
+  }
+
+  /* Utility: full-page container for single-page app mobile layout */
+  .page {
+    min-height: var(--page-min);
+    height: var(--page-min);
+  }
+
+  /* Container query example - use on card/section parents */
+  .section {
+    container-type: inline-size;
+  }
+  @container (max-width: 420px) {
+    .toolbar {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .buttons {
+      width: 100%;
+    }
+  }
+
+  /* Fluid base font and tighter defaults for mobile */
+  body {
+    font-size: var(--step-0);
+    line-height: 1.3;
+  }
+  h1,
+  .timer {
+    font-size: var(--metrics);
+    margin: 0;
+  }
+
+  /* Material density guide (we use Angular Material 3 / MDC). If you maintain
+     a central theme scss, apply density there; below is a helper comment.
+  */
+
+
+
+}

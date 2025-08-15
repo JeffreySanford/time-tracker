@@ -1,20 +1,9 @@
 import { Component, inject, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Project, ProjectTag } from './models/project.model';
 import { Subject, Subscription } from 'rxjs';
 
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  bgColor: string;
-  description: string;
-  suggestedTags: ProjectTag[];
-}
+// Use shared Project and ProjectTag types from models/project.model.ts
 
 interface Task {
   id: string;
@@ -40,7 +29,14 @@ export class HomeComponent implements OnDestroy, OnChanges {
   // Inputs from parent
   @Input() projects: Project[] = [];
   @Input() allTasks: Task[] = [];
-  @Input() selectedProject!: Project; // Will always be provided by parent
+  @Input() selectedProject: Project = {
+    id: '',
+    name: '',
+    color: '',
+    bgColor: '',
+    description: '',
+    suggestedTags: []
+  };
   
   // Outputs to parent
   @Output() projectChange = new EventEmitter<Project>();
@@ -110,6 +106,23 @@ export class HomeComponent implements OnDestroy, OnChanges {
           clearInterval(this.timerInterval);
           this.timerInterval = null;
         }
+        // Compute elapsed time (milliseconds) for this session
+        let elapsedMs = 0;
+        if (this.isPaused) {
+          elapsedMs = this.pausedTime;
+        } else if (this.timerStart) {
+          elapsedMs = Date.now() - this.timerStart;
+        }
+
+        const elapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+
+        // If there is a current task description, create a task from this session with the elapsed time
+        if (this.currentTaskDescription && this.currentTaskDescription.trim()) {
+          const startTime = this.timerStart ? new Date(this.timerStart) : undefined;
+          const endTime = startTime ? new Date((startTime as Date).getTime() + elapsedMs) : undefined;
+          this.createTaskFromCurrentSession(elapsedSeconds, startTime, endTime);
+        }
+
         if (this.timerSessionId) {
           const sub = this.http.patch<{ _id: string; userId: string; startedAt: string; endedAt: string | null; duration: number }>(
             `/api/timeworked/stop/${this.timerSessionId}`, { endedAt: new Date() })
@@ -220,7 +233,10 @@ export class HomeComponent implements OnDestroy, OnChanges {
     this.filterTasksForProject(projectId);
   }
 
-  createTaskFromCurrentSession() {
+  /**
+   * Create a task from the current session. Optionally provide duration (in seconds), start and end times
+   */
+  createTaskFromCurrentSession(durationSeconds?: number, startTime?: Date, endTime?: Date) {
     if (this.currentTaskDescription.trim()) {
       const newTask: Task = {
         id: Date.now().toString(),
@@ -229,31 +245,30 @@ export class HomeComponent implements OnDestroy, OnChanges {
         project: this.currentProject,
         tags: [...this.currentTags],
         status: 'active',
-        timeSpent: 0,
+        timeSpent: durationSeconds ?? 0,
+        startTime: startTime,
+        endTime: endTime,
         createdAt: new Date()
       };
-      
+
       // Emit task update to parent (parent manages the task arrays)
       this.taskUpdate.emit(newTask);
       // Add to current filtered tasks for immediate UI update
       this.tasks.push(newTask);
+      // Clear current inputs
       this.currentTaskDescription = '';
       this.currentTags = [];
     }
   }
 
+  // Always return HH:MM:SS zero-padded for the live timer display and most UI
   formatTime(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${secs}s`;
-    } else {
-      return `${secs}s`;
-    }
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
   }
 
   trackProject(index: number, project: Project): string {

@@ -1,0 +1,488 @@
+/* Mobile-focused tweaks (Android WebView & small screens). Toggle .platform-android for platform-specific rules */
+
+/* TEMP while debugging horizontal overflow on mobile, remove when you find the offender */
+html, body { overflow-x: hidden; }
+
+body {
+  font-size: 0.5rem;
+  line-height: 0.8;
+  color: var(--text);
+  background: var(--surface);
+}
+
+/* Base typography adjustments for mobile */
+h1 { font-size: 1rem; margin: 0; font-weight: 600; } /* Much smaller headers */
+h2 { font-size: 0.9rem; margin: 0; font-weight: 500; }
+h3 { font-size: 0.8rem; margin: 0; font-weight: 500; }
+p, span, div { font-size: 0.75rem; } /* Default 14px for most text */
+.small-text { font-size: 0.5rem; }
+.timer { font-size: 1rem; margin: 0; font-weight: 600; letter-spacing: -0.02em; } /* Specific timer sizing */
+
+/* Tighter spacing throughout the app */
+.app-container {
+  --spacing-unit: 0.5rem; /* 8px base spacing unit */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem;  /* 8px */
+  --spacing-md: 0.75rem; /* 12px */
+  --spacing-lg: 1rem;    /* 16px */
+}
+
+/* Mobile card styles - tighter padding */
+.card {
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Mobile compact top area: timer + project selector on a single row, summary below */
+.mobile-only { display: none; }
+@media (max-width: 768px) {
+  .mobile-only { display: block; }
+
+  /* Make the top area compact and limit to ~25vh so overall session-card top fits 20-30% */
+  .session-card {
+    padding: 0.5rem; /* Much smaller padding */
+    background: #ffffff;
+    border-radius: 10px; /* Reduced border radius */
+    box-shadow: 0 4px 16px rgba(16,24,40,0.06); /* Lighter shadow */
+    border: 1px solid rgba(99,102,241,0.06);
+    width: calc(100% - 0.75rem); /* Nearly full width with small gutter */
+    max-width: none;
+    margin: 0.375rem auto; /* Smaller vertical spacing */
+    box-sizing: border-box;
+    container-type: inline-size; /* Enable container queries */
+  }
+
+  .session-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem; /* Reduced gap */
+  }
+
+  /* Orange bordered design container for the top area */
+  .session-top .design-box {
+    border: 1px solid #ff8a00; /* Thinner border */
+    padding: 0.375rem 0.5rem; /* Reduced padding */
+    border-radius: 8px; /* Smaller radius */
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem; /* Reduced gap */
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Timer display styling */
+  .timer-display {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.75rem; /* Smaller font size */
+    letter-spacing: -0.025em; /* Tighter letter spacing */
+    color: #6366f1; /* Purple/indigo color */
+    font-weight: 600;
+    line-height: 1;
+    margin: 0.125rem 0;
+  }
+  
+  /* Timer status indicator */
+  .timer-status {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #6b7280; /* Gray text */
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Mobile typography for lists and task items */
+  .task-list {
+    font-size: var(--font-small, 0.8rem);
+    
+    .task-item {
+      padding: 0.5rem;
+      
+      .task-title {
+        font-size: var(--font-medium, 0.95rem);
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+      }
+      
+      .task-details {
+        font-size: var(--font-small, 0.8rem);
+        color: var(--muted);
+      }
+      
+      .task-time {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: var(--font-small, 0.8rem);
+      }
+    }
+  }
+
+  .timer-project-row {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center align for better layout */
+    gap: 0.25rem; /* Smaller gap */
+    padding: 0.125rem;
+    flex-wrap: nowrap; /* keep timer and selector on one line */
+    /* Make container query aware */
+    container-type: inline-size;
+  }
+
+  /* Keep the timer compact so it doesn't force the selector to wrap */
+  .timer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem; /* Reduced gap */
+    flex: 0 0 auto; /* fixed-size container */
+    min-width: 0;
+    align-items: center; /* Center align timer content */
+  }
+  
+  /* Project selector styling */
+  .project-selector {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.25rem 0.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #f9fafb;
+    font-size: 0.75rem;
+    max-width: 180px; /* Limit width */
+  }
+  
+  .project-selector .project-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 4px;
+  }
+  
+  .project-selector .project-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+  
+  /* Container query for ultra-narrow screens */
+  @container (max-width: 280px) {
+    .timer-project-row {
+      flex-direction: column;
+      align-items: center; /* Center align content */
+    }
+    
+    .timer-section .timer {
+      font-size: 1.25rem; /* Even smaller for tiny screens */
+    }
+  }
+
+  /* FAB-style controls on mobile: compact circular icons in one row */
+  .timer-controls-compact {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .control-btn-compact {
+    width: 40px; /* Reduced from 44px */
+    height: 40px; /* Reduced from 44px */
+    padding: 0.4rem; /* Simplified padding */
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Less pronounced shadow */
+    border: none;
+    background: white;
+    color: #111827;
+    font-weight: 700;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .control-btn-compact .btn-label { 
+    display: none; 
+  }
+  
+  .control-btn-compact .btn-icon svg { 
+    display: block; 
+    color: inherit; 
+    font-size: var(--font-small, 0.8rem); /* Smaller icon size */
+  }
+  
+  /* Make buttons even more compact on very small screens */
+  @container (max-width: 320px) {
+    .control-btn-compact {
+      width: 36px;
+      height: 36px;
+      padding: 0.3rem;
+    }
+  }
+  .add-task-btn-compact svg, .add-record-btn svg { color: white; }
+  
+  /* MD3 Expressive-inspired fluid typography with container queries */
+  .md3-container {
+    container-type: inline-size;
+    container-name: md3;
+  }
+  
+  @container md3 (max-width: 360px) {
+    .md3-display-large { font-size: var(--font-xlarge, 1.6rem); line-height: 1.2; }
+    .md3-display-medium { font-size: var(--font-large, 1.1rem); line-height: 1.2; }
+    .md3-display-small { font-size: var(--font-medium, 0.95rem); line-height: 1.2; }
+    .md3-headline-large { font-size: var(--font-large, 1.1rem); line-height: 1.3; }
+    .md3-headline-medium { font-size: var(--font-medium, 0.95rem); line-height: 1.3; }
+    .md3-headline-small { font-size: var(--font-small, 0.8rem); line-height: 1.3; }
+    .md3-body-large { font-size: var(--font-medium, 0.95rem); line-height: 1.4; }
+    .md3-body-medium { font-size: var(--font-small, 0.8rem); line-height: 1.4; }
+    .md3-body-small { font-size: 0.75rem; line-height: 1.4; }
+    .md3-label-large { font-size: var(--font-small, 0.8rem); line-height: 1.25; }
+    .md3-label-medium { font-size: 0.75rem; line-height: 1.25; }
+    .md3-label-small { font-size: 0.7rem; line-height: 1.25; }
+  }
+
+  .control-btn-compact.start { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+  .control-btn-compact.pause { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+  .control-btn-compact.stop { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+  
+  /* Form fields and inputs optimized for mobile */
+  .form-field-mobile {
+    margin-bottom: 0.7rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: var(--font-small, 0.8rem);
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 8px;
+      background: #ffffff;
+      font-size: var(--font-small, 0.8rem);
+      line-height: 1.2;
+    }
+    
+    /* Compact form fields for very small screens */
+    @container (max-width: 320px) {
+      margin-bottom: 0.5rem;
+      
+      label {
+        font-size: 0.75rem;
+        margin-bottom: 0.2rem;
+      }
+      
+      input, select, textarea {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .control-btn-compact:active { transform: translateY(1px) scale(0.98); }
+
+  .timer-display {
+  font-size: var(--metrics) !important;
+    font-weight: 800;
+    line-height: 1;
+    min-width: 80px;
+    text-align: left;
+    padding-right: 0.5rem;
+    color: #4b2fbd; /* deep purple accent */
+    letter-spacing: 0.06em;
+  }
+
+  .project-selector-compact {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  }
+
+  .project-selector-compact .selected-project {
+  padding: 0.35rem 0.55rem;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.03));
+    border: 1px solid rgba(99,102,241,0.18);
+    box-shadow: 0 6px 18px rgba(99,102,241,0.06);
+  }
+
+  /* ensure project selector sits to the right visually and can shrink */
+  .timer-project-row .project-selector-compact { margin-left: auto; flex: 1 1 auto; max-width: calc(100% - 110px); }
+
+  .project-selector-compact .project-info {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* force single-line ellipsis for tight widths */
+  }
+
+  /* Ensure input row and buttons don't overflow the viewport */
+  .task-input-row, .timer-controls-compact { width: 100%; box-sizing: border-box; }
+  .task-input-compact { min-width: 0; box-sizing: border-box; }
+  .add-task-btn-compact { flex: 0 0 auto; }
+
+  /* make project name and desc truncate instead of wrapping */
+  .project-selector-compact .project-name,
+  .project-selector-compact .project-desc,
+  .project-name-sm,
+  .project-desc-sm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .project-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+  }
+
+  .project-summary .summary-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .project-icon-large {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: var(--font-medium, 1rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(99,102,241,0.06);
+  }
+
+  .project-name-sm {
+    font-size: var(--font-small, 0.88rem);
+    font-weight: 700;
+  }
+
+  .project-desc-sm {
+    font-size: var(--font-small, 0.68rem);
+    color: #6b7280;
+  }
+
+    .project-name, .project-name-sm { font-size: var(--font-medium, 0.84rem); }
+    .project-desc, .project-desc-sm { font-size: var(--font-small, 0.64rem); }
+
+  .project-totals {
+  font-size: var(--font-small, 0.82rem);
+  font-weight: 700;
+  color: #374151;
+  }
+
+  /* Slightly reduce all body fonts on mobile to fit more information */
+  body { font-size: 13px; }
+
+  /* Full-width input and plus button */
+  .task-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .task-input-compact {
+  flex: 1 1 auto;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid rgba(15,23,42,0.04);
+  font-size: var(--font-medium, 0.95rem);
+  }
+
+  .add-task-btn-compact {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    padding: 0;
+    background: linear-gradient(135deg,#6d28d9 0%, #8b5cf6 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(139,92,246,0.14);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+
+  .add-record-row { display:flex; justify-content:center; margin-top:0.5rem; }
+  .add-record-btn {
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg,#6d28d9 0%, #8b5cf6 100%);
+    color:white;
+    font-weight:600;
+    box-shadow: 0 8px 24px rgba(107,70,193,0.14);
+  }
+
+  /* New record control when inline with other controls */
+  .control-btn-compact.record { background: linear-gradient(135deg,#6d28d9 0%, #8b5cf6 100%); color: white; }
+
+  /* Quick tags chips */
+  .quick-tag {
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: var(--font-small, 0.72rem);
+    box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  }
+
+  /* Project header card look */
+  .project-tasks-header {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 0.7rem;
+    box-shadow: 0 8px 28px rgba(16,24,40,0.04);
+    border: 1px solid rgba(99,102,241,0.04);
+  }
+}
+
+/* Progressive tweaks for very narrow devices */
+@media (max-width: 400px) {
+  .timer-display { font-size: 1.0rem !important; min-width: 44px; }
+  .project-selector-compact .selected-project { padding: 0.28rem 0.45rem; gap: 0.3rem; }
+  .project-name, .project-name-sm { font-size: 0.84rem; }
+  .project-desc, .project-desc-sm { font-size: 0.66rem; }
+  .control-btn-compact { width: 40px; height: 40px; }
+}
+
+@media (max-width: 360px) {
+  .timer-display { font-size: 0.9rem !important; min-width: 44px; }
+  .project-name, .project-name-sm { font-size: 0.78rem; }
+  .project-desc, .project-desc-sm { font-size: 0.64rem; }
+  .project-desc { display: none; } /* hide description on smallest handsets to force single-line layout */
+  .project-selector-compact .selected-project { padding: 0.2rem 0.35rem; }
+  .project-icon-large { width: 3em; height: 3em; font-size: var(--font-small, 0.85rem); }
+  .control-btn-compact { width: 38px; height: 38px; }
+  body { font-size: 11.8px; }
+}
+
+@media (max-width: 320px) {
+  .timer-display { font-size: 0.82rem !important; min-width: 40px; }
+  .project-name, .project-name-sm { font-size: 0.72rem; }
+  .project-selector-compact .selected-project { padding: 0.15rem 0.25rem; }
+  .control-btn-compact { width: 36px; height: 36px; }
+  body { font-size: 11px; }
+}
+
+/* Example: Android-specific nudges */
+.platform-android {
+  /* slightly tighter tap targets on Android if material density is applied */
+  --touch-padding: 0.5rem;
+}
+
+/* Container query example for narrow cards */
+.section { container-type: inline-size; }
+@container (max-width: 420px) {
+  .toolbar { flex-wrap: wrap; gap: .5rem; }
+  .buttons { width: 100%; }
+}

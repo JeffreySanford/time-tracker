@@ -1,0 +1,7 @@
+/* Web-specific overrides (larger layouts, hover states) */
+
+@media(min-width: 769px) {
+  body { font-size: clamp(1rem, 1rem + .4vw, 1.05rem); }
+  .nav-arrows { display: block; }
+  .view-indicators { display: none; }
+}

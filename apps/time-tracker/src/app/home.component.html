@@ -86,9 +86,9 @@
       </div>
       
       <!-- Quick Tags -->
-      <div class="quick-tags" *ngIf="selectedProject.suggestedTags.length > 0">
+      <div class="quick-tags" *ngIf="(selectedProject.suggestedTags?.length ?? 0) > 0">
         <button 
-          *ngFor="let tag of selectedProject.suggestedTags" 
+          *ngFor="let tag of selectedProject.suggestedTags ?? []" 
           class="quick-tag"
           [style.background]="tag.color"
           (click)="addTag(tag)">

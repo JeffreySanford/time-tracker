@@ -1,4 +1,4 @@
-package com.yourco.timetracker;
+package com.truenorth.timetracker;
 
 import com.getcapacitor.BridgeActivity;
 

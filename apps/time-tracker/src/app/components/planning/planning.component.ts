@@ -1,18 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-
-interface ProjectTag {
-  name: string;
-  color: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  bgColor: string;
-  description: string;
-  suggestedTags: ProjectTag[];
-}
+import { Project } from '../../models/project.model';
 
 interface Task {
   id: string;
@@ -195,7 +182,7 @@ export class PlanningComponent {
 
   getProjectColor(projectId: string): string {
     const project = this.projects.find(p => p.id === projectId);
-    return project ? project.color : '#667eea';
+    return project ? project.color ?? '#667eea' : '#667eea';
   }
 
   addTag(tagName: string) {

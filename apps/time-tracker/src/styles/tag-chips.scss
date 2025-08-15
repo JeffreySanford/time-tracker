@@ -1,0 +1,46 @@
+// Tag Chips
+.current-tags {
+  margin-top: 1rem;
+
+  .tag-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px white;
+      }
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .remove-icon {
+        font-weight: bold;
+        font-size: 1rem;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

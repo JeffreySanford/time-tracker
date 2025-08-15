@@ -1,5 +1,5 @@
 {
-  "name": "time-tracker",
+  "name": "time-forge",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
@@ -10,7 +10,7 @@
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/time-tracker",
+  "outputPath": "dist/apps/time-tracker",
         "browser": "apps/time-tracker/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/time-tracker/tsconfig.app.json",
@@ -21,7 +21,10 @@
             "input": "apps/time-tracker/public"
           }
         ],
-        "styles": ["apps/time-tracker/src/styles.scss"]
+        "styles": ["apps/time-tracker/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["apps/time-tracker/src/styles"]
+        }
       },
       "configurations": {
         "production": {
@@ -52,10 +55,10 @@
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "time-tracker:build:production"
+          "buildTarget": "time-forge:build:production"
         },
         "development": {
-          "buildTarget": "time-tracker:build:development",
+          "buildTarget": "time-forge:build:development",
           "proxyConfig": "apps/time-tracker/proxy.conf.json"
         }
       },
@@ -64,7 +67,7 @@
     "extract-i18n": {
       "executor": "@angular/build:extract-i18n",
       "options": {
-        "buildTarget": "time-tracker:build"
+        "buildTarget": "time-forge:build"
       }
     },
     "lint": {
@@ -74,14 +77,14 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/time-tracker"
+          "reportsDirectory": "../../coverage/apps/time-forge"
       }
     },
     "serve-static": {
       "continuous": true,
       "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "time-tracker:build",
+  "options": {
+  "buildTarget": "time-forge:build",
         "port": 4200,
         "staticFilePath": "dist/apps/time-tracker/browser",
         "spa": true

@@ -1,0 +1,51 @@
+/* Helpers extracted from home.component.scss to centralize typography and layout helpers */
+
+:root {
+  /* Two-section split sizes requested: 30% / 70% */
+  --split-a: 30%;
+  --split-b: 70%;
+
+  /* Base font sizes using em/rem for responsiveness */
+  --base-font: 1rem; /* equals browser default */
+  --font-small: 0.875rem; /* ~14px */
+  --font-medium: 1rem; /* 16px */
+  --font-large: 1.25rem; /* 20px */
+  --font-xlarge: 2.25rem; /* used for main timers etc; will scale with rem */
+  --font-xxlarge: 3rem; /* for very large headings/widgets */
+  /* Header/footer shared sizes */
+  --header-height: 3.5em; /* 56px */
+  --footer-height: 4em; /* 64px */
+}
+
+/* Utility for responsive project icon sizing */
+.project-icon, .project-icon-large {
+  width: 3em;
+  height: 3em;
+  border-radius: 0.75em;
+}
+
+/* Mobile adjustments: halve the project icons on narrow viewports */
+@media (max-width: 48em) {
+  .project-icon, .project-icon-large {
+    width: 1.5em; /* half of 3em */
+    height: 1.5em;
+    font-size: 0.85em;
+  }
+
+  /* Make base font slightly smaller on small screens */
+  :root {
+    --base-font: 0.9rem;
+    --font-small: 0.8rem;
+    --font-medium: 0.95rem;
+    --font-large: 1.1rem;
+  --font-xlarge: 1.6rem;
+  --font-xxlarge: 2.25rem;
+  }
+}
+
+/* Helper: use split variables to give a two-column proportion */
+.split-30-70 {
+  display: grid;
+  grid-template-columns: var(--split-a) var(--split-b);
+  gap: 1rem;
+}

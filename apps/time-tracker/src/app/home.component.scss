@@ -1,288 +1,29 @@
-// Enhanced Time Tracker Styles - Mobile First
-.home-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: 'Inter', 'Roboto', Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #333;
-  padding-bottom: 70px; // Account for footer
-  
-  // Less padding on mobile to fit more content
-  @media (max-width: 768px) {
-    padding-bottom: 60px;
-  }
-}
-
-// Manual Entry Button
-.manual-entry-btn {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 1rem 1.5rem;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
-  z-index: 99;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-  }
-}
-
-// Compact Work Session Container
-.work-session-container {
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  
-  // On mobile, reduce padding to fit more content
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-  }
-  
-  .session-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.1),
-      0 2px 16px rgba(0, 0, 0, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    width: 100%;
-    max-width: 800px; // Back to original web size
-    animation: slideInUp 0.6s ease-out;
-    
-    // On mobile, make everything more compact
-    @media (max-width: 768px) {
-      padding: 1rem;
-      border-radius: 16px;
-    }
-  }
-}
-
-// Timer & Project Row
-.timer-project-row {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-  align-items: center;
-  
-  // Make more compact on mobile
-  @media (max-width: 768px) {
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .timer-section {
-    flex: 1;
-    text-align: center;
-    
-    .timer-display {
-      font-size: 2.8rem;
-      font-weight: 800;
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.05em;
-      transition: all 0.3s ease;
-      
-      // Smaller timer on mobile
-      @media (max-width: 768px) {
-        font-size: 2rem;
-        margin-bottom: 0.25rem;
-      }
-      
-      &.active {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: pulse 2s infinite;
-      }
-    }
-    
-    .timer-status {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #64748b;
-      
-      // Smaller status on mobile
-      @media (max-width: 768px) {
-        font-size: 0.75rem;
-        gap: 0.25rem;
-      }
-      
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #cbd5e1;
-        transition: all 0.3s ease;
-        
-        // Smaller dot on mobile
-        @media (max-width: 768px) {
-          width: 6px;
-          height: 6px;
-        }
-        
-        &.active {
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-          box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
-          animation: pulseGlow 2s infinite;
-        }
-      }
-    }
-  }
-  
-  .project-selector-compact {
-    flex: 2;
-    position: relative;
-    
-    .selected-project {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      border-radius: 16px;
-      border: 2px solid transparent;
-      background: rgba(255, 255, 255, 0.8);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      }
-      
-      .project-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
-      
-      .project-info {
-        flex: 1;
-        text-align: left;
-        
-        .project-name {
-          display: block;
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin-bottom: 0.25rem;
-        }
-        
-        .project-desc {
-          font-size: 0.875rem;
-          color: #6b7280;
-          font-weight: 500;
-        }
-      }
-      
-      .dropdown-arrow {
-        font-size: 0.875rem;
-        color: #9ca3af;
-        transition: transform 0.2s ease;
-      }
-    }
-  }
-}
-
-// Task Input Row
-.task-input-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  
-  .task-input-compact {
-    flex: 1;
-    padding: 1rem 1.25rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 16px;
-    font-size: 1rem;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.9);
-    transition: all 0.3s ease;
-    
-    &:focus {
-      outline: none;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-      background: white;
-    }
-    
-    &::placeholder {
-      color: #9ca3af;
-      font-style: italic;
-    }
-  }
-  
-  .add-task-btn-compact {
-    padding: 1rem 1.25rem;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 1.25rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
-    
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-    }
-    
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-  }
-}
+@use 'variables' as *;
+@use 'buttons' as *;
+@use 'tags' as *;
+@use 'cards' as *;
+@use 'project-selector' as *;
+@use 'task-input' as *;
+@use 'tasks-table' as *;
+@use 'tag-chips' as *;
+@use 'dropdown' as *;
+@use 'animations' as *;
+@use 'timer' as *;
 
 // Timer Controls Row
 .timer-controls-compact {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  
+  gap: 0.5rem; // reduced gap
+  margin-bottom: 1rem;
+
   // More compact on mobile
   @media (max-width: 768px) {
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
-  
+
   .control-btn-compact {
-    flex: 1;
-    padding: 1rem;
+  flex: 1;
+  padding: 0.5rem 0.75rem; // reduced padding
     border: none;
     border-radius: 16px;
     font-size: 0.875rem;
@@ -294,51 +35,51 @@
     justify-content: center;
     gap: 0.5rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    
+
     // Smaller buttons on mobile
     @media (max-width: 768px) {
       padding: 0.75rem;
       font-size: 0.75rem;
       border-radius: 12px;
     }
-    
+
     .btn-icon {
       font-size: 1.1rem;
     }
-    
+
     &.start {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
-      
+
       &:hover:not(:disabled) {
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
       }
     }
-    
+
     &.pause {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       color: white;
-      
+
       &:hover:not(:disabled) {
         background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
       }
     }
-    
+
     &.stop {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: white;
-      
+
       &:hover:not(:disabled) {
         background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
       }
     }
-    
+
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -351,154 +92,22 @@
 // Quick Tags
 .quick-tags {
   margin-bottom: 1.5rem;
-  
+
   .quick-tag {
-    display: inline-block;
-    padding: 0.5rem 1rem;
+    @include base-tag();
     margin: 0 0.5rem 0.5rem 0;
-    border: none;
-    border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 600;
     color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    @media (max-width: 768px) {
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.6rem;
     }
   }
 }
 
-// Project Tasks Header
-.tasks-table-section {
-  .project-tasks-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    
-    .project-title-section {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      
-      .project-icon-large {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-        font-size: 1.25rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-      
-      .project-title-info {
-        .project-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin: 0 0 0.25rem 0;
-          
-          .project-name {
-            font-weight: 800;
-            background: linear-gradient(135deg, currentColor 0%, currentColor 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          }
-        }
-        
-        .project-description {
-          font-size: 0.875rem;
-          color: #6b7280;
-          margin: 0;
-          font-weight: 500;
-        }
-      }
-    }
-    
-    .task-count-badge {
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      border: 2px solid;
-      color: inherit;
-      min-width: 80px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(5px);
-    }
-  }
-  
-  // Legacy table header styles (for fallback)
-  .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    
-    h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin: 0;
-    }
-    
-    .task-count {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
-    }
-  }
-}
-
-// Animations
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
-  }
-}
+// Animations are provided by the shared `animations` partial
 
 // Enhanced Project Section
 .project-section {
@@ -508,9 +117,105 @@
   gap: 1rem;
 }
 
+/* Timer + Project row layout: ensure on mobile the timer (with label underneath)
+   sits on the left and the project selector on the right in a single flex row */
+.timer-project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  .timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* left align timer and label */
+    flex: 1 1 auto; /* allow the timer section to shrink/grow */
+    min-width: 0; /* allow flex children to shrink properly */
+
+    .timer-display {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      line-height: 1;
+      text-align: left;
+      /* responsive font: scales with viewport but stays within reasonable bounds */
+      font-size: clamp(1rem, 6vw, 1.4rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timer-status {
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      display: block; /* ensure label is underneath the time */
+    }
+  }
+
+  .project-selector-compact {
+    flex: 0 0 auto; /* keep selector compact on the right */
+    min-width: 0; /* avoid forcing a line-break on narrow viewports */
+
+    .selected-project {
+      white-space: nowrap; /* keep selector text on one line */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // Mobile-specific tweaks: slightly larger timer and tighter spacing
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+
+    .timer-section {
+      .timer-display {
+        font-size: 1.6rem;
+      }
+    }
+  }
+}
+
+/* Strong overrides for very small viewports to ensure the timer and project selector stay on one row.
+   Uses !important to beat global/mobile styles that force large fonts or column layout. */
+@media (max-width: 572px) {
+  /* increase selector specificity */
+  .session-card .timer-project-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  .session-card .timer-project-row .timer-section {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    text-align: left !important;
+  }
+
+  .session-card .timer-project-row .timer-section .timer-display {
+    font-size: 1rem !important; /* force small size on tiny screens */
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .session-card .timer-project-row .project-selector-compact {
+    flex: 0 0 auto !important;
+    margin-left: 0.25rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .session-card .timer-project-row .timer-section .timer-display {
+    font-size: 0.9rem !important;
+  }
+}
+
 .project-selector {
   position: relative;
-  
+
   .project-button {
     width: 100%;
     display: flex;
@@ -523,21 +228,21 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-    
+
     .project-icon {
       font-size: 1.5rem;
       flex-shrink: 0;
     }
-    
+
     .project-info {
       flex: 1;
       text-align: left;
-      
+
       .project-name {
         display: block;
         font-weight: 700;
@@ -545,7 +250,7 @@
         color: #2d3748;
         margin-bottom: 0.25rem;
       }
-      
+
       .project-description {
         display: block;
         font-size: 0.875rem;
@@ -553,7 +258,7 @@
         font-weight: 500;
       }
     }
-    
+
     .dropdown-arrow {
       font-size: 0.875rem;
       color: #6b7280;
@@ -561,90 +266,86 @@
       flex-shrink: 0;
     }
   }
-  
+
   &.active .project-button .dropdown-arrow {
     transform: rotate(180deg);
   }
 }
 
 .project-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  overflow: hidden;
-  animation: projectDropdownSlide 0.3s ease-out;
-  margin-top: 0.5rem;
-  
+  @include dropdown;
+
   .project-option {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    border: none;
-    border-left: 4px solid transparent;
-    background: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    text-align: left;
-    
+    @include dropdown-option;
+
     &:hover {
       background: #f8fafc;
       transform: translateX(4px);
     }
-    
+
     &.selected {
       background: rgba(102, 126, 234, 0.05);
       border-left-color: currentColor;
     }
-    
+
     .option-icon {
       font-size: 1.25rem;
       flex-shrink: 0;
     }
-    
+
     .option-info {
       flex: 1;
-      
+
       .option-name {
         display: block;
         font-weight: 600;
         color: #2d3748;
         margin-bottom: 0.25rem;
       }
-      
+
       .option-description {
         display: block;
         font-size: 0.8rem;
         color: #6b7280;
       }
     }
+
+    // More compact on mobile
+    @media (max-width: 768px) {
+      gap: 0.375rem;
+      padding: 0.5rem;
+      border-left-width: 2px;
+
+      .option-icon {
+        font-size: 0.75rem;
+      }
+
+      .option-info {
+        .option-name {
+          font-size: 0.65rem;
+          margin-bottom: 0.125rem;
+        }
+
+        .option-description {
+          font-size: 0.6rem;
+        }
+      }
+    }
   }
 }
 
-@keyframes projectDropdownSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
+// projectDropdownSlide keyframes are defined in shared `animations` partial
 
 // Enhanced Tags Section
 .tags-section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  // Make more compact on mobile
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
 }
 
 .active-tags {
@@ -652,7 +353,12 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
-  
+
+  // Make more compact on mobile
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+  }
+
   .active-tag {
     display: flex;
     align-items: center;
@@ -663,23 +369,32 @@
     color: white;
     font-weight: 600;
     font-size: 0.875rem;
+
+    // Smaller tags on mobile
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     animation: tagSlideIn 0.3s ease-out;
-    
+
+    @media (max-width: 768px) {
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.6rem;
+      gap: 0.25rem;
+    }
+
     &:hover {
       transform: translateY(-2px) scale(1.05);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
-    
+
     .remove-tag {
       font-weight: 700;
       font-size: 1rem;
       opacity: 0.8;
       transition: opacity 0.2s ease;
     }
-    
+
     &:hover .remove-tag {
       opacity: 1;
     }
@@ -695,13 +410,13 @@
     margin-bottom: 0.75rem;
     text-align: center;
   }
-  
+
   .tag-suggestions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
-    
+
     .suggested-tag {
       padding: 0.375rem 0.75rem;
       border: 2px solid;
@@ -713,7 +428,7 @@
       transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
-      
+
       &:before {
         content: '';
         position: absolute;
@@ -721,25 +436,30 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
         transition: left 0.5s ease;
       }
-      
+
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         background: currentColor;
         color: white !important;
-        
+
         &:before {
           left: 100%;
         }
       }
-      
+
       &.added {
         opacity: 0.5;
         cursor: not-allowed;
-        
+
         &:hover {
           transform: none;
           box-shadow: none;
@@ -751,16 +471,7 @@
   }
 }
 
-@keyframes tagSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
+// tagSlideIn keyframes are defined in shared `animations` partial
 
 .timer-controls {
   display: flex;
@@ -779,18 +490,18 @@
   transition: all 0.2s ease;
   min-width: 100px;
   min-height: 44px; // Touch target
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
   }
-  
+
   &:not(:disabled):hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-  
+
   &:not(:disabled):active {
     transform: translateY(0);
   }
@@ -811,33 +522,26 @@
   color: white;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
+// pulse keyframes are provided by the shared `animations` partial
 
 // Mobile-First Responsive Design
 @media (min-width: 480px) {
   .home-header {
     padding: 1rem 1.5rem;
   }
-  
+
   .app-title {
     font-size: 1.5rem;
   }
-  
+
   .timer-display {
     font-size: 3rem !important;
   }
-  
+
   .timer-card {
     padding: 2.5rem 2rem;
   }
-  
+
   .total-time {
     font-size: 1.125rem;
   }
@@ -845,65 +549,72 @@
 
 @media (min-width: 768px) {
   .home-container {
-    max-width: 768px;
-    margin: 0 auto;
+    /* Use full width of parent container but keep a small outer margin */
+    width: calc(100% - 1rem);
+    max-width: 100%;
+    margin: 0.5em auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
-  
+
   .home-header {
     padding: 1rem 2rem;
   }
-  
+
   .header-left {
     gap: 1rem;
   }
-  
+
   .app-title {
     font-size: 1.75rem;
   }
-  
+
   .date-range-compact {
     gap: 0.75rem;
-    
+
     .range-dropdown {
       padding: 0.5rem 0.75rem;
       font-size: 0.9rem;
       min-width: 100px;
     }
-    
+
     .current-date {
       font-size: 1rem;
     }
   }
-  
+
   .timer-display {
     font-size: 3.5rem !important;
   }
-  
+
   .timer-card {
-    max-width: 500px;
+    /* Let the timer card fill the container width on larger viewports */
+    width: 100%;
+    max-width: none;
     padding: 3rem 2.5rem;
+    box-sizing: border-box;
   }
-  
+
   .total-time {
     font-size: 1.25rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .control-btn {
     min-width: 120px;
     padding: 1rem 1.75rem;
     font-size: 1.1rem;
   }
-  
+
   .footer-content {
     max-width: 768px;
     padding: 0 2rem;
   }
-  
+
   .footer-sticker {
     font-size: 1.2rem;
   }
-  
+
   .status-label {
     font-size: 1rem;
   }
@@ -911,17 +622,21 @@
 
 @media (min-width: 1024px) {
   .home-container {
-    max-width: 1024px;
+    width: calc(100% - 1rem);
+    max-width: 100%;
+    margin: 0.5em auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
-  
+
   .timer-display {
     font-size: 4rem !important;
   }
-  
+
   .timer-card {
     padding: 3.5rem 3rem;
   }
-  
+
   .total-time {
     font-size: 1.5rem;
   }
@@ -933,7 +648,7 @@
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
   }
-  
+
   .timer-card {
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
@@ -945,20 +660,20 @@
   .home-container {
     padding-top: 60px;
   }
-  
+
   .home-header {
     min-height: 60px;
     padding: 0.5rem 1rem;
   }
-  
+
   .enhanced-timer-section {
     padding: 0.5rem;
   }
-  
+
   .timer-card {
     padding: 1.5rem;
   }
-  
+
   .timer-display {
     font-size: 2rem !important;
   }
@@ -971,12 +686,12 @@
     padding-right: max(1rem, env(safe-area-inset-right));
     padding-top: max(0.75rem, env(safe-area-inset-top));
   }
-  
+
   .enhanced-timer-section {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }
-  
+
   .footer-content {
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
@@ -1002,48 +717,43 @@
 @media (max-width: 768px) {
   .work-session-container {
     padding: 0.75rem;
-    
+
     .session-card {
       padding: 1.25rem;
     }
   }
-  
+
   .timer-project-row {
     flex-direction: column;
     gap: 1rem;
-    
     .timer-section .timer-display {
       font-size: 2.2rem;
     }
   }
-  
+
   .timer-controls-compact {
-    flex-direction: column;
-    
-    .control-btn-compact {
-      padding: 1rem 1.5rem;
-    }
+    border: 1px solid yellow;
   }
-  
+
   // Project header responsive styles
   .tasks-table-section {
     .project-tasks-header {
       flex-direction: column;
       gap: 1rem;
       text-align: center;
-      
+
       .project-title-section {
         flex-direction: column;
         text-align: center;
         gap: 0.75rem;
-        
+
         .project-title-info {
           .project-title {
             font-size: 1.25rem;
           }
         }
       }
-      
+
       .task-count-badge {
         align-self: center;
       }
@@ -1055,267 +765,40 @@
   .timer-section .timer-display {
     font-size: 2rem !important;
   }
-  
+
   .session-card {
     margin: 0 0.5rem;
   }
-  
+
   .task-input-row {
     flex-direction: column;
-    
+
     .add-task-btn-compact {
       width: 100%;
+      @include base-btn();
     }
   }
-  
+
   // Mobile project header styles
   .tasks-table-section {
     .project-tasks-header {
       padding: 0.75rem;
-      
+
       .project-title-section {
         .project-icon-large {
           width: 40px;
           height: 40px;
           font-size: 1rem;
         }
-        
+
         .project-title-info {
           .project-title {
             font-size: 1.125rem;
           }
-          
+
           .project-description {
             font-size: 0.8rem;
           }
-        }
-      }
-    }
-  }
-}
-
-// Tasks Table Section (Updated for Compact Design)
-.tasks-table-section {
-  .table-container {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-    
-    .tasks-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-      border-radius: 12px;
-      overflow: hidden;
-      
-      th {
-        text-align: left;
-        padding: 0.875rem 1rem;
-        font-weight: 700;
-        color: #374151;
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border-bottom: 2px solid #e2e8f0;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      
-      td {
-        padding: 1rem;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-        vertical-align: top;
-      }
-      
-      tbody tr {
-        transition: all 0.2s ease;
-        background: rgba(255, 255, 255, 0.5);
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.8);
-          transform: translateX(4px);
-        }
-        
-        &:nth-child(even) {
-          background: rgba(248, 250, 252, 0.5);
-          
-          &:hover {
-            background: rgba(248, 250, 252, 0.8);
-          }
-        }
-      }
-      
-      .task-title {
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 0.25rem;
-        font-size: 0.875rem;
-      }
-      
-      .task-description {
-        font-size: 0.75rem;
-        color: #6b7280;
-        font-style: italic;
-      }
-      
-      .task-tags {
-        display: flex;
-        gap: 0.375rem;
-        flex-wrap: wrap;
-        
-        .task-tag {
-          padding: 0.25rem 0.5rem;
-          border-radius: 8px;
-          font-size: 0.625rem;
-          font-weight: 600;
-          color: white;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-      }
-      
-      .time-spent {
-        font-family: 'JetBrains Mono', 'Courier New', monospace;
-        font-weight: 700;
-        color: #059669;
-        background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
-        padding: 0.375rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        border: 1px solid rgba(5, 150, 105, 0.2);
-      }
-      
-      .status-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-        outline: none;
-        
-        &:focus-visible {
-          box-shadow: 0 0 0 2px #3b82f6;
-        }
-        
-        &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        &.status-active {
-          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-          color: #1e40af;
-          border: 1px solid #3b82f6;
-        }
-        
-        &.status-completed {
-          background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-          color: #166534;
-          border: 1px solid #16a34a;
-        }
-        
-        &.status-paused {
-          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          color: #92400e;
-          border: 1px solid #f59e0b;
-        }
-      }
-      
-      .delete-btn {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 8px;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
-          transform: scale(1.1);
-        }
-        
-        &:focus-visible {
-          outline: 2px solid #ef4444;
-          outline-offset: 2px;
-        }
-      }
-    }
-    
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: #6b7280;
-      
-      .empty-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.6;
-      }
-      
-      h3 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: #374151;
-      }
-      
-      p {
-        margin: 0;
-        font-size: 0.875rem;
-      }
-    }
-  }
-}
-
-// Tag Chips
-.current-tags {
-  margin-top: 1rem;
-  
-  .tag-chips {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    
-    .tag-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: white;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: none;
-      outline: none;
-      
-      &:focus-visible {
-        box-shadow: 0 0 0 2px white;
-      }
-      
-      &:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      }
-      
-      .remove-icon {
-        font-weight: bold;
-        font-size: 1rem;
-        opacity: 0.8;
-        transition: opacity 0.2s ease;
-        
-        &:hover {
-          opacity: 1;
         }
       }
     }

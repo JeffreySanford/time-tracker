@@ -1,0 +1,22 @@
+// Shared button styles and mixins
+@mixin base-btn($bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%), $color: white, $radius: 12px) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: $bg;
+  color: $color;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

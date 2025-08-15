@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+/* Top-level stylesheet: import modular partials to keep this file small.
+   The partials are:
+   - styles/_variables.scss
+   - styles/_base.scss
+   - styles/_mobile.scss
+   - styles/_web.scss
+   - styles/_material.scss (guidance only)
+   - styles/_legacy.scss (reference snapshot)
+*/
+
+@use 'variables' as *;
+@use 'home-helpers' as *;
+@use 'base' as *;
+@use 'mobile' as *;
+@use 'tablet' as *;
+@use 'web' as *;
+@use 'material' as *;
+@use 'legacy' as *;

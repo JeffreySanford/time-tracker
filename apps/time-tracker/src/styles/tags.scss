@@ -1,0 +1,41 @@
+// Shared tag styles and mixins
+@mixin base-tag($bg: #f3f4f6, $color: #4b5563, $radius: 20px) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: $radius;
+  background: $bg;
+  color: $color;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+}
+
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    gap: 0.25rem;
+    margin: 0.5rem 0;
+  }
+
+  .quick-tag {
+    @include base-tag();
+    @media (max-width: 768px) {
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.6rem;
+    }
+  }
+}

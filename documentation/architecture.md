@@ -1,6 +1,9 @@
 # System Architecture (Current Implementation)
 
+Last updated: 2025-08-15
+
 ## Current State (Phase 1)
+
 ```mermaid
 flowchart LR
   UI[Angular Frontend\n(Timer UI)] -->|HTTP REST| API[NestJS API\n(Express + Mongoose)]
@@ -23,7 +26,11 @@ flowchart LR
 ```
 
 ## Future Architecture (Target State)
+
 ```mermaid
+---
+id: 855030e0-bcf4-4c3e-aa20-9fd477d799ca
+---
 flowchart LR
   A[IDE Plugins\n(VS Code, JetBrains, Android Studio)] -->|heartbeat| G[/HTTP POST /heartbeats/]
   M[Android App\n(Rx + WebSocket)] -->|start/stop, manual, settings| G

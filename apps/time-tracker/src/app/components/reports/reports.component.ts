@@ -1,18 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  bgColor: string;
-  description: string;
-  suggestedTags: ProjectTag[];
-}
-
-interface ProjectTag {
-  name: string;
-  color: string;
-}
+import { Project } from '../../models/project.model';
 
 interface Task {
   id: string;
@@ -158,6 +145,6 @@ export class ReportsComponent {
 
   getProjectColor(projectId: string): string {
     const project = this.projects.find(p => p.id === projectId);
-    return project ? project.color : '#667eea';
+    return project ? project.color ?? '#667eea' : '#667eea';
   }
 }

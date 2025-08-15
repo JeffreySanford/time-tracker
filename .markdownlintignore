@@ -1,0 +1,26 @@
+# Ignore node modules and common build outputs
+node_modules/
+build/
+dist/
+.android/
+.android/**
+node_modules/
+build/
+dist/
+.android/
+.android/**
+.gradle/
+.gradle/**
+out/
+coverage/
+**/build/
+**/dist/
+**/.next/
+**/.vite/
+**/.turbo/
+android/
+ios/
+**/*.lock
+.vscode/
+.idea/
+.DS_Store

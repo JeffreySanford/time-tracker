@@ -3,8 +3,9 @@
 ## 🎯 Project Vision
 
 Create a comprehensive time tracking and productivity analytics platform that surpasses WakaTime by providing:
+
 - **Git-integrated intelligence** for contextual time tracking
-- **Real-time productivity insights** with AI-powered recommendations  
+- **Real-time productivity insights** with AI-powered recommendations
 - **Comprehensive project analytics** including code quality correlation
 - **Low-overhead data collection** without impacting development workflow
 - **Beautiful visualizations** for actionable insights
@@ -14,6 +15,7 @@ Create a comprehensive time tracking and productivity analytics platform that su
 ### Phase 1: Enhanced Data Collection (2-3 weeks)
 
 #### 1.1 Git Integration Engine
+
 ```typescript
 // Priority: HIGH
 // Estimated: 1 week
@@ -26,8 +28,9 @@ Tasks:
 ```
 
 #### 1.2 Enhanced Schema Migration
+
 ```typescript
-// Priority: HIGH  
+// Priority: HIGH
 // Estimated: 3-4 days
 
 Tasks:
@@ -38,6 +41,7 @@ Tasks:
 ```
 
 #### 1.3 IDE Plugin Foundation
+
 ```typescript
 // Priority: MEDIUM
 // Estimated: 1 week
@@ -52,6 +56,7 @@ Tasks:
 ### Phase 2: Analytics & Intelligence (3-4 weeks)
 
 #### 2.1 Data Processing Pipeline
+
 ```typescript
 // Priority: HIGH
 // Estimated: 1.5 weeks
@@ -64,6 +69,7 @@ Tasks:
 ```
 
 #### 2.2 AI-Powered Insights
+
 ```typescript
 // Priority: MEDIUM
 // Estimated: 2 weeks
@@ -76,6 +82,7 @@ Tasks:
 ```
 
 #### 2.3 Advanced Visualizations
+
 ```typescript
 // Priority: HIGH
 // Estimated: 1.5 weeks
@@ -90,6 +97,7 @@ Tasks:
 ### Phase 3: User Experience Enhancement (2-3 weeks)
 
 #### 3.1 Mobile App Redesign
+
 ```typescript
 // Priority: HIGH
 // Estimated: 2 weeks
@@ -102,6 +110,7 @@ Tasks:
 ```
 
 #### 3.2 Desktop Web Interface
+
 ```typescript
 // Priority: MEDIUM
 // Estimated: 1.5 weeks
@@ -114,6 +123,7 @@ Tasks:
 ```
 
 #### 3.3 Performance Optimization
+
 ```typescript
 // Priority: HIGH
 // Estimated: 3-4 days
@@ -128,6 +138,7 @@ Tasks:
 ### Phase 4: Advanced Features (3-4 weeks)
 
 #### 4.1 Team Analytics
+
 ```typescript
 // Priority: MEDIUM
 // Estimated: 1.5 weeks
@@ -140,18 +151,20 @@ Tasks:
 ```
 
 #### 4.2 Integration Ecosystem
+
 ```typescript
 // Priority: MEDIUM
 // Estimated: 2 weeks
 
 Tasks:
 - Jira/Linear task correlation
-- Slack productivity notifications  
+- Slack productivity notifications
 - Calendar meeting time exclusion
 - CI/CD pipeline integration
 ```
 
 #### 4.3 Quality Intelligence
+
 ```typescript
 // Priority: HIGH
 // Estimated: 1 week
@@ -172,17 +185,17 @@ graph LR
     IDE[IDE Plugins] --> COLLECTOR[Data Collector]
     GIT[Git Hooks] --> COLLECTOR
     BUILD[Build Events] --> COLLECTOR
-    
+
     COLLECTOR --> QUEUE[Message Queue]
     QUEUE --> PROCESSOR[Stream Processor]
-    
+
     PROCESSOR --> TIMESERIES[(Time Series DB)]
     PROCESSOR --> ANALYTICS[(Analytics Store)]
     PROCESSOR --> CACHE[(Redis Cache)]
-    
+
     ANALYTICS --> AI[AI Engine]
     AI --> INSIGHTS[Insights API]
-    
+
     TIMESERIES --> REALTIME[Real-time API]
     CACHE --> DASHBOARD[Dashboard]
 ```
@@ -190,21 +203,22 @@ graph LR
 ### Technology Stack Decisions
 
 #### Backend Services
+
 ```typescript
 interface TechStack {
   api: 'NestJS + Express'; // Current, keep for consistency
   database: {
-    primary: 'MongoDB';     // Current, good for flexible schemas
+    primary: 'MongoDB'; // Current, good for flexible schemas
     timeSeries: 'InfluxDB'; // Add for time-series data
-    cache: 'Redis';         // Add for real-time features
+    cache: 'Redis'; // Add for real-time features
   };
-  
+
   processing: {
     stream: 'Apache Kafka'; // For high-throughput events
     batch: 'Node.js Workers'; // For analytics computation
     ai: 'Python + TensorFlow'; // For ML insights
   };
-  
+
   monitoring: {
     metrics: 'Prometheus';
     logging: 'Winston + ELK';
@@ -214,22 +228,23 @@ interface TechStack {
 ```
 
 #### Frontend Applications
+
 ```typescript
 interface FrontendStack {
   web: {
-    framework: 'Angular';    // Current, maintain consistency
-    state: 'NgRx';          // Current, enhance with effects
+    framework: 'Angular'; // Current, maintain consistency
+    state: 'NgRx'; // Current, enhance with effects
     ui: 'Angular Material + Custom';
     charts: 'D3.js + Chart.js';
     realTime: 'Socket.io';
   };
-  
+
   mobile: {
-    framework: 'Flutter';   // Cross-platform efficiency
-    state: 'Bloc/Cubit';   // Flutter state management
-    charts: 'fl_chart';    // Flutter charting
+    framework: 'Flutter'; // Cross-platform efficiency
+    state: 'Bloc/Cubit'; // Flutter state management
+    charts: 'fl_chart'; // Flutter charting
   };
-  
+
   desktop: {
     ide: 'VS Code Extension API';
     jetbrains: 'IntelliJ Platform SDK';
@@ -240,6 +255,7 @@ interface FrontendStack {
 ## 📊 Data Flow Architecture
 
 ### Real-time Event Processing
+
 ```typescript
 interface EventFlow {
   // IDE Events
@@ -248,14 +264,14 @@ interface EventFlow {
     batching: '10_seconds';
     processing: 'real_time';
   };
-  
-  // Git Events  
+
+  // Git Events
   gitActivity: {
     frequency: 'on_commit';
     batching: 'immediate';
     processing: 'real_time + batch';
   };
-  
+
   // Build Events
   buildActivity: {
     frequency: 'on_build';
@@ -266,6 +282,7 @@ interface EventFlow {
 ```
 
 ### Analytics Pipeline
+
 ```typescript
 interface AnalyticsPipeline {
   // Real-time aggregations (last 24h)
@@ -274,15 +291,15 @@ interface AnalyticsPipeline {
     metrics: ['active_time', 'keystrokes', 'commits'];
     storage: 'memory + redis';
   };
-  
-  // Historical aggregations  
+
+  // Historical aggregations
   batch: {
     daily: 'midnight_utc';
     weekly: 'sunday_midnight';
     monthly: 'first_of_month';
     storage: 'mongodb + influxdb';
   };
-  
+
   // ML insights
   intelligence: {
     frequency: 'hourly';
@@ -295,6 +312,7 @@ interface AnalyticsPipeline {
 ## 🎨 UI/UX Implementation Plan
 
 ### Design System Implementation
+
 ```typescript
 interface DesignSystem {
   components: {
@@ -303,13 +321,13 @@ interface DesignSystem {
     navigation: ['sidebar', 'tabs', 'breadcrumbs'];
     feedback: ['notifications', 'progress', 'loading'];
   };
-  
+
   theming: {
     modes: ['light', 'dark', 'auto'];
     colors: ['primary', 'secondary', 'accent', 'semantic'];
     typography: ['headers', 'body', 'code', 'metrics'];
   };
-  
+
   interactions: {
     animations: ['micro', 'transitions', 'loading'];
     gestures: ['swipe', 'pinch', 'long_press'];
@@ -319,20 +337,20 @@ interface DesignSystem {
 ```
 
 ### Mobile-First Implementation
+
 ```typescript
-interface ResponsiveStrategy {
+// Updated on August 15, 2025: Simplified to use CSS media queries instead of component variants
+
+interface ResponsiveApproach {
   breakpoints: {
     mobile: '0-768px';
     tablet: '769-1024px';
     desktop: '1025px+';
   };
-  
-  components: {
-    mobile: 'stacked_layout';
-    tablet: 'hybrid_layout';
-    desktop: 'grid_layout';
-  };
-  
+
+  // Using CSS media queries with a single component
+  layoutStrategy: 'css_media_queries';
+
   interactions: {
     mobile: 'touch_optimized';
     desktop: 'mouse_keyboard';
@@ -343,6 +361,7 @@ interface ResponsiveStrategy {
 ## 🔒 Security & Privacy Implementation
 
 ### Data Protection Strategy
+
 ```typescript
 interface PrivacyFramework {
   collection: {
@@ -350,13 +369,13 @@ interface PrivacyFramework {
     minimization: 'only_necessary_data';
     anonymization: 'hash_sensitive_data';
   };
-  
+
   storage: {
     encryption: 'AES_256_at_rest';
     transmission: 'TLS_1_3';
     access: 'role_based_control';
   };
-  
+
   retention: {
     raw_data: '30_days';
     aggregated: '2_years';
@@ -368,6 +387,7 @@ interface PrivacyFramework {
 ## 📈 Performance Targets
 
 ### System Performance Goals
+
 ```typescript
 interface PerformanceTargets {
   api: {
@@ -375,13 +395,13 @@ interface PerformanceTargets {
     throughput: '1000_rps';
     availability: '99.9%';
   };
-  
+
   data_collection: {
     overhead: '<1%_cpu';
     latency: '<50ms';
     battery_impact: 'minimal';
   };
-  
+
   ui: {
     initial_load: '<2s';
     interaction: '<16ms';
@@ -393,6 +413,7 @@ interface PerformanceTargets {
 ## 🚢 Deployment Strategy
 
 ### Infrastructure Plan
+
 ```typescript
 interface DeploymentArchitecture {
   hosting: {
@@ -401,13 +422,13 @@ interface DeploymentArchitecture {
     cache: 'redis_cloud';
     cdn: 'cloudflare';
   };
-  
+
   scaling: {
     api: 'horizontal_auto_scaling';
     processing: 'queue_based_workers';
     storage: 'automatic_sharding';
   };
-  
+
   monitoring: {
     uptime: 'pingdom';
     performance: 'datadog';
@@ -420,6 +441,7 @@ interface DeploymentArchitecture {
 ## 🎯 Success Metrics
 
 ### Key Performance Indicators
+
 ```typescript
 interface SuccessMetrics {
   technical: {
@@ -428,14 +450,14 @@ interface SuccessMetrics {
     response_time: '<100ms';
     user_satisfaction: '4.8/5';
   };
-  
+
   business: {
     user_adoption: '1000_active_users';
     retention_rate: '85%_monthly';
     feature_usage: '80%_core_features';
     support_tickets: '<1%_daily_users';
   };
-  
+
   competitive: {
     vs_wakatime: {
       accuracy: '+20%';
@@ -452,13 +474,15 @@ interface SuccessMetrics {
 ## 📝 Implementation Checklist
 
 ### Phase 1 - Foundation
+
 - [ ] Enhanced data schema design
 - [ ] Git hooks integration
 - [ ] Basic IDE plugin
 - [ ] Real-time data pipeline
 - [ ] Core analytics engine
 
-### Phase 2 - Intelligence  
+### Phase 2 - Intelligence
+
 - [ ] AI insights engine
 - [ ] Advanced visualizations
 - [ ] Productivity recommendations
@@ -466,6 +490,7 @@ interface SuccessMetrics {
 - [ ] Performance optimization
 
 ### Phase 3 - User Experience
+
 - [ ] Mobile app redesign
 - [ ] Desktop dashboard
 - [ ] Real-time updates
@@ -473,6 +498,7 @@ interface SuccessMetrics {
 - [ ] Accessibility compliance
 
 ### Phase 4 - Ecosystem
+
 - [ ] Team collaboration features
 - [ ] Third-party integrations
 - [ ] API ecosystem

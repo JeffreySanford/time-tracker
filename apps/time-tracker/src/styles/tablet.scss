@@ -1,0 +1,149 @@
+/* Tablet styles
+   Based on mobile.scss but with slightly larger typography so tablets keep the same
+   compact layout as mobile while matching the visual scale used on larger screens.
+
+   Usage: import or include this file wherever `mobile.scss` is included for tablet
+   builds (or rely on the global build pipeline to include it). The rules are scoped to
+   a tablet width range so they won't affect phone or desktop breakpoints.
+*/
+
+@import 'mobile';
+
+/* Target typical tablet widths: ~601px — 1024px */
+@media (min-width: 601px) and (max-width: 1024px) {
+  /* Make the timer number larger but keep the same responsive behavior */
+  .timer-display {
+    /* Increase the minimum and maximum sizes a bit compared to mobile */
+    font-size: clamp(1.6rem, 5.8vw, 2.6rem) !important;
+    line-height: 1 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Slightly larger labels and controls to match the timer scale */
+  .timer-label,
+  .timer-controls-compact,
+  .project-selector,
+  .timer-controls button,
+  .timer-controls .btn {
+    font-size: clamp(0.95rem, 2.6vw, 1.15rem) !important;
+  }
+
+  /* Keep the single-row layout but ensure items align nicely on tablets */
+  .timer-project-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* force single row */
+    align-items: center !important;
+    gap: 0.4rem !important;
+    justify-content: space-between !important;
+  }
+
+  /* Allow the left/timer area to shrink correctly and prevent overflow */
+  .timer-left,
+  .timer-area {
+    flex: 1 1 auto !important;
+    min-width: 0 !important; /* allow flex children to shrink */
+  }
+
+  /* Make the project selector a fixed-width item on the right so it doesn't wrap */
+  .project-selector,
+  .timer-actions {
+    flex: 0 0 220px !important; /* fixed width for selector column; adjust as needed */
+    max-width: 220px !important;
+    min-width: 160px !important; /* floor for small tablets */
+  }
+
+  /* Strongly prevent wrapping of the digits and label so they stay on the left */
+  .timer-display {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-width: 0 !important;
+  }
+
+  /* Slightly increase padding so touch targets are comfortable on tablets */
+  .timer-controls-compact {
+    padding: 0.35rem 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* If there are any mobile-specific strong rules, prefer these tablet sizes */
+  :root {
+    --timer-tablet-scale: 1.15;
+  }
+}
+
+/* Additional range: cover small tablets and large phones where stacking occurs */
+@media (min-width: 480px) and (max-width: 900px) {
+  /* Force single-row and prevent wrapping issues across this range */
+  .timer-project-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    justify-content: space-between !important;
+  }
+
+  /* Left/timer area should shrink before the selector wraps */
+  .timer-left,
+  .timer-area {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+
+  /* Use relative sizing so selector doesn't bleed over on narrower devices */
+  .project-selector,
+  .timer-actions {
+    flex: 0 0 22% !important; /* ~22% of row width */
+    max-width: 28% !important;
+    min-width: 12% !important;
+  }
+
+  /* Reduce timer maximum so digits fit inline alongside selector */
+  .timer-display {
+    font-size: clamp(1.2rem, 5.2vw, 2.2rem) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-width: 0 !important;
+  }
+
+  .timer-label,
+  .timer-controls-compact,
+  .timer-controls button,
+  .timer-controls .btn {
+    font-size: clamp(0.85rem, 2.4vw, 1.05rem) !important;
+  }
+}
+
+/* Narrow small breakpoint: extend to 572px to catch larger small devices */
+@media (max-width: 572px) {
+  .timer-project-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.4rem !important;
+    justify-content: space-between !important;
+  }
+
+  .timer-left,
+  .timer-area {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+  }
+
+  /* Use em-based size to scale with font-size and prevent bleed */
+  .project-selector,
+  .timer-actions {
+    flex: 0 0 14em !important; /* scales with font-size */
+    max-width: 18em !important;
+    min-width: 10em !important;
+  }
+
+  .timer-display {
+    font-size: clamp(1rem, 5vw, 1.8rem) !important;
+  }
+}

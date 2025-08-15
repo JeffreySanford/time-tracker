@@ -1,0 +1,13 @@
+export interface ProjectTag {
+  name: string;
+  color?: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  color: string;
+  bgColor?: string;
+  description?: string;
+  suggestedTags?: ProjectTag[];
+}

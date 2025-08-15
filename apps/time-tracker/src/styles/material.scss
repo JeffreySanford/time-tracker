@@ -1,0 +1,43 @@
+/* Angular Material (MDC / Material 3) density and theme helper
+   This file provides a safe, toggleable example that you can enable in your
+   SASS pipeline. If you have a central theme scss used by Angular, prefer
+   placing the density definition there.
+
+   To enable: set $enable-material-density: true and ensure your build
+   processes @use from node_modules (Sass path configured).
+*/
+
+$enable-material-density: false !default;
+
+/* NOTE: Many editors/linters parse this file even when $enable-material-density is false.
+  The example below is intentionally left commented-out to avoid parser errors such as
+  "Unknown at rule @use" or "identifier or variable expected" in environments where
+  the Sass includePaths or Angular Material @use support are not configured.
+
+  To enable material density in your global theme, copy the example and place it in
+  your application's central theme file (where you already @use Angular Material),
+  then set $enable-material-density: true and ensure your Sass build knows how to
+  resolve node_modules paths for @use.
+
+  Example (copy into theme scss and uncomment there):
+
+  // @use '@angular/material' as mat;
+
+  // $my-density: (
+  //   // valid values: 0, -1, -2, -3 (more negative = more compact)
+  //   'button-density': -2,
+  //   'form-field-density': -2,
+  //   'list-density': -2,
+  //   'table-density': -2,
+  //   'chips-density': -2,
+  // );
+
+  // $my-theme: mat.define-theme((
+  //   color: mat.$indigo-palette,
+  //   typography: mat.define-typography-config(),
+  //   density: $my-density
+  // ));
+
+  // @include mat.all-component-themes($my-theme);
+
+*/

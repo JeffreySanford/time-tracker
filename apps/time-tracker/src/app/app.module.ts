@@ -23,7 +23,14 @@ import { ReportsComponent } from './components/reports/reports.component';
 import { PlanningComponent } from './components/planning/planning.component';
 
 @NgModule({
-  declarations: [App, HomeComponent, HeaderComponent, FooterComponent, ReportsComponent, PlanningComponent],
+  declarations: [
+    App,
+    HomeComponent,
+    HeaderComponent,
+    FooterComponent,
+    ReportsComponent,
+    PlanningComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -37,9 +44,7 @@ import { PlanningComponent } from './components/planning/planning.component';
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
-    RouterModule.forRoot([
-      { path: '', component: HomeComponent },
-    ]),
+  RouterModule.forRoot([{ path: '', component: HomeComponent }]),
   ],
   bootstrap: [App],
 })

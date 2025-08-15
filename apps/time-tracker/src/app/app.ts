@@ -1,18 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-  bgColor: string;
-  description: string;
-  suggestedTags: ProjectTag[];
-}
-
-interface ProjectTag {
-  name: string;
-  color: string;
-}
+import { Project } from './models/project.model';
 
 interface Task {
   id: string;
@@ -96,7 +85,7 @@ export class App implements OnInit {
       name: '📋 Forge Board',
       color: '#dc2626',
       bgColor: 'rgba(220, 38, 38, 0.1)',
-      description: 'Project management and collaboration tool',
+      description: 'Comprehensive project management with real-time analytics, kanban workflows, audit trails, and enterprise security controls',
       suggestedTags: [
         { name: 'collaboration', color: '#f59e0b' },
         { name: 'ui', color: '#ec4899' },
@@ -136,6 +125,14 @@ export class App implements OnInit {
     
     // Test initial connection
     this.pingServer();
+
+    // Toggle Android platform class so we can apply small OS-specific CSS fixes
+    try {
+      const isAndroid = Capacitor.getPlatform && Capacitor.getPlatform() === 'android';
+      document.body.classList.toggle('platform-android', !!isAndroid);
+    } catch {
+      // Capacitor may not be available in browser/dev server - ignore
+    }
   }
 
   private initializeSampleTasks(): void {
