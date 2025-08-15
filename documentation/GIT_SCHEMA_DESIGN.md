@@ -328,6 +328,7 @@ interface TechnologyProficiency {
 ## 🎯 Data Collection Strategy
 
 ### Lightweight Collection Points
+
 1. **Git Hooks**: Minimal overhead, maximum insight
 2. **IDE Language Server**: Real-time without performance impact
 3. **Build System Webhooks**: Automated collection from CI/CD
@@ -388,6 +389,7 @@ interface OptimizationStrategy {
 ```
 
 This enhanced schema design provides:
+
 - **Better than WakaTime**: Git correlation, quality metrics, and productivity insights
 - **Low System Overhead**: Efficient collection and storage strategies
 - **Privacy-Focused**: Configurable data collection with user control

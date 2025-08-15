@@ -20,6 +20,7 @@ interface TimeWorked {
 ### Timer Management
 
 - `POST /api/timeworked/start` → Start new timer session
+
   ```json
   Request: { "userId": "demo-user" }
   Response: {
@@ -33,6 +34,7 @@ interface TimeWorked {
   ```
 
 - `PATCH /api/timeworked/stop/:id` → Stop active timer session
+
   ```json
   Request: { "endedAt": "2025-08-12T20:04:52.527Z" }
   Response: {
