@@ -425,7 +425,7 @@ export class App implements OnInit {
   async pingServer() {
     const start = performance.now();
     try {
-      const response = await fetch('http://localhost:3000/api/health');
+      const response = await fetch('/api/health');
       this.isConnected = response.status === 200;
       this.pingTime = Math.round(performance.now() - start);
     } catch {

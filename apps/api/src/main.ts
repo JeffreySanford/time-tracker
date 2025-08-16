@@ -15,9 +15,26 @@ async function bootstrap() {
     }
     const app = await NestFactory.create(AppModule);
     
-    // Enable CORS for frontend development
+    // Enable CORS for frontend development and mobile testing (Android emulator/device)
+    const allowedOrigins = [
+      'http://localhost:4200',
+      'http://10.0.2.2:4200', // Android emulator -> host localhost
+      'capacitor://localhost',
+      'http://localhost',
+    ];
+
+    const isDev = process.env.NODE_ENV === 'development';
+    // allow local network IPs during development (e.g. http://192.168.1.194:4200)
+    const localNetworkRegex = /^https?:\/\/(10\.|192\.168\.)\d{1,3}\.\d{1,3}(:\d+)?$/;
+
     app.enableCors({
-      origin: ['http://localhost:4200'],
+      origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // allow requests with no origin (native apps, curl, server-to-server)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        if (isDev && localNetworkRegex.test(origin)) return callback(null, true);
+        return callback(new Error('CORS policy: origin not allowed'), false);
+      },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
     });
