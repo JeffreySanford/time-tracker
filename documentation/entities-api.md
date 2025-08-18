@@ -1,6 +1,5 @@
 # Current Entities (Implemented)
 
-Last updated: 2025-08-15
 
 ## TimeWorked Schema
 
@@ -61,20 +60,8 @@ interface TimeWorked {
 
 # Future API Endpoints (Planned)
 
-- `POST /v1/heartbeats:batch` → [HeartbeatDTO] (max 100 per request)
-- `POST /v1/sessions` → create manual/pomodoro session
-- `PATCH /v1/sessions/:id` → stop/update
-- `GET /v1/summary?range=today|week|custom`
-- `GET /v1/projects/:id/summary?range=week`
-- `POST /v1/apikeys` / `DELETE /v1/apikeys/:id`
-- `WS /v1/live` → push {todayMinutes, byLanguage[], byEditor[]} deltas
-
----
-
 # Android Implementation Notes
 
-- Stack: Kotlin + Jetpack Compose UI; RxJava3 or Kotlin Flow
-- Data: Room for local cache; WorkManager for offline → batch sync
-- Live: OkHttp WebSocket + Rx bridge for real-time summaries
-- Idle/Pomodoro: Foreground service + notifications; configurable thresholds
 - Testing: Unit tests for bucketing/aggregation; UI tests for timer/idle
+
+Last updated: 17 Aug 2025

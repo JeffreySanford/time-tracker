@@ -1,6 +1,4 @@
-# DESIGN — Styling, Material 3 (Expressive), and mobile strategy
-
-Last updated: 2025-08-15
+# DESIGN  Styling, Material 3 (Expressive), and mobile strategy
 
 This document captures the styling decisions, file layout, and concrete steps we applied to make the Time Forge mobile app behave like a one-page, left/right-swipable app with no vertical scroll.
 
@@ -41,9 +39,18 @@ Four major changes in MD3 Expressive (Material 3 -> how we map them)
    - MD3 encourages expressive surfaces and subtle elevation.
    - How we apply: keep a small palette in `--primary`, `--surface`, and use Material theme palettes for production. Use subtle backdrop-filter / blur in indicators only on high-performance devices.
 
-4) Component composition and container-based layout
-   - Use container queries instead of only viewport media queries for cards and toolbars.
-   - How we apply: `_mobile.scss` and `_base.scss` contain `container-type: inline-size;` and examples of `@container` rules for toolbars/buttons.
+Notes & testing
+
+- For fast CSS iteration: run the Angular dev server and use adb reverse + Capacitor server.url to hot-reload directly on device. Inspect with chrome://inspect.
+- Use container-query debugging + "scroll containers" in DevTools to hunt overflow.
+- After verifying fixes, remove `overflow-x: hidden` and delete `_legacy.scss` when confident.
+
+Next steps
+
+- If you want I can enable the density snippet in your real theme file (paste it or point me to it), and I can tighten specific screens (e.g., `home.component.scss`) with before/after patches.
+- I can also add unit-ish visual tests (snapshot-ish CSS checks) or a small Playwright test that loads the app in a mobile viewport and captures the layout for review.
+
+Last updated: 17 Aug 2025
 
 Practical steps applied for mobile
 

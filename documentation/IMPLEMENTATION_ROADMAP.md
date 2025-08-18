@@ -339,7 +339,7 @@ interface DesignSystem {
 ### Mobile-First Implementation
 
 ```typescript
-// Updated on August 15, 2025: Simplified to use CSS media queries instead of component variants
+// Updated on 15 Aug 2025: Simplified to use CSS media queries instead of component variants
 
 interface ResponsiveApproach {
   breakpoints: {

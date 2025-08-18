@@ -1,6 +1,4 @@
-# Design Standards — Time Forge
-
-Last updated: 2025-08-15
+# Design Standards  Time Forge
 
 ## Purpose
 
@@ -38,6 +36,8 @@ HTML/TS simplification rules
 - Prefer simple, declarative templates with clear structure.
 - Keep heavy logic in component classes and services.
 - Use `ngIf` for conditional rendering of UI elements based on state.
+
+Last updated: 17 Aug 2025
 
 Accessibility
 

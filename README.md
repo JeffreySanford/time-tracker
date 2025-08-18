@@ -1,6 +1,5 @@
 # TimeTracker
 
-Last updated: 2025-08-15
 
 A comprehensive time tracking application built with Angular, NestJS, and Capacitor for cross-platform development.
 
@@ -177,7 +176,6 @@ This command will:
 
 ## 🔗 Useful Links
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial)
-- [Capacitor Documentation](https://capacitorjs.com/docs)
+
+Last updated: 17 Aug 2025
 - [NestJS Documentation](https://docs.nestjs.com)
-- [Angular Documentation](https://angular.io/docs)

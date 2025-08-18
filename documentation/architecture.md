@@ -1,6 +1,5 @@
 # System Architecture (Current Implementation)
 
-Last updated: 2025-08-15
 
 ## Current State (Phase 1)
 
@@ -24,6 +23,8 @@ flowchart LR
     API --> SERVICE[TimeWorked Service]
   end
 ```
+
+Last updated: 17 Aug 2025
 
 ## Future Architecture (Target State)
 
