@@ -187,8 +187,8 @@
     <mat-sidenav #taskSidenav mode="over" position="end" class="drawer-sidenav">
       <app-quick-edit-drawer
         [task]="selectedTask"
-        (save)="handleDrawerSave($event)"
-        (cancel)="handleDrawerCancel()"
+        (saveTask)="handleDrawerSave($event)"
+        (cancelEdit)="handleDrawerCancel()"
       ></app-quick-edit-drawer>
     </mat-sidenav>
 

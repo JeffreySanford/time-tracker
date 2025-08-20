@@ -15,14 +15,14 @@ import { TaskDto } from '../../services/task-api.service';
 })
 export class QuickEditDrawerComponent {
   @Input() task: TaskDto | null = null;
-  @Output() save = new EventEmitter<TaskDto>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() saveTask = new EventEmitter<TaskDto>();
+  @Output() cancelEdit = new EventEmitter<void>();
 
   onSave() {
-    if (this.task) this.save.emit(this.task);
+    if (this.task) this.saveTask.emit(this.task);
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelEdit.emit();
   }
 }
