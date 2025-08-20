@@ -1,6 +1,5 @@
 # System Architecture (Current Implementation)
 
-
 ## Current State (Phase 1)
 
 ```mermaid

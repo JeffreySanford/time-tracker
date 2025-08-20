@@ -281,7 +281,6 @@ npm run android:build
 
 ## 🔗 Additional Resources
 
-
 ## Initial Setup
 
 ### 1. Project Dependencies

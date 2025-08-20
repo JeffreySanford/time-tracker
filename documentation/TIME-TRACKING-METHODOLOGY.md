@@ -1,6 +1,5 @@
 # Time Tracking Methodology & Theory
 
-
 ## 🎯 Core Philosophy
 
 ### The Science of Time Awareness

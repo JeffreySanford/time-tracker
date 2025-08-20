@@ -1,6 +1,5 @@
 # Git-Integrated Data Schema Design
 
-
 ## 🎯 Core Data Models for Enhanced Tracking
 
 ### Time Session with Git Correlation

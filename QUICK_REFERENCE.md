@@ -1,6 +1,5 @@
 # TimeTracker - Quick Reference
 
-
 ## � Recent Changes
 
 - **15 Aug 2025**: Removed component variants approach in favor of a single responsive component with CSS media queries.
@@ -100,4 +99,5 @@ curl http://localhost:3000/api/health
 curl http://10.0.2.2:4200
 curl http://10.0.2.2:3000/api/health
 ```
+
 Last updated: 17 Aug 2025

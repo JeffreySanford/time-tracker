@@ -1,6 +1,5 @@
 # TimeTracker
 
-
 A comprehensive time tracking application built with Angular, NestJS, and Capacitor for cross-platform development.
 
 ## 🚀 Quick Start
@@ -176,6 +175,6 @@ This command will:
 
 ## 🔗 Useful Links
 
-
 Last updated: 17 Aug 2025
+
 - [NestJS Documentation](https://docs.nestjs.com)
