@@ -201,7 +201,7 @@ p, span, div { font-size: 0.75rem; } /* Default 14px for most text */
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .control-btn-compact .btn-label { 
+  .control-btn-compact .btn-tag { 
     display: none; 
   }
   
@@ -237,9 +237,9 @@ p, span, div { font-size: 0.75rem; } /* Default 14px for most text */
     .md3-body-large { font-size: var(--font-medium, 0.95rem); line-height: 1.4; }
     .md3-body-medium { font-size: var(--font-small, 0.8rem); line-height: 1.4; }
     .md3-body-small { font-size: 0.75rem; line-height: 1.4; }
-    .md3-label-large { font-size: var(--font-small, 0.8rem); line-height: 1.25; }
-    .md3-label-medium { font-size: 0.75rem; line-height: 1.25; }
-    .md3-label-small { font-size: 0.7rem; line-height: 1.25; }
+  .md3-tag-large { font-size: var(--font-small, 0.8rem); line-height: 1.25; }
+  .md3-tag-medium { font-size: 0.75rem; line-height: 1.25; }
+  .md3-tag-small { font-size: 0.7rem; line-height: 1.25; }
   }
 
   .control-btn-compact.start { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }

@@ -1,0 +1,28 @@
+<ng-container *ngIf="task">
+  <div class="drawer">
+    <h3>Edit Task</h3>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Title</mat-label>
+      <input matInput [(ngModel)]="task.title" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Time (seconds)</mat-label>
+      <input matInput type="number" [(ngModel)]="task.timeSpent" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <select matNativeControl [(ngModel)]="task.status">
+        <option value="active">Active</option>
+        <option value="backlog">Backlog</option>
+        <option value="completed">Completed</option>
+      </select>
+    </mat-form-field>
+
+    <div class="drawer-actions">
+      <button mat-button color="primary" (click)="onSave()">Save</button>
+      <button mat-button (click)="onCancel()">Cancel</button>
+    </div>
+  </div>
+</ng-container>

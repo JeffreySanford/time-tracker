@@ -117,7 +117,7 @@
   gap: 1rem;
 }
 
-/* Timer + Project row layout: ensure on mobile the timer (with label underneath)
+/* Timer + Project row layout: ensure on mobile the timer (with tag underneath)
    sits on the left and the project selector on the right in a single flex row */
 .timer-project-row {
   display: flex;
@@ -128,7 +128,7 @@
   .timer-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* left align timer and label */
+  align-items: flex-start; /* left align timer and tag */
     flex: 1 1 auto; /* allow the timer section to shrink/grow */
     min-width: 0; /* allow flex children to shrink properly */
 
@@ -148,7 +148,7 @@
       margin-top: 0.25rem;
       font-size: 0.875rem;
       color: #6b7280;
-      display: block; /* ensure label is underneath the time */
+  display: block; /* ensure tag is underneath the time */
     }
   }
 
@@ -402,7 +402,7 @@
 }
 
 .suggested-tags {
-  .tags-label {
+  .tags {
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
@@ -615,7 +615,7 @@
     font-size: 1.2rem;
   }
 
-  .status-label {
+  .status-tag {
     font-size: 1rem;
   }
 }

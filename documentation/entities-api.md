@@ -1,6 +1,5 @@
 # Current Entities (Implemented)
 
-
 ## TimeWorked Schema
 
 ```typescript
@@ -56,7 +55,7 @@ interface TimeWorked {
 - **Session**: id, userId, projectId, start, end, source, type, tags[]
 - **Heartbeat**: id, userId, projectId?, ts, durationSec, editor, language, fileHash, branch?, isWrite, deviceId, source
 - **Device**: id, userId, name, platform, lastSeen
-- **ApiKey**: id, userId, label, scopes[], createdAt
+- **ApiKey**: id, userId, tag, scopes[], createdAt
 
 # Future API Endpoints (Planned)
 

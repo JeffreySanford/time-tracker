@@ -11,6 +11,11 @@ const config: CapacitorConfig = {
   },
   android: {
     allowMixedContent: true
+  },
+  ios: {
+    // iOS-specific configuration
+    scheme: 'Time Tracker',
+    contentInset: 'automatic'
   }
 };
 

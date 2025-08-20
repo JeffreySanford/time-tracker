@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TimeWorked } from './timeworked.schema';
-import { Observable, from } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
 @Injectable()
 export class TimeWorkedService {
@@ -23,12 +24,12 @@ export class TimeWorkedService {
   }
 
   stopSession(id: string, endedAt?: Date): Observable<TimeWorked> {
-    return from(
-      this.timeWorkedModel.findById(id).then(session => {
-        if (!session) throw new Error('Session not found');
+    return from(this.timeWorkedModel.findById(id).exec()).pipe(
+      mergeMap(session => {
+        if (!session) return throwError(() => new Error('Session not found'));
         session.endedAt = endedAt || new Date();
         session.duration = Math.floor((session.endedAt.getTime() - session.startedAt.getTime()) / 1000);
-        return session.save();
+        return from(session.save());
       })
     );
   }

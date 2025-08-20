@@ -1,5 +1,6 @@
 import { Component, inject, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { TimeWorkedApiService, TimeWorkedSessionDto } from './services/timeworked-api.service';
 import { Project, ProjectTag } from './models/project.model';
 import { Subject, Subscription } from 'rxjs';
 
@@ -11,11 +12,18 @@ interface Task {
   description: string;
   project: string;
   tags: string[];
-  status: 'active' | 'completed' | 'paused';
+  status: 'active' | 'completed' | 'backlog';
   timeSpent: number; // in seconds
   startTime?: Date;
   endTime?: Date;
   createdAt: Date;
+  // _meta stores DB extras like labels and assignees. Explicitly type the commonly used fields.
+  _meta?: {
+  // migrated shape: `tags` contains label objects {id?, name, color?}
+  tags?: Array<{id?: string; name?: string; color?: string}>;
+    assignees?: string[];
+    [key: string]: unknown;
+  };
 }
 
 @Component({
@@ -29,6 +37,37 @@ export class HomeComponent implements OnDestroy, OnChanges {
   // Inputs from parent
   @Input() projects: Project[] = [];
   @Input() allTasks: Task[] = [];
+  @Input() tagsList: Array<{id: string; name: string; color?: string}> = [];
+  // Accept the common runtime shape: array of assignee ids (or undefined/null)
+  @Input() resolveAssignees: (assignees?: string[] | null) => string = () => '';
+
+  // When older tasks still have legacy label UIDs, fall back to tagsList resolution.
+  getTagName(work: {id?: string; name?: string; color?: string} | string | undefined): string {
+    if (!work) return '';
+    if (typeof work === 'string') {
+      return this.tagsList.find(l => l.id === work)?.name || work;
+    }
+    return work.name || (work.id ? (this.tagsList.find(l => l.id === work.id)?.name || work.id) : '');
+  }
+
+  getTagColor(work: {id?: string; name?: string; color?: string} | string | undefined): string {
+    if (!work) return '#ddd';
+    if (typeof work === 'string') {
+      return this.tagsList.find(l => l.id === work)?.color || '#ddd';
+    }
+    return work.color || (work.id ? (this.tagsList.find(l => l.id === work.id)?.color || '#ddd') : '#ddd');
+  }
+
+  // Normalize task tag data for templates: prefer migrated `_meta.tags` (objects), fall back to legacy label id array
+  getTaskTags(task: Task): Array<{id?: string; name?: string; color?: string} | string> {
+    const meta = task._meta as Record<string, unknown> | undefined;
+    if (!meta) return [];
+    const maybeTags = meta['tags'] as unknown;
+    if (Array.isArray(maybeTags)) return maybeTags as Array<{id?: string; name?: string; color?: string} | string>;
+    const legacy = meta['labels'] as unknown; // legacy field name in some seeded JSON
+    if (Array.isArray(legacy)) return legacy as string[];
+    return [];
+  }
   @Input() selectedProject: Project = {
     id: '',
     name: '',
@@ -69,6 +108,7 @@ export class HomeComponent implements OnDestroy, OnChanges {
   subscriptions: Subscription[] = [];
 
   http = inject(HttpClient);
+  timeWorked = inject(TimeWorkedApiService);
 
   constructor() {
     const today = new Date();
@@ -80,11 +120,9 @@ export class HomeComponent implements OnDestroy, OnChanges {
         this.timerActive = true;
         this.timerStart = Date.now();
         this.timerDisplay = '00:00:00';
-        const sub = this.http.post<{ _id: string; userId: string; startedAt: string; endedAt: string | null; duration: number }>(
-          '/api/timeworked/start', { userId: 'demo-user' })
-          .subscribe({
-            next: (session) => {
-              this.timerSessionId = session._id;
+        const sub = this.timeWorked.start('demo-user').subscribe({
+            next: (session: TimeWorkedSessionDto | void) => {
+              this.timerSessionId = (session && (session as TimeWorkedSessionDto)._id) ? (session as TimeWorkedSessionDto)._id : null;
               console.log('Timer session started:', session);
               this.timerInterval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - this.timerStart) / 1000);
@@ -124,10 +162,8 @@ export class HomeComponent implements OnDestroy, OnChanges {
         }
 
         if (this.timerSessionId) {
-          const sub = this.http.patch<{ _id: string; userId: string; startedAt: string; endedAt: string | null; duration: number }>(
-            `/api/timeworked/stop/${this.timerSessionId}`, { endedAt: new Date() })
-            .subscribe({
-              next: (result) => {
+          const sub = this.timeWorked.stop(this.timerSessionId, new Date()).subscribe({
+              next: (result: TimeWorkedSessionDto | void) => {
                 console.log('Timer session stopped:', result);
                 this.timerSessionId = null;
               },
@@ -207,20 +243,7 @@ export class HomeComponent implements OnDestroy, OnChanges {
     this.currentTags = this.currentTags.filter(t => t !== tag);
   }
 
-  getTagColor(tagName: string): string {
-    // Default color scheme for tags
-    const tagColors: { [key: string]: string } = {
-      'frontend': '#06b6d4',
-      'backend': '#84cc16',
-      'angular': '#dd0031',
-      'nestjs': '#e0234e',
-      'design': '#ec4899',
-      'api': '#f59e0b'
-    };
-    
-    const cleanTag = tagName.replace('#', '');
-    return tagColors[cleanTag] || (this.selectedProject?.color ?? '#667eea');
-  }
+  // NOTE: color resolution for tag objects/strings is handled by getTagColor(work)
 
   // Task management methods
   filterTasksForProject(projectId: string): void {
@@ -276,7 +299,7 @@ export class HomeComponent implements OnDestroy, OnChanges {
   }
 
   toggleTaskStatus(task: Task): void {
-    const statuses: ('active' | 'completed' | 'paused')[] = ['active', 'paused', 'completed'];
+  const statuses: ('active' | 'completed' | 'backlog')[] = ['active', 'backlog', 'completed'];
     const currentIndex = statuses.indexOf(task.status);
     const nextIndex = (currentIndex + 1) % statuses.length;
     task.status = statuses[nextIndex];

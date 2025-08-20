@@ -6,7 +6,7 @@
           (mouseenter)="onPingServer()"
           [title]="pingTime ? 'Ping: ' + pingTime + ' ms' : (isConnected ? 'Connected' : 'Disconnected')">
       <span class="status-icon"></span>
-      <span class="status-label">{{ isConnected ? 'Online' : 'Offline' }}</span>
+  <span class="status-tag">{{ isConnected ? 'Online' : 'Offline' }}</span>
     </span>
   </div>
 </footer>

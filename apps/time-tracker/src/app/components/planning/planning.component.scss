@@ -254,7 +254,7 @@
         margin-bottom: 0.25rem;
       }
       
-      .stat-label {
+  .stat-tag {
         font-size: var(--font-small, 0.75rem);
         color: #6b7280;
         text-transform: uppercase;
@@ -571,6 +571,21 @@
         }
       }
     }
+    .kanban-totals {
+      margin-top: 0.5rem;
+      .totals-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        h3 { margin: 0 0 0.75rem 0; font-size: 1rem; }
+        .totals-row { display:flex; gap:1rem; flex-wrap:wrap; }
+        .label { font-size:0.75rem; color:#6b7280; }
+        .value { font-weight:800; font-size:1.1rem; }
+        .time-summary { margin-top:0.75rem; display:flex; justify-content:space-between; align-items:center; }
+      }
+    }
   }
 }
 
@@ -672,7 +687,7 @@
             }
           }
           
-          &.status-paused {
+          &.status-backlog {
             border-color: #f59e0b;
             color: #f59e0b;
             
@@ -786,6 +801,13 @@
 
 // Responsive Design
 @media (min-width: 768px) {
+  .kanban-view .kanban-board {
+    display:flex;
+    align-items:flex-start;
+    gap:1rem;
+  }
+  .kanban-view .kanban-column { flex: 1 1 0; min-width: 240px; }
+  .kanban-view .kanban-totals { width: 260px; flex: 0 0 260px; }
   .planning-header {
     .header-content {
       flex-direction: row;

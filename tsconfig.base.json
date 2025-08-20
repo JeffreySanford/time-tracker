@@ -4,7 +4,9 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+  "moduleResolution": "node",
+  "resolveJsonModule": true,
+  "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -16,5 +18,5 @@
     "baseUrl": ".",
     "paths": {}
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp", "**/*.spec.ts", "**/*.spec.tsx"]
 }

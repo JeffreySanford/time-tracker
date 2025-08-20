@@ -1,0 +1,22 @@
+file,path,line,kind,snippet
+apps/time-tracker-e2e/src/example.spec.ts,c:\repos\time-tracker\apps\time-tracker-e2e\src\example.spec.ts,3,async,"test('has title', async ({ page }) => {"
+apps/time-tracker-e2e/src/example.spec.ts,c:\repos\time-tracker\apps\time-tracker-e2e\src\example.spec.ts,4,await,"await page.goto('/');"
+apps/time-tracker-e2e/src/example.spec.ts,c:\repos\time-tracker\apps\time-tracker-e2e\src\example.spec.ts,7,await,"expect(await page.locator('h1').innerText()).toContain('Welcome');"
+apps/time-tracker/src/app/app.spec.ts,c:\repos\time-tracker\apps\time-tracker\src\app\app.spec.ts,6,async,"beforeEach(async () => {"
+apps/time-tracker/src/app/app.spec.ts,c:\repos\time-tracker\apps\time-tracker\src\app\app.spec.ts,7,await,"await TestBed.configureTestingModule({"
+
+# Regenerated on: 2025-08-19
+# Summary: this CSV enumerates the remaining uses of async/await/Promise/.then across the repo.
+# - Items intentionally excluded from early conversion: bootstrap/startup code that awaits mongodb-memory-server and test files (Playwright/Jasmine) — these are documented here for visibility but will be converted later if desired.
+#
+# Next steps (recommended):
+# 1) Runtime conversions: focus on components/services/effects that call HttpClient or directly consume Promises and convert them to hot Observables (BehaviorSubject/ReplaySubject) where shared state or caching is required.
+# 2) Seeds & migrations: update seed files and any renames (e.g., `paused` → `backlog`) in a targeted PR with migration steps.
+# 3) Tests: update unit and e2e tests after runtime conversions; keep Playwright tests asynchronous (they rely on async/await semantics).
+#
+# Notes:
+# - The majority of runtime code has already been migrated to Observables in previous batches; remaining `async/await` occurrences are primarily in bootstrap and test files.
+
+# Recent notes:
+# - 2025-08-19: Fixed `timer.effects.ts` to use `HttpClient` for health GET and `TimeWorkedApiService` for start/stop; eliminated a stray `any` usage in that effect.
+

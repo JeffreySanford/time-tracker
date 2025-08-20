@@ -21,8 +21,8 @@
     text-overflow: ellipsis;
   }
 
-  /* Slightly larger labels and controls to match the timer scale */
-  .timer-label,
+  /* Slightly larger tags and controls to match the timer scale */
+  .timer-tag,
   .timer-controls-compact,
   .project-selector,
   .timer-controls button,
@@ -112,7 +112,7 @@
     min-width: 0 !important;
   }
 
-  .timer-label,
+  .timer-tag,
   .timer-controls-compact,
   .timer-controls button,
   .timer-controls .btn {

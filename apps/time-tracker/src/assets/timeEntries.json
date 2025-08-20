@@ -1,0 +1,92 @@
+[
+  {
+    "id": "te1",
+    "taskId": "66c1f205a1c9f0b1d0016003",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-14T09:00:00.000Z",
+    "end": "2025-08-14T11:00:00.000Z",
+    "minutes": 120,
+    "billable": true
+  },
+  {
+    "id": "te2",
+    "taskId": "1",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-18T09:30:00.000Z",
+    "end": "2025-08-18T11:30:00.000Z",
+    "minutes": 120,
+    "billable": true
+  },
+  {
+    "id": "te3",
+    "taskId": "2",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-19T10:00:00.000Z",
+    "end": "2025-08-19T11:00:00.000Z",
+    "minutes": 60,
+    "billable": false
+  },
+  {
+    "id": "te4",
+    "taskId": "4",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-16T13:00:00.000Z",
+    "end": "2025-08-16T16:00:00.000Z",
+    "minutes": 180,
+    "billable": true
+  },
+  {
+    "id": "te5",
+    "taskId": "5",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-15T09:00:00.000Z",
+    "end": "2025-08-15T12:00:00.000Z",
+    "minutes": 180,
+    "billable": true
+  },
+  {
+    "id": "te6",
+    "taskId": "7",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-14T14:00:00.000Z",
+    "end": "2025-08-14T16:30:00.000Z",
+    "minutes": 150,
+    "billable": false
+  },
+  {
+    "id": "te7",
+    "taskId": "8",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-13T10:00:00.000Z",
+    "end": "2025-08-13T13:30:00.000Z",
+    "minutes": 210,
+    "billable": true
+  },
+  {
+    "id": "te8",
+    "taskId": "9",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-18T14:00:00.000Z",
+    "end": "2025-08-18T15:00:00.000Z",
+    "minutes": 60,
+    "billable": true
+  },
+  {
+    "id": "te9",
+    "taskId": "10",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-19T15:00:00.000Z",
+    "end": "2025-08-19T17:00:00.000Z",
+    "minutes": 120,
+    "billable": false
+  },
+  {
+    "id": "te10",
+    "taskId": "11",
+    "userId": "66c1f0e3a1c9f0b1d0012001",
+    "start": "2025-08-17T11:00:00.000Z",
+    "end": "2025-08-17T12:00:00.000Z",
+    "minutes": 60,
+    "billable": false
+  }
+]

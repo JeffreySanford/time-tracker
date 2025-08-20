@@ -1,4 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChildren, QueryList, AfterViewInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { KanbanColumnsService } from '../../services/kanban-columns.service';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
 import { Project } from '../../models/project.model';
 
 interface Task {
@@ -7,13 +9,19 @@ interface Task {
   description: string;
   project: string;
   tags: string[];
-  status: 'active' | 'completed' | 'paused';
+  status: 'active' | 'completed' | 'backlog';
   timeSpent: number;
   startTime?: Date;
   endTime?: Date;
   createdAt: Date;
   priority?: 'low' | 'medium' | 'high';
   estimatedTime?: number; // in seconds
+}
+interface Column {
+  id: string;
+  title: string;
+  tasks: Task[];
+  color: string;
 }
 
 @Component({
@@ -23,7 +31,7 @@ interface Task {
     // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
-export class PlanningComponent {
+export class PlanningComponent implements OnChanges, AfterViewInit {
   @Input() projects: Project[] = [];
   @Input() allTasks: Task[] = [];
   @Input() selectedProject!: Project; // Will always be provided by parent
@@ -34,6 +42,8 @@ export class PlanningComponent {
   viewMode: 'kanban' | 'list' = 'kanban';
   showProjectSelector = false;
   showTaskForm = false;
+  // Controls whether additional/extended status columns are shown
+  showExtendedColumns = false;
 
   // New task form
   newTask: Partial<Task> = {
@@ -48,27 +58,93 @@ export class PlanningComponent {
     return this.allTasks.filter(task => task.project === this.selectedProject.id);
   }
 
-  get kanbanColumns() {
-    return [
-      {
-        id: 'active',
-        title: 'Active',
-        tasks: this.filteredTasks.filter(task => task.status === 'active'),
-        color: '#3b82f6'
-      },
-      {
-        id: 'paused',
-        title: 'Paused',
-        tasks: this.filteredTasks.filter(task => task.status === 'paused'),
-        color: '#f59e0b'
-      },
-      {
-        id: 'completed',
-        title: 'Completed',
-        tasks: this.filteredTasks.filter(task => task.status === 'completed'),
-        color: '#10b981'
-      }
-    ];
+  // Stable kanban columns array used by the template. Must be kept stable
+  // (same references) to avoid breaking CDK drag/drop when change detection
+  // recreates arrays.
+  private _kanbanColumns: Column[] = [];
+
+  get kanbanColumns(): Column[] {
+    return this._kanbanColumns;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Rebuild columns whenever relevant inputs change
+    if (changes['allTasks'] || changes['selectedProject'] || changes['showExtendedColumns']) {
+      this.buildKanbanColumns();
+    }
+  }
+
+  private buildKanbanColumns() {
+    const baseOrder = ['backlog', 'active', 'completed'];
+
+    const extraStatuses = Array.from(new Set(this.filteredTasks.map(t => t.status))).filter(s => !baseOrder.includes(s));
+
+    const order = [...baseOrder];
+    if (this.showExtendedColumns && extraStatuses.length) {
+      const insertAt = order.indexOf('active') + 1;
+      order.splice(insertAt, 0, ...extraStatuses);
+    }
+
+    const titleFor = (s: string) => {
+      if (s === 'backlog') return 'Backlog';
+      if (s === 'active') return 'Active';
+      if (s === 'completed') return 'Completed';
+      return s.split(/-|_/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+    };
+
+    const colorFor = (s: string) => {
+      if (s === 'backlog') return '#f59e0b';
+      if (s === 'active') return '#3b82f6';
+      if (s === 'completed') return '#10b981';
+      return '#6b7280';
+    };
+
+    // Build stable arrays for each column's tasks
+    this._kanbanColumns = order.map(id => ({
+      id,
+      title: titleFor(id),
+      tasks: this.filteredTasks.filter(task => task.status === id),
+      color: colorFor(id)
+    }));
+  }
+
+  // Collect cdk drop list directive instances so we can pass their actual
+  // runtime ids to the connected lists binding. This ensures the CDK wiring
+  // points to directive ids (not just DOM ids) which avoids fragile/template
+  // parsing issues and makes cross-list dragging reliable.
+  @ViewChildren(CdkDropList) dropLists!: QueryList<CdkDropList<Task[]>>;
+
+  connectedDropListIds: string[] = [];
+
+  ngAfterViewInit(): void {
+    const build = () => {
+      this.connectedDropListIds = this.dropLists.toArray().map(dl => dl.id).filter(Boolean);
+    };
+
+    build();
+    this.dropLists.changes.subscribe(build);
+  // Debug: print connected drop lists so dev can confirm CDK wiring
+  console.log('PlanningComponent ngAfterViewInit connectedDropLists:', this.connectedDropLists.map(d => d.id));
+  }
+
+  private kanbanService = inject(KanbanColumnsService);
+
+  get dropListIds(): string[] {
+    return this.connectedDropListIds;
+  }
+
+  // Also expose the actual CdkDropList directive instances as an array.
+  // Binding the connected lists to directive instances is more resilient
+  // than using DOM ids and avoids mismatches between host id attributes
+  // and the directive's internal id generation.
+  get connectedDropLists(): CdkDropList<Task[]>[] {
+    return this.dropLists ? this.dropLists.toArray() : [];
+  }
+
+  // Helper used by templates to get task counts safely by status id
+  getColumnCount(status: string): number {
+    const col = this.kanbanColumns.find(c => c.id === status);
+    return col ? col.tasks.length : 0;
   }
 
   toggleView() {
@@ -123,39 +199,49 @@ export class PlanningComponent {
     this.showTaskForm = false;
   }
 
-  updateTaskStatus(task: Task, newStatus: 'active' | 'completed' | 'paused') {
+  updateTaskStatus(task: Task, newStatus: 'active' | 'completed' | 'backlog') {
     const updatedTask = { ...task, status: newStatus };
     this.taskUpdate.emit(updatedTask);
   }
 
-  deleteTask(taskId: string) {
-    this.taskDelete.emit(taskId);
-  }
-
-  onDragStart(event: DragEvent, task: Task) {
-    if (event.dataTransfer) {
-      event.dataTransfer.setData('text/plain', JSON.stringify(task));
-      event.dataTransfer.effectAllowed = 'move';
+  // New CDK drop handler used by the template. It will move items within
+  // a column or between columns and emit an updated task with the new status.
+  onCdkDrop(event: CdkDragDrop<Task[]>, targetStatus: string) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      return;
     }
-  }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-  }
+    // Transfer item between lists
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
 
-  onDrop(event: DragEvent, status: string) {
-    event.preventDefault();
-    const taskData = event.dataTransfer?.getData('text/plain');
-    if (taskData) {
-      const task = JSON.parse(taskData) as Task;
-      const newStatus = status as 'active' | 'completed' | 'paused';
-      if (task.status !== newStatus) {
-        this.updateTaskStatus(task, newStatus);
+    const moved = event.container.data[event.currentIndex];
+    if (!moved) return;
+
+    const newStatus = targetStatus as 'active' | 'completed' | 'backlog';
+    if (moved.status !== newStatus) {
+      const updated = { ...moved, status: newStatus };
+      // Emit updated task so parent can persist changes
+      this.taskUpdate.emit(updated);
+      // Persist new order of columns to server (best-effort)
+      try {
+        const orderIds = this.kanbanColumns.map(c => c.id);
+        this.kanbanService.updateOrder(orderIds).subscribe({
+          error: (err) => console.error('Failed to persist kanban order', err)
+        });
+      } catch (e) {
+        console.error('Error while persisting kanban order', e);
       }
     }
+  }
+
+  deleteTask(taskId: string) {
+    this.taskDelete.emit(taskId);
   }
 
   formatTime(seconds: number): string {
@@ -169,6 +255,11 @@ export class PlanningComponent {
     } else {
       return `${seconds}s`;
     }
+  }
+
+  // total time across currently filtered tasks (seconds)
+  get totalTimeForFilteredTasks(): number {
+    return this.filteredTasks.reduce((sum, t) => sum + (t.timeSpent || 0), 0);
   }
 
   getPriorityColor(priority: string): string {

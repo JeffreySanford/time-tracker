@@ -141,6 +141,7 @@
             <thead>
               <tr>
                 <th>Task</th>
+                <th>Assignees</th>
                 <th>Tags</th>
                 <th>Time</th>
                 <th>Status</th>
@@ -152,6 +153,9 @@
                 <td>
                   <div class="task-title">{{ task.title }}</div>
                   <div class="task-description" *ngIf="task.description">{{ task.description }}</div>
+                </td>
+                <td>
+                  <div class="assignee-display">{{ resolveAssignees(task._meta?.assignees) }}</div>
                 </td>
                 <td>
                   <div class="task-tags">

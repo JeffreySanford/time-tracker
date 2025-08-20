@@ -14,6 +14,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { App } from './app';
 import { HomeComponent } from './home.component';
@@ -21,6 +27,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { PlanningComponent } from './components/planning/planning.component';
+import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-edit-drawer.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +51,15 @@ import { PlanningComponent } from './components/planning/planning.component';
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
-  RouterModule.forRoot([{ path: '', component: HomeComponent }]),
+    MatPaginatorModule,
+    MatSortModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    DragDropModule,
+    RouterModule.forRoot([{ path: '', component: HomeComponent }]),
+    // register standalone component
+    QuickEditDrawerComponent
   ],
   bootstrap: [App],
 })

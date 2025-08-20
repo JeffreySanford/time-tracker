@@ -47,6 +47,14 @@
           <span class="btn-icon">➕</span>
           Add Task
         </button>
+        <!-- Toggle extended columns -->
+        <button
+          class="toggle-extended-btn"
+          (click)="showExtendedColumns = !showExtendedColumns"
+          [class.active]="showExtendedColumns"
+          title="Show other categories">
+          {{ showExtendedColumns ? 'Hide extra columns' : 'Show extra columns' }}
+        </button>
       </div>
     </div>
   </div>
@@ -67,15 +75,19 @@
     <div class="task-stats">
       <div class="stat-item">
         <span class="stat-value">{{ filteredTasks.length }}</span>
-        <span class="stat-label">Total</span>
+  <span class="stat-tag">Total</span>
+      </div>
+      <div class="stat-item backlog">
+        <span class="stat-value">{{ getColumnCount('backlog') }}</span>
+        <span class="stat-tag">Backlog</span>
       </div>
       <div class="stat-item active">
-        <span class="stat-value">{{ kanbanColumns[0].tasks.length }}</span>
-        <span class="stat-label">Active</span>
+        <span class="stat-value">{{ getColumnCount('active') }}</span>
+        <span class="stat-tag">Active</span>
       </div>
       <div class="stat-item completed">
-        <span class="stat-value">{{ kanbanColumns[2].tasks.length }}</span>
-        <span class="stat-label">Done</span>
+        <span class="stat-value">{{ getColumnCount('completed') }}</span>
+        <span class="stat-tag">Done</span>
       </div>
     </div>
   </div>
@@ -158,8 +170,11 @@
         <div 
           class="kanban-column" 
           *ngFor="let column of kanbanColumns"
-          (dragover)="onDragOver($event)"
-          (drop)="onDrop($event, column.id)">
+          cdkDropList
+          [cdkDropListData]="column.tasks"
+          [cdkDropListConnectedTo]="connectedDropLists"
+          [id]="column.id"
+          (cdkDropListDropped)="onCdkDrop($event, column.id)">
           <div class="column-header" [style.border-color]="column.color">
             <h3 [style.color]="column.color">{{ column.title }}</h3>
             <span class="task-count">{{ column.tasks.length }}</span>
@@ -169,8 +184,8 @@
             <div 
               class="task-card" 
               *ngFor="let task of column.tasks"
-              draggable="true"
-              (dragstart)="onDragStart($event, task)">
+              cdkDrag
+              [cdkDragData]="task">
               <div class="task-header">
                 <div class="task-priority" [style.background]="getPriorityColor(task.priority || 'medium')"></div>
                 <button class="task-menu" (click)="deleteTask(task.id)">⋯</button>
@@ -199,6 +214,35 @@
             <!-- Empty Column -->
             <div class="empty-column" *ngIf="column.tasks.length === 0">
               <p>No {{ column.title.toLowerCase() }} tasks</p>
+            </div>
+          </div>
+        </div>
+        <!-- Totals / Summary column -->
+        <div class="kanban-totals">
+          <div class="totals-card">
+            <h3>Totals</h3>
+            <div class="totals-row">
+              <div>
+                <div class="label">Tasks</div>
+                <div class="value">{{ filteredTasks.length }}</div>
+              </div>
+              <div>
+                <div class="label">Backlog</div>
+                <div class="value">{{ getColumnCount('backlog') }}</div>
+              </div>
+              <div>
+                <div class="label">Active</div>
+                <div class="value">{{ getColumnCount('active') }}</div>
+              </div>
+              <div>
+                <div class="label">Done</div>
+                <div class="value">{{ getColumnCount('completed') }}</div>
+              </div>
+            </div>
+
+            <div class="time-summary">
+              <div class="label">Total Time</div>
+              <div class="value">{{ formatTime(totalTimeForFilteredTasks) }}</div>
             </div>
           </div>
         </div>
@@ -259,7 +303,7 @@
           </div>
           
           <div class="col-actions">
-            <button class="action-btn pause" (click)="updateTaskStatus(task, 'paused')" title="Pause">⏸</button>
+            <button class="action-btn pause" (click)="updateTaskStatus(task, 'backlog')" title="Backlog">⏸</button>
             <button class="action-btn delete" (click)="deleteTask(task.id)" title="Delete">🗑️</button>
           </div>
         </div>

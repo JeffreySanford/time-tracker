@@ -1,0 +1,106 @@
+[
+  {
+    "id": "time-forge",
+    "name": "⚡ Time Forge",
+    "color": "#667eea",
+    "bgColor": "rgba(102, 126, 234, 0.1)",
+    "description": "Advanced time tracking application",
+    "category": "product",
+    "owner": "internal",
+    "progress": 0
+  },
+  {
+    "id": "portfolio",
+    "name": "🌐 Portfolio",
+    "color": "#0ea5e9",
+    "bgColor": "rgba(14, 165, 233, 0.06)",
+    "description": "Personal portfolio and showcase projects",
+    "category": "personal",
+    "owner": "internal",
+    "progress": 0
+  },
+  {
+    "id": "forge-board",
+    "name": "🧩 Forge Board",
+    "color": "#7c3aed",
+    "bgColor": "rgba(124, 58, 237, 0.06)",
+    "description": "Kanban/board demo project",
+    "category": "demo",
+    "owner": "internal",
+    "progress": 0
+  },
+  {
+    "id": "true-north",
+    "name": "🧭 True North",
+    "color": "#059669",
+    "bgColor": "rgba(5, 150, 105, 0.06)",
+    "description": "True North family of products",
+    "category": "client",
+    "owner": "sonja",
+    "progress": 0,
+    "subprojects": [
+      {
+        "id": "true-north-insights",
+        "name": "🧭 True North Insights",
+        "color": "#059669",
+        "bgColor": "rgba(5, 150, 105, 0.1)",
+        "description": "Analytics and insights platform (10% complete)",
+        "progress": 10,
+        "features": ["Forge Board", "Realtime Security", "Auditing Controls"]
+      },
+      {
+        "id": "true-north-apparel",
+        "name": "🇺🇸 True North Apparel",
+        "color": "#ef4444",
+        "bgColor": "rgba(239, 68, 68, 0.1)",
+        "description": "Blockchain-backed apparel store (20% complete)",
+        "progress": 20
+      }
+    ]
+  },
+  {
+    "id": "usace-sharepoint",
+    "name": "USACE - SharePoint",
+    "color": "#0ea5e9",
+    "bgColor": "rgba(14, 165, 233, 0.06)",
+    "description": "SharePoint development and documentation for US Army Corps of Engineers - September intensive",
+    "category": "gov",
+    "owner": "contract",
+    "progress": 0,
+    "notes": ["PowerOps","Cloud Deployment","Data Visualization","Defense Intelligence"]
+  },
+  {
+    "id": "buffalo-city-picker",
+    "name": "🧾 Buffalo City Picker",
+    "color": "#d97706",
+    "bgColor": "rgba(217, 119, 6, 0.06)",
+    "description": "Buffalo City Picker app — needs full app structure and dataset access for Squarespace",
+    "category": "local-client",
+    "owner": "local",
+    "progress": 0
+  },
+  {
+    "id": "make-space",
+    "name": "🎨 Make Space (Fucky Buffalo)",
+    "color": "#f97316",
+    "bgColor": "rgba(249, 115, 22, 0.06)",
+    "description": "Application project for Sonja and Craig Thierer; pitch deck from Chelsea pending",
+    "category": "local-client",
+    "owner": "sonja",
+    "progress": 0,
+    "subprojects": [
+      { "id": "make-space-ux", "name": "Make Space - UX", "progress": 0 },
+      { "id": "make-space-backend", "name": "Make Space - Backend", "progress": 0 }
+    ]
+  },
+  {
+    "id": "community-computing",
+    "name": "💻 Jamestown Community Computing",
+    "color": "#8b5cf6",
+    "bgColor": "rgba(139, 92, 246, 0.06)",
+    "description": "Local meetup: kids, young adults, adults, and seniors — computer basics, programming, AI, and support",
+    "category": "community",
+    "owner": "local",
+    "progress": 0
+  }
+]

@@ -44,29 +44,72 @@
   </div>
 
   <!-- Summary Cards -->
-  <div class="summary-cards">
-    <div class="summary-card total-time">
-      <div class="card-icon">⏱️</div>
-      <div class="card-content">
-        <h3>Total Time</h3>
-        <div class="card-value">{{ formatTime(totalTimeSpent) }}</div>
+  <!-- Table Controls -->
+  <div class="table-controls">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Search by project, description or date" />
+    </mat-form-field>
+  </div>
+
+  <!-- Material Table -->
+  <div class="reports-table">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+        <td mat-cell *matCellDef="let element">{{ formatDate(element.date) }}</td>
+      </ng-container>
+
+      <!-- Project Column -->
+      <ng-container matColumnDef="project">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
+        <td mat-cell *matCellDef="let element">{{ getProjectName(element.project) }}</td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      </ng-container>
+
+      <!-- Time Column -->
+      <ng-container matColumnDef="timeSpent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+        <td mat-cell *matCellDef="let element">{{ formatTime(element.timeSpent) }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+  <td mat-cell *matCellDef="let element">{{ getTaskStatus(element.id) }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons aria-label="Select page"></mat-paginator>
+  </div>
+  <!-- Prominent period clock (total time for selected range) -->
+  <div class="period-clock">
+    <div class="clock-label">{{ periodLabel }}</div>
+    <div class="clock-row">
+      <div class="clock-value">{{ periodTotalFormatted }}</div>
+      <div class="sparkline" *ngIf="dailyTotals.length > 0">
+  <svg [attr.width]="sparklinePath.width" [attr.height]="sparklinePath.height" [attr.viewBox]="'0 0 ' + sparklinePath.width + ' ' + sparklinePath.height">
+          <path [attr.d]="sparklinePath.path" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></path>
+        </svg>
       </div>
     </div>
-
-    <div class="summary-card average-time">
-      <div class="card-icon">📈</div>
-      <div class="card-content">
-        <h3>Daily Average</h3>
-        <div class="card-value">{{ formatTime(averageTimePerDay) }}</div>
-      </div>
-    </div>
-
-    <div class="summary-card entries-count">
-      <div class="card-icon">📝</div>
-      <div class="card-content">
-        <h3>Time Entries</h3>
-        <div class="card-value">{{ filteredTimeEntries.length }}</div>
-      </div>
+    <div class="billable-row">
+      <div class="billable-minutes">Billable: {{ billableMinutes }}m</div>
+      <div class="billable-amount">Amount: {{ billableAmount | currency:'USD' }}</div>
+      <mat-form-field appearance="outline" class="rate-field">
+        <mat-label>Rate</mat-label>
+        <input matInput type="number" [(ngModel)]="hourlyRate" />
+      </mat-form-field>
     </div>
   </div>
 
@@ -99,36 +142,58 @@
     </div>
   </div>
 
-  <!-- Time Entries List -->
-  <div class="time-entries-section">
-    <h2 class="section-title">Time Entries</h2>
-    
-    <div class="entries-list" *ngIf="filteredTimeEntries.length > 0">
-      <div 
-        class="entry-item" 
-        *ngFor="let entry of filteredTimeEntries">
-        <div class="entry-header">
-          <span 
-            class="project-indicator" 
-            [style.background]="getProjectColor(entry.project)">
-          </span>
-          <div class="entry-info">
-            <div class="entry-title">{{ getProjectName(entry.project) }}</div>
-            <div class="entry-date">{{ formatDate(entry.date) }}</div>
-          </div>
-          <div class="entry-time">{{ formatTime(entry.timeSpent) }}</div>
-        </div>
-        <div class="entry-description" *ngIf="entry.description">
-          {{ entry.description }}
+  <!-- Daily totals and top tasks condensed into a right-hand column for wider screens -->
+  <div class="insights">
+    <div class="daily-totals" *ngIf="dailyTotals.length > 0">
+      <h3 class="small-title">Daily Totals</h3>
+      <div class="daily-list">
+        <div class="daily-item" *ngFor="let d of dailyTotals">
+          <div class="daily-date">{{ formatDate(d.date) }}</div>
+          <div class="daily-time">{{ formatTime(d.time) }}</div>
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="filteredTimeEntries.length === 0">
-      <div class="empty-icon">📊</div>
-      <h3>No time entries found</h3>
-      <p>Start tracking time to see your reports here</p>
+    <div class="top-tasks-cards" *ngIf="topTasks.length > 0">
+      <h3 class="small-title">Top Tasks</h3>
+      <div class="cards">
+        <div class="task-card" *ngFor="let t of topTasks" (click)="openTaskDrawer(t)" role="button" tabindex="0">
+          <div class="card-header">
+            <div class="task-title">{{ t.title }}</div>
+            <div class="task-time">{{ formatTime(t.timeSpent) }}</div>
+          </div>
+          <div class="card-sub">{{ getProjectName(t.project) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="billable-breakdown" *ngIf="dailyBillableBreakdown.length > 0">
+      <h3 class="small-title">Billable vs Non-billable</h3>
+      <div class="breakdown-bars">
+        <div class="bar-row" *ngFor="let d of dailyBillableBreakdown">
+          <div class="bar-date">{{ formatDate(d.date) }}</div>
+          <div class="bar" [matTooltip]="getEntriesTextForDate(d.date)">
+            <div class="bar-fill billable" [style.width.%]="(d.billable / (d.billable + d.nonBillable || 1)) * 100"></div>
+            <div class="bar-fill nonbillable" [style.width.%]="(d.nonBillable / (d.billable + d.nonBillable || 1)) * 100"></div>
+          </div>
+          <div class="bar-legend">{{ d.billable }}m / {{ d.nonBillable }}m</div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Sidenav drawer for quick-edit (MatSidenav) - now uses app-quick-edit-drawer -->
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #taskSidenav mode="over" position="end" class="drawer-sidenav">
+      <app-quick-edit-drawer
+        [task]="selectedTask"
+        (save)="handleDrawerSave($event)"
+        (cancel)="handleDrawerCancel()"
+      ></app-quick-edit-drawer>
+    </mat-sidenav>
+
+    <div class="sidenav-content">
+      <!-- ...existing page content remains displayed above; the sidenav overlays this content when opened -->
+    </div>
+  </mat-sidenav-container>
 </div>

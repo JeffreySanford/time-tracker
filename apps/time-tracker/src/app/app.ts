@@ -1,7 +1,16 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Capacitor } from '@capacitor/core';
+import { Observable, of } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+import { switchMap, catchError, mapTo, tap, take } from 'rxjs/operators';
 
 import { Project } from './models/project.model';
+import { TaskApiService } from './services/task-api.service';
+import projectsData from '../assets/projects.json';
+import tasksData from '../assets/tasks.json';
+import usersData from '../assets/users.json';
+import tagsData from '../assets/tags.json';
 
 interface Task {
   id: string;
@@ -9,7 +18,7 @@ interface Task {
   description: string;
   project: string;
   tags: string[];
-  status: 'active' | 'completed' | 'paused';
+  status: 'active' | 'completed' | 'backlog';
   timeSpent: number;
   startTime?: Date;
   endTime?: Date;
@@ -55,7 +64,9 @@ export class App implements OnInit {
   pingTime: number | null = null;
   
   // Shared data between components
-  projects: Project[] = [
+  // Load projects from the static JSON file so it can be easily edited/extended
+  projects: Project[] = (projectsData as Project[]).concat([
+    // keep a small portfolio entry locally for demo/sample tasks
     {
       id: 'portfolio',
       name: '🎨 Portfolio',
@@ -67,52 +78,50 @@ export class App implements OnInit {
         { name: 'frontend', color: '#06b6d4' },
         { name: 'responsive', color: '#f59e0b' }
       ]
-    },
-    {
-      id: 'true-north-insights',
-      name: '🧭 True North Insights',
-      color: '#059669',
-      bgColor: 'rgba(5, 150, 105, 0.1)',
-      description: 'Analytics and insights platform',
-      suggestedTags: [
-        { name: 'analytics', color: '#10b981' },
-        { name: 'dashboard', color: '#3b82f6' },
-        { name: 'data', color: '#6366f1' }
-      ]
-    },
-    {
-      id: 'forge-board',
-      name: '📋 Forge Board',
-      color: '#dc2626',
-      bgColor: 'rgba(220, 38, 38, 0.1)',
-      description: 'Comprehensive project management with real-time analytics, kanban workflows, audit trails, and enterprise security controls',
-      suggestedTags: [
-        { name: 'collaboration', color: '#f59e0b' },
-        { name: 'ui', color: '#ec4899' },
-        { name: 'features', color: '#8b5cf6' }
-      ]
-    },
-    {
-      id: 'time-forge',
-      name: '⚡ Time Forge',
-      color: '#667eea',
-      bgColor: 'rgba(102, 126, 234, 0.1)',
-      description: 'Advanced time tracking application',
-      suggestedTags: [
-        { name: 'auth', color: '#ef4444' },
-        { name: 'backend', color: '#84cc16' },
-        { name: 'architecture', color: '#6366f1' }
-      ]
     }
-  ];
+  ]);
+
 
   allTasks: Task[] = [];
+  users: Array<{id: string; name: string}> = (usersData as unknown as Array<Record<string, unknown>>).map(u => ({ id: String(u['id'] ?? u['_id'] ?? ''), name: String(u['name'] ?? '') }));
+  tagsList: Array<{id: string; name: string; color?: string}> = (tagsData as unknown as Array<Record<string, unknown>>).map(l => ({ id: String(l['id'] ?? l['_id'] ?? ''), name: String(l['name'] ?? ''), color: String(l['color'] ?? '') }));
   selectedProject!: Project; // Will always be defined after ngOnInit
 
   ngOnInit() {
-    // Initialize with Time Forge project
-    this.selectedProject = this.projects.find(p => p.id === 'time-forge') || this.projects[3];
-    this.initializeSampleTasks();
+    // Ensure compatibility aliases for older IDs used by sample tasks
+    const ensureProject = (id: string, fallback: Partial<Project>) => {
+      if (!this.projects.find(p => p.id === id)) {
+        this.projects.push({
+          id: id,
+          name: fallback.name || id,
+          color: fallback.color || '#999',
+          bgColor: fallback.bgColor || 'rgba(0,0,0,0.04)',
+          description: fallback.description || '',
+          ...(fallback as Partial<Project>)
+        } as Project);
+      }
+    };
+
+    ensureProject('forge-board', { name: '📋 Forge Board', description: 'Forge Board (compat alias)' });
+    ensureProject('buffalo-city-popcorn', { name: '🍿 Buffalo City Popcorn', description: 'Buffalo City Popcorn (compat alias)' });
+
+  // Initialize with Time Forge project
+  this.selectedProject = this.projects.find(p => p.id === 'time-forge') || this.projects[0];
+  // Kick off load of tasks (populate TaskApiService hot cache) and then restore any
+  // in-session edits from sessionStorage so UI changes survive a reload in the same session.
+  const api = inject(TaskApiService);
+  // Populate the server cache and then subscribe to its hot stream so the app stays in sync
+  api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+    complete: () => this.restoreSessionTasks(),
+    error: () => this.restoreSessionTasks()
+  });
+
+  // Keep `allTasks` in sync with TaskApiService's hot cache
+  api.tasks$.subscribe((list) => {
+    if (Array.isArray(list)) {
+      this.allTasks = (list as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
+    }
+  });
     
     // Initialize current date display
     const today = new Date();
@@ -135,149 +144,130 @@ export class App implements OnInit {
     }
   }
 
-  private initializeSampleTasks(): void {
-    this.allTasks = [
-      // Portfolio tasks
-      {
-        id: '1',
-        title: 'Design portfolio landing page',
-        description: 'Create an engaging hero section and layout',
-        project: 'portfolio',
-        tags: ['design', 'frontend'],
-        timeSpent: 7200,
-        status: 'completed',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 14400
-      },
-      {
-        id: '2',
-        title: 'Implement responsive navigation',
-        description: 'Add mobile-friendly navigation menu',
-        project: 'portfolio',
-        tags: ['frontend', 'responsive'],
-        timeSpent: 3600,
-        status: 'active',
-        createdAt: new Date(),
-        priority: 'medium',
-        estimatedTime: 7200
-      },
-      {
-        id: '3',
-        title: 'Optimize portfolio images',
-        description: 'Compress and optimize all portfolio images',
-        project: 'portfolio',
-        tags: ['optimization', 'images'],
-        timeSpent: 1800,
-        status: 'paused',
-        createdAt: new Date(),
-        priority: 'low',
-        estimatedTime: 3600
-      },
-      
-      // True North Insights tasks
-      {
-        id: '4',
-        title: 'Build analytics dashboard',
-        description: 'Create comprehensive data visualization dashboard',
-        project: 'true-north-insights',
-        tags: ['analytics', 'dashboard'],
-        timeSpent: 14400,
-        status: 'active',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 28800
-      },
-      {
-        id: '5',
-        title: 'Implement data pipeline',
-        description: 'Set up automated data collection and processing',
-        project: 'true-north-insights',
-        tags: ['backend', 'data'],
-        timeSpent: 10800,
-        status: 'completed',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 14400
-      },
-      {
-        id: '6',
-        title: 'Add real-time notifications',
-        description: 'Implement WebSocket-based alert system',
-        project: 'true-north-insights',
-        tags: ['realtime', 'notifications'],
-        timeSpent: 5400,
-        status: 'paused',
-        createdAt: new Date(),
-        priority: 'medium',
-        estimatedTime: 7200
-      },
-      
-      // Forge Board tasks
-      {
-        id: '7',
-        title: 'Design kanban board interface',
-        description: 'Create drag-and-drop task management interface',
-        project: 'forge-board',
-        tags: ['design', 'ui'],
-        timeSpent: 9000,
-        status: 'active',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 14400
-      },
-      {
-        id: '8',
-        title: 'Implement team collaboration features',
-        description: 'Add commenting and assignment functionality',
-        project: 'forge-board',
-        tags: ['collaboration', 'features'],
-        timeSpent: 12600,
-        status: 'completed',
-        createdAt: new Date(),
-        priority: 'medium',
-        estimatedTime: 21600
-      },
-      
-      // Time Forge tasks
-      {
-        id: '9',
-        title: 'Setup project structure',
-        description: 'Initialize the project with proper folder structure',
-        project: 'time-forge',
-        tags: ['setup', 'architecture'],
-        timeSpent: 3600,
-        status: 'completed',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 7200
-      },
-      {
-        id: '10',
-        title: 'Implement user authentication',
-        description: 'Add login and registration functionality',
-        project: 'time-forge',
-        tags: ['auth', 'security'],
-        timeSpent: 7200,
-        status: 'active',
-        createdAt: new Date(),
-        priority: 'high',
-        estimatedTime: 14400
-      },
-      {
-        id: '11',
-        title: 'Design database schema',
-        description: 'Plan and create the database structure',
-        project: 'time-forge',
-        tags: ['database', 'design'],
-        timeSpent: 5400,
-        status: 'paused',
-        createdAt: new Date(),
-        priority: 'medium',
-        estimatedTime: 10800
-      }
-    ];
+  private snackBar = inject(MatSnackBar);
+
+  private loadTasksFromJson(): void {
+    // Convert imported JSON (with ISO strings) to Task objects with Date types
+    try {
+      const rawTasks = tasksData as unknown as Array<Record<string, unknown>>;
+      this.allTasks = rawTasks.map(t => this.mapRawToTask(t));
+    } catch (e) {
+      console.error('Failed to load tasks from JSON', e);
+      this.allTasks = [];
+    }
   }
+
+  private tryLoadTasks(): Observable<void> {
+    const api = inject(TaskApiService);
+    // Subscribe to the hot tasks stream; if it's empty, trigger a refresh which will update the stream
+    return api.fetchTasks(this.selectedProject?.id).pipe(
+      take(1),
+      catchError(() => {
+        this.loadTasksFromJson();
+        return of(undefined);
+      }),
+      tap((tasks) => {
+        if (Array.isArray(tasks)) {
+          this.allTasks = (tasks as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
+        } else {
+          // If the hot stream has no value yet, trigger a refresh and subscribe once
+          api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+            next: (resp) => { if (Array.isArray(resp)) this.allTasks = (resp as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t)); },
+            error: () => this.loadTasksFromJson()
+          });
+        }
+      }),
+      mapTo(undefined)
+    );
+  }
+
+  private mapRawToTask(t: Record<string, unknown>): Task & { _meta?: Record<string, unknown> } {
+    const createdAt = typeof t['createdAt'] === 'string' ? new Date(t['createdAt'] as string) : new Date();
+    const startTime = typeof t['startTime'] === 'string' ? new Date(t['startTime'] as string) : undefined;
+    const endTime = typeof t['endTime'] === 'string' ? new Date(t['endTime'] as string) : undefined;
+
+    const statusStr = typeof t['status'] === 'string' ? (t['status'] as string) : 'active';
+
+    // Map kanban column IDs (from seeded JSON) to app statuses
+    const columnId = typeof t['columnId'] === 'string' ? (t['columnId'] as string) : undefined;
+    const columnStatusMap: Record<string, Task['status']> = {
+      // Backlog -> backlog, In Progress -> active, Review -> backlog, Done -> completed
+      '66c1f15ea1c9f0b1d0014001': 'backlog',
+      '66c1f15ea1c9f0b1d0014002': 'active',
+      '66c1f15ea1c9f0b1d0014003': 'backlog',
+      '66c1f15ea1c9f0b1d0014004': 'completed'
+    };
+
+    let status = 'active' as Task['status'];
+    if (columnId && columnStatusMap[columnId]) {
+      status = columnStatusMap[columnId];
+    } else if (statusStr === 'done') {
+      status = 'completed';
+    } else if (statusStr === 'in-progress') {
+      status = 'active';
+    } else if (statusStr === 'backlog') {
+      status = 'backlog';
+    } else if (['active', 'completed', 'backlog'].includes(statusStr)) {
+      status = statusStr as Task['status'];
+    }
+
+    const priorityStr = typeof t['priority'] === 'string' ? (t['priority'] as string) : undefined;
+    const priority = (priorityStr === 'low' || priorityStr === 'medium' || priorityStr === 'high') ? (priorityStr as Task['priority']) : undefined;
+
+  // Build `tags` array from any incoming legacy label UIDs by resolving against the local tagsList.
+  const rawLabels = t['labels'];
+    let tags: Array<{id?: string; name?: string; color?: string}> | undefined;
+    if (Array.isArray(rawLabels)) {
+      tags = (rawLabels as unknown as string[]).map(id => {
+        const found = this.tagsList.find(l => l.id === String(id));
+        return found ? { id: found.id, name: found.name, color: found.color } : { name: String(id) };
+      });
+    }
+
+    return {
+      id: String(t['id'] ?? t['_id'] ?? ''),
+      title: String(t['title'] ?? t['key'] ?? ''),
+      description: String(t['description'] ?? ''),
+  project: String(t['project'] ?? (t['projectId'] === '66c1f0a0a1c9f0b1d0011001' ? 'time-forge' : t['projectId']) ?? ''),
+      tags: Array.isArray(t['tags']) ? (t['tags'] as unknown as string[]) : [],
+      timeSpent: typeof t['timeSpent'] === 'number' ? (t['timeSpent'] as number) : Number(t['timeSpent'] as unknown) || 0,
+      status,
+      createdAt,
+      startTime,
+      endTime,
+      priority,
+      estimatedTime: typeof t['estimatedTime'] === 'number' ? (t['estimatedTime'] as number) : (Number(t['estimatedTime'] as unknown) || undefined),
+      _meta: {
+        key: t['key'],
+        points: t['points'],
+  // expose resolved label objects under `tags` (name/color) instead of raw UID strings
+  tags,
+        assignees: t['assignees'],
+        columnId: t['columnId'],
+        updatedAt: t['updatedAt']
+      }
+    } as Task & { _meta?: Record<string, unknown> };
+  }
+
+  // Resolve assignee display for templates. Mobile shows one; web shows a comma-separated list.
+  resolveAssigneesDisplay(assignees: unknown): string {
+    if (!Array.isArray(assignees)) return '';
+    const ids = assignees.map(a => String(a));
+    const names = ids.map(id => this.users.find(u => u.id === id)?.name || id);
+    let isMobile = window.innerWidth < 600;
+    try {
+      const platform = Capacitor && typeof Capacitor.getPlatform === 'function' ? Capacitor.getPlatform() : undefined;
+      if (platform === 'android' || platform === 'ios') isMobile = true;
+    } catch {
+      // ignore
+    }
+    if (isMobile) {
+      return names.length ? names[0] : '';
+    }
+    return names.join(', ');
+  }
+
+  // ...existing code...
 
   // Navigation methods
   navigateToReports() {
@@ -383,11 +373,44 @@ export class App implements OnInit {
     } else {
       this.allTasks.push(task);
     }
+    // Try to persist the change to the API; fall back to sessionStorage so changes
+    // survive a reload during the current browser session even if the API is unavailable.
+  // Use TaskApiService to persist and rely on its cache update; fall back to session storage on error
+  const api = inject(TaskApiService);
+  api.persistTask(task).subscribe({ error: () => this.persistTasksToSession() });
   }
 
   onTaskDelete(taskId: string) {
     this.allTasks = this.allTasks.filter(task => task.id !== taskId);
+    // Try delete on API; if it fails, persist local state to sessionStorage so the UI
+    // remains consistent for the current browser session.
+  const api = inject(TaskApiService);
+  api.deleteTask(taskId).subscribe({ error: () => this.persistTasksToSession() });
   }
+
+  // --- Session / API persistence helpers ---
+  private persistTasksToSession() {
+    try {
+      sessionStorage.setItem('tt_tasks', JSON.stringify(this.allTasks || []));
+    } catch {
+      // ignore session storage errors
+    }
+  }
+
+  private restoreSessionTasks() {
+    try {
+      const raw = sessionStorage.getItem('tt_tasks');
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Array<Record<string, unknown>>;
+      if (!Array.isArray(parsed) || parsed.length === 0) return;
+      // Map stored objects back through mapRawToTask so Date strings are normalized
+      this.allTasks = parsed.map(t => this.mapRawToTask(t));
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  // NOTE: task persistence is now handled by `TaskApiService` which keeps a hot cache and updates it on save/delete.
 
   // Header methods
   toggleUserMenu() {
@@ -422,15 +445,14 @@ export class App implements OnInit {
   }
 
   // Footer methods
-  async pingServer() {
+  pingServer() {
     const start = performance.now();
-    try {
-      const response = await fetch('/api/health');
-      this.isConnected = response.status === 200;
+    fromFetch('/api/health').pipe(
+      switchMap(res => of(res.status === 200)),
+      catchError(() => of(false))
+    ).subscribe((connected) => {
+      this.isConnected = connected;
       this.pingTime = Math.round(performance.now() - start);
-    } catch {
-      this.isConnected = false;
-      this.pingTime = Math.round(performance.now() - start);
-    }
+    });
   }
 }
