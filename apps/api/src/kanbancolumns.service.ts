@@ -23,13 +23,13 @@ export class KanbanColumnsService {
           const docs = parsed.map((c: any) => ({ id: c.id || c._id || '', name: c.name || '' }));
           return from(this.colModel.insertMany(docs)).pipe(mapTo(undefined));
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding kanban columns:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding kanban columns:', err);
         return of(undefined);
       })

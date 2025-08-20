@@ -29,13 +29,13 @@ export class UsersService {
 
           return from(this.userModel.insertMany(docs)).pipe(mapTo(undefined));
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding users:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding users:', err);
         return of(undefined);
       })

@@ -27,13 +27,13 @@ export class TagsService {
 
           return from(this.tagModel.insertMany(docs)).pipe(mapTo(undefined));
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding tags:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding tags:', err);
         return of(undefined);
       })

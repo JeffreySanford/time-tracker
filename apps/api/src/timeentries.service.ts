@@ -30,13 +30,13 @@ export class TimeEntriesService {
 
           return from(this.teModel.insertMany(docs)).pipe(mapTo(undefined));
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding time entries:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding time entries:', err);
         return of(undefined);
       })

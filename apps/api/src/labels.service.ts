@@ -27,13 +27,13 @@ export class LabelsService {
 
           return from(this.labelModel.insertMany(docs)).pipe(mapTo(undefined));
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding labels:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding labels:', err);
         return of(undefined);
       })

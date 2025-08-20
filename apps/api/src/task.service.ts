@@ -55,13 +55,13 @@ export class TaskService {
             })
           );
         } catch (err) {
-          // eslint-disable-next-line no-console
+           
           console.error('Failed seeding tasks:', err);
           return of(undefined);
         }
       }),
       catchError(err => {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed seeding tasks:', err);
         return of(undefined);
       })
