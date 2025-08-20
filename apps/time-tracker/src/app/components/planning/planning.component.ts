@@ -28,7 +28,6 @@ interface Column {
   selector: 'app-planning',
   templateUrl: './planning.component.html',
   styleUrls: ['./planning.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class PlanningComponent implements OnChanges, AfterViewInit {

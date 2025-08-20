@@ -24,12 +24,8 @@ export default [
           style: 'kebab-case',
         },
       ],
-      // Enforce traditional module structure, disallow standalone
-      '@angular-eslint/prefer-standalone': [
-        'error', {
-          "disallowOptOut": true
-        }
-      ]
+  // Don't require or prefer standalone components in this repo (Angular 19, module orientation)
+  '@angular-eslint/prefer-standalone': 'off'
     },
   },
   {

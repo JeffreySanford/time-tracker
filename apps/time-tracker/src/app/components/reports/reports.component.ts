@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { from } from 'rxjs';
 import { TaskApiService, TaskDto } from '../../services/task-api.service';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -33,7 +34,6 @@ interface TimeEntry {
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
-    // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class ReportsComponent implements AfterViewInit, OnChanges {
@@ -81,20 +81,10 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
     return (this.billableMinutes / 60) * this.hourlyRate;
   }
 
-  http = inject(TaskApiService);
+  private http = inject(TaskApiService);
+  private snackBar = inject(MatSnackBar);
 
-  constructor() {
-    // customize filter behavior to search date, project name, description and formatted time
-    this.dataSource.filterPredicate = (data: TimeEntry, filter: string) => {
-      const f = filter.trim().toLowerCase();
-      const projectName = this.getProjectName(data.project).toLowerCase();
-      const desc = (data.description || '').toLowerCase();
-      const dateStr = this.formatDate(new Date(data.date)).toLowerCase();
-      const timeStr = this.formatTime(data.timeSpent).toLowerCase();
-      return projectName.includes(f) || desc.includes(f) || dateStr.includes(f) || timeStr.includes(f);
-    };
-  }
-
+  
   get filteredTimeEntries(): TimeEntry[] {
     const days = parseInt(this.reportPeriod);
     const cutoffDate = new Date();
@@ -406,11 +396,15 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
       const previous = { ...this.tasks[idx] };
       this.tasks[idx] = { ...edited } as Task;
       // persist to backend
-  this.http.persistTask(edited as TaskDto).subscribe({
+      this.http.persistTask(edited as TaskDto).subscribe({
+        next: () => {
+          this.snackBar.open('Task saved', 'Close', { duration: 3000 });
+        },
         error: (err) => {
           // revert optimistic update on error
           this.tasks[idx] = previous;
           console.error('Failed to save task edits', err);
+          this.snackBar.open('Failed to save task edits', 'Close', { duration: 5000 });
         }
       });
     } else {
@@ -422,11 +416,13 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
             const i = this.tasks.findIndex(t => t.id === edited.id);
             if (i >= 0) this.tasks[i] = { ...res } as Task;
           }
+          this.snackBar.open('Task created', 'Close', { duration: 3000 });
         },
         error: (err) => {
           // remove the optimistic add
           this.tasks = (this.tasks || []).filter(t => t.id !== edited.id);
           console.error('Failed to create task', err);
+          this.snackBar.open('Failed to create task', 'Close', { duration: 5000 });
         }
       });
     }

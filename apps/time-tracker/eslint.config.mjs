@@ -24,6 +24,8 @@ export default [
           style: 'kebab-case',
         },
       ],
+  // Disable prefer-standalone rule for this repo (we use module orientation)
+  '@angular-eslint/prefer-standalone': 'off',
     },
   },
   {

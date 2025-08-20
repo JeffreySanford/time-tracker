@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -16,7 +16,7 @@ export class TimeWorkedApiService {
   private subject = new BehaviorSubject<TimeWorkedSessionDto | null>(null);
   readonly session$ = this.subject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   start(userId = 'demo-user'): Observable<TimeWorkedSessionDto | void> {
     return this.http.post<TimeWorkedSessionDto>('/api/timeworked/start', { userId }).pipe(

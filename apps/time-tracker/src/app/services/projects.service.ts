@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,13 +10,13 @@ export class ProjectsService {
   private subject = new BehaviorSubject<ProjectDto[] | null>(null);
   readonly projects$ = this.subject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   // Trigger a fresh load from the API and update the hot stream
   refresh(): Observable<ProjectDto[] | null> {
     return this.http.get<ProjectDto[]>('/api/projects').pipe(
       tap(data => this.subject.next(data)),
-      catchError(err => {
+      catchError(() => {
         this.subject.next(null);
         return of(null);
       })

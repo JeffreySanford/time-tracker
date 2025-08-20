@@ -30,6 +30,12 @@ export default [
     },
   },
   {
+    files: ['**/*.ts'],
+    rules: {
+      '@angular-eslint/prefer-standalone': 'off'
+    }
+  },
+  {
     files: [
       '**/*.ts',
       '**/*.tsx',

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -19,14 +19,14 @@ export class TaskApiService {
   private subject = new BehaviorSubject<TaskDto[] | null>(null);
   readonly tasks$ = this.subject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   // Refresh from the API and update the hot stream. Optionally filter by project on the server.
   refresh(projectId?: string): Observable<TaskDto[] | null> {
     const url = projectId ? `/api/tasks/project/${encodeURIComponent(projectId)}` : '/api/tasks';
     return this.http.get<TaskDto[]>(url).pipe(
       tap(data => this.subject.next(data)),
-      catchError(err => {
+      catchError(() => {
         this.subject.next(null);
         return of(null);
       })

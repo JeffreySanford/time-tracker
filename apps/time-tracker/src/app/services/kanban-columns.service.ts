@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,12 +10,12 @@ export class KanbanColumnsService {
   private subject = new BehaviorSubject<KanbanColumnDto[] | null>(null);
   readonly columns$ = this.subject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   refresh(): Observable<KanbanColumnDto[] | null> {
     return this.http.get<KanbanColumnDto[]>('/api/kanban-columns').pipe(
       tap(data => this.subject.next(data)),
-      catchError(err => {
+      catchError(() => {
         this.subject.next(null);
         return of(null);
       })

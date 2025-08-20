@@ -31,11 +31,12 @@ interface Task {
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
 export class App implements OnInit {
   title = 'Time Forge';
+  private api = inject(TaskApiService);
+  private snackBar = inject(MatSnackBar);
   
   // Navigation state
   currentView: 'reports' | 'home' | 'planning' = 'home';
@@ -109,15 +110,14 @@ export class App implements OnInit {
   this.selectedProject = this.projects.find(p => p.id === 'time-forge') || this.projects[0];
   // Kick off load of tasks (populate TaskApiService hot cache) and then restore any
   // in-session edits from sessionStorage so UI changes survive a reload in the same session.
-  const api = inject(TaskApiService);
   // Populate the server cache and then subscribe to its hot stream so the app stays in sync
-  api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+  this.api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
     complete: () => this.restoreSessionTasks(),
     error: () => this.restoreSessionTasks()
   });
 
   // Keep `allTasks` in sync with TaskApiService's hot cache
-  api.tasks$.subscribe((list) => {
+  this.api.tasks$.subscribe((list: import('./services/task-api.service').TaskDto[] | null) => {
     if (Array.isArray(list)) {
       this.allTasks = (list as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
     }
@@ -144,7 +144,7 @@ export class App implements OnInit {
     }
   }
 
-  private snackBar = inject(MatSnackBar);
+  // snackBar provided via constructor injection
 
   private loadTasksFromJson(): void {
     // Convert imported JSON (with ISO strings) to Task objects with Date types
@@ -158,9 +158,9 @@ export class App implements OnInit {
   }
 
   private tryLoadTasks(): Observable<void> {
-    const api = inject(TaskApiService);
+  // use constructor-injected TaskApiService
     // Subscribe to the hot tasks stream; if it's empty, trigger a refresh which will update the stream
-    return api.fetchTasks(this.selectedProject?.id).pipe(
+  return this.api.fetchTasks(this.selectedProject?.id).pipe(
       take(1),
       catchError(() => {
         this.loadTasksFromJson();
@@ -171,9 +171,9 @@ export class App implements OnInit {
           this.allTasks = (tasks as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
         } else {
           // If the hot stream has no value yet, trigger a refresh and subscribe once
-          api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
-            next: (resp) => { if (Array.isArray(resp)) this.allTasks = (resp as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t)); },
-            error: () => this.loadTasksFromJson()
+      this.api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+        next: (resp: unknown) => { if (Array.isArray(resp)) this.allTasks = (resp as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t)); },
+        error: () => this.loadTasksFromJson()
           });
         }
       }),
@@ -376,16 +376,14 @@ export class App implements OnInit {
     // Try to persist the change to the API; fall back to sessionStorage so changes
     // survive a reload during the current browser session even if the API is unavailable.
   // Use TaskApiService to persist and rely on its cache update; fall back to session storage on error
-  const api = inject(TaskApiService);
-  api.persistTask(task).subscribe({ error: () => this.persistTasksToSession() });
+  this.api.persistTask(task).subscribe({ error: () => this.persistTasksToSession() });
   }
 
   onTaskDelete(taskId: string) {
     this.allTasks = this.allTasks.filter(task => task.id !== taskId);
     // Try delete on API; if it fails, persist local state to sessionStorage so the UI
     // remains consistent for the current browser session.
-  const api = inject(TaskApiService);
-  api.deleteTask(taskId).subscribe({ error: () => this.persistTasksToSession() });
+  this.api.deleteTask(taskId).subscribe({ error: () => this.persistTasksToSession() });
   }
 
   // --- Session / API persistence helpers ---

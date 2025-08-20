@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TimeWorkedApiService, TimeWorkedSessionDto } from './services/timeworked-api.service';
 import { Project, ProjectTag } from './models/project.model';
@@ -30,10 +30,9 @@ interface Task {
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })
-export class HomeComponent implements OnDestroy, OnChanges {
+export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   // Inputs from parent
   @Input() projects: Project[] = [];
   @Input() allTasks: Task[] = [];
@@ -107,14 +106,16 @@ export class HomeComponent implements OnDestroy, OnChanges {
   stopSubject = new Subject<void>();
   subscriptions: Subscription[] = [];
 
-  http = inject(HttpClient);
-  timeWorked = inject(TimeWorkedApiService);
+  private http = inject(HttpClient);
+  private timeWorked = inject(TimeWorkedApiService);
 
   constructor() {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     this.todayString = today.toLocaleDateString(undefined, options);
+  }
 
+  ngOnInit() {
     this.subscriptions.push(
       this.startSubject.subscribe(() => {
         this.timerActive = true;
@@ -176,6 +177,8 @@ export class HomeComponent implements OnDestroy, OnChanges {
       })
     );
   }
+
+  // (initialization moved into the injected constructor)
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['allTasks'] && this.allTasks) {

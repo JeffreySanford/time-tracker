@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,12 +10,12 @@ export class TimeEntriesService {
   private subject = new BehaviorSubject<TimeEntryDto[] | null>(null);
   readonly timeEntries$ = this.subject.asObservable();
 
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   refresh(): Observable<TimeEntryDto[] | null> {
     return this.http.get<TimeEntryDto[]>('/api/time-entries').pipe(
       tap(data => this.subject.next(data)),
-      catchError(err => {
+      catchError(() => {
         this.subject.next(null);
         return of(null);
       })
