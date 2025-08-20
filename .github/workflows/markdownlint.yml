@@ -15,5 +15,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Run markdownlint
-        run: npx markdownlint-cli2 "**/*.md" -c .markdownlint.json
+      - name: Run markdownlint (tracked files only)
+        run: |
+          git ls-files -z -- "*.md" | xargs -0 -n 50 npx markdownlint-cli2 -c .markdownlint.json
