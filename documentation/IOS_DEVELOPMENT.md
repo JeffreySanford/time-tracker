@@ -27,7 +27,7 @@ This document outlines how to extend the Time Tracker application to iOS and dis
 
 ### Prerequisites
 
-**⚠️ IMPORTANT: iOS development requires macOS**
+#### ⚠️ IMPORTANT: iOS development requires macOS
 
 #### For macOS Users
 

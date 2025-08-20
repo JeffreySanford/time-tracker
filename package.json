@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-  "start:frontend": "nx run time-forge:serve",
-  "start:frontend:android": "nx run time-forge:serve --host 0.0.0.0",
-  "start:backend": "nx run api:serve",
-  "start:backend:dev": "cross-env NODE_ENV=development nx run api:serve",
-  "start:all": "npx nx --version && concurrently --prefix-colors \"cyan,magenta\" --prefix \"[{name}]\" --names \"frontend,backend\" \"npm run start:frontend\" \"npm run start:backend\"",
-  "start:all:dev": "npx nx --version && cross-env NODE_ENV=development concurrently --prefix-colors \"cyan,magenta\" --prefix \"[{name}]\" --names \"frontend,backend\" \"npm run start:frontend\" \"npm run start:backend:dev\"",
-  "start:all:android:dev": "npx nx --version && concurrently --prefix-colors \"cyan,magenta,green\" --prefix \"[{name}]\" --names \"frontend,backend,android\" \"npm run start:frontend:android\" \"npm run start:backend:dev\" \"node scripts/android-dev.js\"",
+    "prepare": "husky install .husky",
+    "start:frontend": "nx run time-forge:serve",
+    "start:frontend:android": "nx run time-forge:serve --host 0.0.0.0",
+    "start:backend": "nx run api:serve",
+    "start:backend:dev": "cross-env NODE_ENV=development nx run api:serve",
+    "start:all": "npx nx --version && concurrently --prefix-colors \"cyan,magenta\" --prefix \"[{name}]\" --names \"frontend,backend\" \"npm run start:frontend\" \"npm run start:backend\"",
+    "start:all:dev": "npx nx --version && cross-env NODE_ENV=development concurrently --prefix-colors \"cyan,magenta\" --prefix \"[{name}]\" --names \"frontend,backend\" \"npm run start:frontend\" \"npm run start:backend:dev\"",
+    "start:all:android:dev": "npx nx --version && concurrently --prefix-colors \"cyan,magenta,green\" --prefix \"[{name}]\" --names \"frontend,backend,android\" \"npm run start:frontend:android\" \"npm run start:backend:dev\" \"node scripts/android-dev.js\"",
     "build:android": "nx run time-forge:build && npx cap sync android",
     "build:frontend": "nx run time-forge:build",
     "build:backend": "nx run api:build",
@@ -54,6 +55,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "husky": "^8.0.0",
     "@analogjs/vite-plugin-angular": "~1.19.1",
     "@analogjs/vitest-angular": "~1.19.1",
     "@angular-devkit/core": "~20.1.0",
@@ -97,6 +99,6 @@
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.29.0",
     "vite": "^6.0.0",
-  "vitest": "^3.0.0"
+    "vitest": "^3.0.0"
   }
 }

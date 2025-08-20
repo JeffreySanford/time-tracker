@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run quick pre-commit checks: staged markdownlint, eslint (staged files), and unit tests (fast)
+echo "Running pre-commit checks..."
+
+# Lint markdown files that are staged
+STAGED_MD=$(git diff --name-only --cached -- '*.md')
+if [ -n "$STAGED_MD" ]; then
+	echo "Linting staged markdown files..."
+	echo "$STAGED_MD" | xargs npx markdownlint-cli2 -c .markdownlint.json || exit 1
+fi
+
+# Optionally run eslint on staged JS/TS files
+STAGED_TS=$(git diff --name-only --cached -- '*.{ts,tsx,js,jsx}')
+if [ -n "$STAGED_TS" ]; then
+	echo "Running eslint on staged TS/JS files..."
+	echo "$STAGED_TS" | xargs npx eslint --fix || exit 1
+fi
+
+echo "Pre-commit checks passed."

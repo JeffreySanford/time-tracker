@@ -2,26 +2,12 @@
 
 ## Can I Test iOS Without Paying Apple?
 
-**YES!** You can start iOS development completely free:
-
-### FREE Options (Available Now)
-- ✅ **iOS Simulator**: Test in Xcode simulator (unlimited, free)
-- ✅ **Personal Device**: 7-day installs with free Apple ID
-- ✅ **Local Development**: Build and test locally on a mac
-
-### Steps to Test Right Now:
-1. Open Xcode (comes free with macOS)
-2. Run: `npm run ios:build`
-# iOS Development - Quick Start Guide
-
-## Can I Test iOS Without Paying Apple?
-
-**YES!** You can start iOS development completely free:
+Yes — you can start iOS development completely free.
 
 ### FREE Options (Available Now)
 
 - ✅ **iOS Simulator**: Test in Xcode simulator (unlimited, free)
-- ✅ **Personal Device**: 7-day installs with free Apple ID
+- ✅ **Personal Device**: 7-day installs with a free Apple ID
 - ✅ **Local Development**: Build and test locally on a Mac
 
 ### Steps to Test Right Now
@@ -44,10 +30,9 @@
 
 ## Current Project Status
 
-Your Capacitor iOS setup is ready to go - no additional configuration needed!
+Your Capacitor iOS setup is ready to go — no additional configuration needed.
 
 ```bash
 # Test immediately in simulator:
 npm run ios:build
 ```
-
