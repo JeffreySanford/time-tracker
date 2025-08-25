@@ -26,6 +26,10 @@ import { HomeComponent } from './home.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ReportsComponent } from './components/reports/reports.component';
+import { CommitAnalyticsComponent } from './components/commit-analytics/commit-analytics.component';
+import { CommitHeatmapComponent } from './components/commit-heatmap/commit-heatmap.component';
+import { CommitCategoryBarComponent } from './components/commit-category-bar/commit-category-bar.component';
+import { CommitSessionsTimelineComponent } from './components/commit-sessions-timeline/commit-sessions-timeline.component';
 import { PlanningComponent } from './components/planning/planning.component';
 import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-edit-drawer.component';
 
@@ -36,7 +40,11 @@ import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-e
     HeaderComponent,
     FooterComponent,
     ReportsComponent,
-    PlanningComponent
+  PlanningComponent,
+  CommitAnalyticsComponent,
+  CommitHeatmapComponent,
+  CommitCategoryBarComponent,
+  CommitSessionsTimelineComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +65,10 @@ import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-e
     MatTooltipModule,
     MatSnackBarModule,
     DragDropModule,
-    RouterModule.forRoot([{ path: '', component: HomeComponent }]),
+    RouterModule.forRoot([
+      { path: '', component: HomeComponent },
+      { path: 'commit-analytics', component: CommitAnalyticsComponent }
+    ]),
     // register standalone component
     QuickEditDrawerComponent
   ],

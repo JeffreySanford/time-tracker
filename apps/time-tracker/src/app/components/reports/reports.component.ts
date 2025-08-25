@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { from } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { TaskApiService, TaskDto } from '../../services/task-api.service';
+import { CommitAnalyticsService, CommitDay, CategorySummary, CommitSessionDto } from '../../services/commit-analytics.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import timeEntriesData from '../../../assets/timeEntries.json';
 import { MatTableDataSource } from '@angular/material/table';
@@ -36,7 +37,7 @@ interface TimeEntry {
   styleUrls: ['./reports.component.scss'],
   standalone: false
 })
-export class ReportsComponent implements AfterViewInit, OnChanges {
+export class ReportsComponent implements AfterViewInit, OnChanges, OnInit {
   @Input() projects: Project[] = [];
   @Input() tasks: Task[] = [];
   @Input() selectedProject!: Project; // Will always be provided by parent
@@ -44,8 +45,8 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
   @Output() taskChange = new EventEmitter<Task>();
 
   // Material table wiring
-  displayedColumns: string[] = ['date', 'project', 'description', 'timeSpent', 'status'];
-  dataSource = new MatTableDataSource<TimeEntry>([]);
+  displayedColumns: string[] = ['date', 'source', 'project', 'description', 'timeSpent', 'status'];
+  dataSource = new MatTableDataSource<TimeEntry & { source?: string }>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -61,14 +62,17 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
   showProjectSelector = false;
   // Billing
   hourlyRate = 100; // default rate (USD per hour) — can be edited in UI
+  public projectRates: Record<string, number> = {};
 
   get billableMinutes(): number {
-    // Sum minutes of entries marked billable within the filtered entries
-    // Note: timeEntries.json uses minutes; our internal entries use seconds
     const raw = this.rawTimeEntries as Array<Record<string, unknown>>;
     const minutes = this.filteredTimeEntries.reduce((sum, e) => {
       const r = raw.find(r => String(r['id'] ?? '') === e.id);
-      if (r && (r['billable'] === true)) {
+      // Derive project id for raw or task
+      const projectId = e.project;
+      const proj = this.projects.find(p => p.id === projectId);
+      const projectBillable = proj?.isBillable !== false; // default true if not specified
+      if (r && r['billable'] === true && projectBillable) {
         const m = typeof r['minutes'] === 'number' ? (r['minutes'] as number) : Number(r['minutes'] ?? 0);
         return sum + (isFinite(m) ? m : 0);
       }
@@ -82,6 +86,15 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
   }
 
   private http = inject(TaskApiService);
+  private commitSvc = inject(CommitAnalyticsService);
+
+  // Commit analytics observables (explicitly typed so Angular template type checking resolves child component @Input types)
+  public commitDays$: Observable<CommitDay[] | null> = this.commitSvc.days$;
+  public commitCategories$: Observable<CategorySummary[] | null> = this.commitSvc.categories$;
+  public commitSessions$ = this.commitSvc.sessions$; // sessions component currently accepts generic shape
+  public commitAvailable$ = this.commitSvc.available$;
+  private commitDaysSnapshot: CommitDay[] = [];
+  private commitSessionsSnapshot: CommitSessionDto[] = [];
   private snackBar = inject(MatSnackBar);
 
   
@@ -106,6 +119,17 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
     this.dataSource.sort = this.sort;
   }
 
+  ngOnInit(): void {
+    // load stored project rates
+    try { const saved = localStorage.getItem('projectHourlyRates'); if (saved) this.projectRates = JSON.parse(saved); } catch { /* ignore corrupt storage */ }
+    if (this.selectedProject?.id && this.projectRates[this.selectedProject.id]) this.hourlyRate = this.projectRates[this.selectedProject.id];
+    // initial pull of git commit analytics summary
+    this.refreshCommits();
+  // snapshot streams for synchronous weekly calculations
+  this.commitDays$.subscribe(d => { this.commitDaysSnapshot = d || []; this.updateTable(); });
+  this.commitSessions$.subscribe(s => { this.commitSessionsSnapshot = s || []; this.updateTable(); });
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     // update the table whenever inputs change
     if (changes['tasks'] || changes['reportPeriod'] || changes['selectedProject']) {
@@ -114,9 +138,39 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
   }
 
   private updateTable() {
-    const rows = this.filteredTimeEntries.map(e => ({ ...e }));
-    this.dataSource.data = rows;
+    const manualRows: Array<TimeEntry & { source: string }> = this.filteredTimeEntries.map(e => ({ ...e, source: 'Manual' }));
+    // Map commit sessions into pseudo-entries (weekly scope handled by filter later if we limit)
+    const sessionRows: Array<TimeEntry & { source: string }> = this.commitSessionsSnapshot.map(s => {
+      const tasks = s.tasksSummary ? Object.keys(s.tasksSummary) : [];
+      const taskPart = tasks.length ? tasks.slice(0,4).join(', ') + (tasks.length>4?'…':'') : `${s.commitCount} commit${s.commitCount===1?'':'s'}`;
+      return {
+        id: s.id,
+        date: new Date(s.startTs),
+        project: this.selectedProject ? this.selectedProject.id : '',
+        timeSpent: (s.totalEstimatedMinutes || 0) * 60,
+        description: taskPart,
+        source: 'Git'
+      };
+    });
+    const rows = [...manualRows, ...sessionRows];
+    this.dataSource.data = rows.sort((a,b) => b.date.getTime() - a.date.getTime());
     if (this.paginator) this.paginator.firstPage();
+  }
+
+  public refreshCommits(): void {
+  const days = parseInt(this.reportPeriod, 10) || 30;
+  const windowDays = Math.max(days, 7); // always fetch at least 7 days so weekly summary can compute
+    // Dev convenience: trigger local ingestion first (non-blocking) then refresh summary & sessions
+  this.commitSvc.ingestLocal(windowDays).subscribe({
+      next: () => {
+    this.commitSvc.refresh(windowDays).subscribe();
+    this.commitSvc.loadSessions(Math.min(windowDays, 30)).subscribe();
+      },
+      error: () => {
+    this.commitSvc.refresh(windowDays).subscribe();
+    this.commitSvc.loadSessions(Math.min(windowDays, 30)).subscribe();
+      }
+    });
   }
 
   applyFilter(event: Event) {
@@ -311,6 +365,7 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
 
   selectProject(project: Project) {
     this.selectedProject = project;
+    if (project && this.projectRates[project.id]) this.hourlyRate = this.projectRates[project.id];
     this.showProjectSelector = false;
     this.projectChange.emit(project);
   }
@@ -414,7 +469,7 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
         next: (res: TaskDto | void) => {
           if (res && res.id) {
             const i = this.tasks.findIndex(t => t.id === edited.id);
-            if (i >= 0) this.tasks[i] = { ...res } as Task;
+            if (i >= 0) this.tasks[i] = { ...(res as TaskDto) } as Task;
           }
           this.snackBar.open('Task created', 'Close', { duration: 3000 });
         },
@@ -476,5 +531,120 @@ export class ReportsComponent implements AfterViewInit, OnChanges {
     });
 
     return lines.join('\n') || 'No entries';
+  }
+
+  // Weekly summary metrics (always 7-day window ending today)
+  private get weekStartDate(): Date {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() - 6); // include today + previous 6 days
+    return d;
+  }
+
+  get weeklyCommitMinutes(): number {
+    const start = this.weekStartDate.getTime();
+    return this.commitDaysSnapshot
+      .filter(d => {
+        const dt = new Date(d.date + 'T00:00:00');
+        return dt.getTime() >= start;
+      })
+      .reduce((s,c) => s + (c.minutes || 0), 0);
+  }
+
+  get weeklyManualSeconds(): number {
+    const start = this.weekStartDate.getTime();
+    return this.allTimeEntries
+      .filter(e => e.date.getTime() >= start)
+      .filter(e => !this.selectedProject || e.project === this.selectedProject.id)
+      .reduce((s,e) => s + e.timeSpent, 0);
+  }
+
+  get weeklyCombinedMinutes(): number {
+    return Math.round(this.weeklyManualSeconds / 60) + this.weeklyCommitMinutes;
+  }
+
+  get weeklyAverageMinutesPerDay(): number {
+    return this.weeklyCombinedMinutes / 7;
+  }
+
+  get weeklySessionsCount(): number {
+    const start = this.weekStartDate.getTime();
+    return this.commitSessionsSnapshot.filter(s => new Date(s.startTs).getTime() >= start).length;
+  }
+
+  get weeklyManualMinutesRounded(): number {
+    return Math.round(this.weeklyManualSeconds / 60);
+  }
+
+  get weeklyAverageMinutesRounded(): number {
+    return Math.round(this.weeklyAverageMinutesPerDay);
+  }
+
+  // --- Weekly Billing Metrics ---
+  get weeklyBillableMinutes(): number {
+    const start = this.weekStartDate.getTime();
+    const raws = (this.rawTimeEntries || []) as Array<Record<string, unknown>>;
+    let total = 0;
+    raws.forEach(r => {
+      if (r['billable'] !== true) return;
+      const startStr = typeof r['start'] === 'string' ? r['start'] as string : '';
+      if (!startStr) return;
+      const dt = new Date(startStr);
+      if (dt.getTime() < start) return;
+      let project = String(r['project'] ?? '');
+      const taskId = String(r['taskId'] ?? '');
+      if (taskId) {
+        const t = (this.tasks || []).find(tt => tt.id === taskId);
+        if (t) project = t.project;
+      }
+      if (this.selectedProject && this.selectedProject.id && project !== this.selectedProject.id) return;
+      const proj = this.projects.find(p => p.id === project);
+      if (proj && proj.isBillable === false) return;
+      const minutes = typeof r['minutes'] === 'number' ? (r['minutes'] as number) : Number(r['minutes'] ?? 0);
+      if (isFinite(minutes)) total += minutes;
+    });
+    return total; // already minutes
+  }
+
+  get weeklyBillableAmount(): number {
+    return (this.weeklyBillableMinutes / 60) * this.hourlyRate;
+  }
+
+  get weeklyNonBillableMinutes(): number {
+    const non = this.weeklyCombinedMinutes - this.weeklyBillableMinutes;
+    return non < 0 ? 0 : non;
+  }
+
+  get weeklyBillablePercent(): number {
+    return this.weeklyCombinedMinutes > 0 ? (this.weeklyBillableMinutes / this.weeklyCombinedMinutes) * 100 : 0;
+  }
+
+  get weeklyEffectiveRate(): number {
+    // total time includes billable + nonbillable; effective rate = earned / total hours
+    const totalHours = this.weeklyCombinedMinutes / 60;
+    return totalHours > 0 ? this.weeklyBillableAmount / totalHours : 0;
+  }
+
+  formatMinutesCompact(min: number): string {
+    if (min <= 0) return '0m';
+    const rounded = Math.round(min); // ensure we don't show repeating fractions
+    const h = Math.floor(rounded / 60);
+    const m = rounded % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  formatCurrency(amount: number): string { return amount.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }); }
+
+  // Persist hourly rate per project when changed from UI
+  onRateChanged() {
+    if (this.selectedProject?.id) {
+      this.projectRates[this.selectedProject.id] = this.hourlyRate;
+      try { localStorage.setItem('projectHourlyRates', JSON.stringify(this.projectRates)); } catch { /* storage write failed */ }
+    }
+  }
+
+  getProjectBillable(id: string): boolean {
+    const proj = this.projects.find(p => p.id === id);
+    return proj ? proj.isBillable !== false : true;
   }
 }

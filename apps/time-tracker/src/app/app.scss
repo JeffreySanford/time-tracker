@@ -194,18 +194,11 @@
   }
 }
 
-// Prevent text selection during swipes
-.app-container {
+// Prevent accidental selection only on explicit drag zones instead of whole app
+// .app-container global no-select removed to allow copy/paste
+.drag-zone, .swipe-region {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  
-  // Re-enable text selection for interactive elements
-  input, textarea, button {
-    -webkit-user-select: auto;
-    -moz-user-select: auto;
-    -ms-user-select: auto;
-    user-select: auto;
-  }
 }

@@ -30,6 +30,7 @@ export class Project {
   progress?: number;
 
   @Prop({ type: [Object], default: [] })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subprojects?: any[];
 
   @Prop({ type: [String], default: [] })
@@ -37,6 +38,12 @@ export class Project {
 
   @Prop({ type: [String], default: [] })
   notes?: string[];
+
+  @Prop({ default: true })
+  isCodeProject?: boolean;
+
+  @Prop({ default: true })
+  isBillable?: boolean; // new billing flag
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

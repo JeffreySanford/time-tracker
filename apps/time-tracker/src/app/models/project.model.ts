@@ -17,4 +17,6 @@ export interface Project {
   subprojects?: Project[];
   features?: string[];
   notes?: string[];
+  isCodeProject?: boolean; // controls whether to show Git analytics in reports
+  isBillable?: boolean; // new flag: include time in billing metrics
 }

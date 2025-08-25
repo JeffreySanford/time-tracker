@@ -314,6 +314,31 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
     this.taskDelete.emit(taskId);
   }
 
+  toggleCodeFlag(): void {
+    if (!this.selectedProject?.id) return;
+    const next = !(this.selectedProject.isCodeProject !== false);
+    this.http.patch(`/projects/${this.selectedProject.id}`, { isCodeProject: next }).subscribe({
+      next: () => {
+        this.selectedProject = { ...this.selectedProject, isCodeProject: next } as Project;
+        this.projectChange.emit(this.selectedProject);
+      },
+      error: (err) => console.error('Failed to update project code flag', err)
+    });
+  }
+
+  toggleBillableFlag(): void {
+    if (!this.selectedProject?.id) return;
+    const current = !(this.selectedProject.isBillable === false);
+    const next = !current; // invert
+    this.http.patch(`/projects/${this.selectedProject.id}`, { isBillable: next }).subscribe({
+      next: () => {
+        this.selectedProject = { ...this.selectedProject, isBillable: next } as Project;
+        this.projectChange.emit(this.selectedProject);
+      },
+      error: (err) => console.error('Failed to update project billable flag', err)
+    });
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     if (this.timerInterval !== null) {

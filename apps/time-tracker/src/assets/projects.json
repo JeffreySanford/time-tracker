@@ -7,7 +7,9 @@
     "description": "Advanced time tracking application",
     "category": "product",
     "owner": "internal",
-    "progress": 0
+  "progress": 0,
+  "isCodeProject": true,
+  "isBillable": true
   },
   {
     "id": "portfolio",
@@ -17,7 +19,8 @@
     "description": "Personal portfolio and showcase projects",
     "category": "personal",
     "owner": "internal",
-    "progress": 0
+    "progress": 0,
+    "isBillable": false
   },
   {
     "id": "forge-board",
@@ -27,7 +30,9 @@
     "description": "Kanban/board demo project",
     "category": "demo",
     "owner": "internal",
-    "progress": 0
+  "progress": 0,
+  "isCodeProject": true,
+  "isBillable": false
   },
   {
     "id": "true-north",
@@ -37,7 +42,9 @@
     "description": "True North family of products",
     "category": "client",
     "owner": "sonja",
-    "progress": 0,
+  "progress": 0,
+  "isCodeProject": false,
+  "isBillable": true,
     "subprojects": [
       {
         "id": "true-north-insights",
@@ -45,7 +52,9 @@
         "color": "#059669",
         "bgColor": "rgba(5, 150, 105, 0.1)",
         "description": "Analytics and insights platform (10% complete)",
-        "progress": 10,
+  "progress": 10,
+  "isCodeProject": true,
+  "isBillable": true,
         "features": ["Forge Board", "Realtime Security", "Auditing Controls"]
       },
       {
@@ -54,7 +63,9 @@
         "color": "#ef4444",
         "bgColor": "rgba(239, 68, 68, 0.1)",
         "description": "Blockchain-backed apparel store (20% complete)",
-        "progress": 20
+  "progress": 20,
+  "isCodeProject": true,
+  "isBillable": true
       }
     ]
   },
@@ -66,7 +77,9 @@
     "description": "SharePoint development and documentation for US Army Corps of Engineers - September intensive",
     "category": "gov",
     "owner": "contract",
-    "progress": 0,
+  "progress": 0,
+  "isCodeProject": false,
+  "isBillable": true,
     "notes": ["PowerOps","Cloud Deployment","Data Visualization","Defense Intelligence"]
   },
   {
@@ -77,7 +90,9 @@
     "description": "Buffalo City Picker app — needs full app structure and dataset access for Squarespace",
     "category": "local-client",
     "owner": "local",
-    "progress": 0
+  "progress": 0,
+  "isCodeProject": false,
+  "isBillable": true
   },
   {
     "id": "make-space",
@@ -87,10 +102,12 @@
     "description": "Application project for Sonja and Craig Thierer; pitch deck from Chelsea pending",
     "category": "local-client",
     "owner": "sonja",
-    "progress": 0,
+  "progress": 0,
+  "isCodeProject": false,
+  "isBillable": true,
     "subprojects": [
-      { "id": "make-space-ux", "name": "Make Space - UX", "progress": 0 },
-      { "id": "make-space-backend", "name": "Make Space - Backend", "progress": 0 }
+      { "id": "make-space-ux", "name": "Make Space - UX", "progress": 0, "isBillable": true },
+      { "id": "make-space-backend", "name": "Make Space - Backend", "progress": 0, "isBillable": true }
     ]
   },
   {
@@ -101,6 +118,8 @@
     "description": "Local meetup: kids, young adults, adults, and seniors — computer basics, programming, AI, and support",
     "category": "community",
     "owner": "local",
-    "progress": 0
+  "progress": 0,
+  "isCodeProject": false,
+  "isBillable": false
   }
 ]

@@ -44,4 +44,39 @@ export class ProjectsService {
   findById(id: string): Observable<any> {
     return from(this.projectModel.findOne({ id }).lean().exec());
   }
+
+  updateIsCodeProject(id: string, isCodeProject: boolean | undefined) {
+    if (typeof isCodeProject !== 'boolean') return of({ updated: 0 });
+    return from(this.projectModel.findOneAndUpdate({ id }, { isCodeProject }, { new: true }).exec()).pipe(
+      mergeMap(updated => {
+        if (!updated) return of({ updated: 0 });
+        if (Array.isArray(updated.subprojects) && updated.subprojects.length) {
+          const subs = updated.subprojects.map((s: any) => ({ ...s, isCodeProject: s.isCodeProject ?? isCodeProject }));
+          return from(this.projectModel.updateOne({ id }, { subprojects: subs }).exec()).pipe(mapTo({ updated: 1, propagated: subs.length }));
+        }
+        return of({ updated: 1 });
+      })
+    );
+  }
+
+  updateProjectFlags(id: string, flags: { isCodeProject?: boolean; isBillable?: boolean }) {
+    const update: any = {};
+    if (typeof flags.isCodeProject === 'boolean') update.isCodeProject = flags.isCodeProject;
+    if (typeof flags.isBillable === 'boolean') update.isBillable = flags.isBillable;
+    if (Object.keys(update).length === 0) return of({ updated: 0 });
+    return from(this.projectModel.findOneAndUpdate({ id }, update, { new: true }).exec()).pipe(
+      mergeMap(updated => {
+        if (!updated) return of({ updated: 0 });
+        if (Array.isArray(updated.subprojects) && updated.subprojects.length) {
+          const subs = updated.subprojects.map((s: any) => ({
+            ...s,
+            isCodeProject: s.isCodeProject ?? update.isCodeProject,
+            isBillable: s.isBillable ?? update.isBillable
+          }));
+          return from(this.projectModel.updateOne({ id }, { subprojects: subs }).exec()).pipe(mapTo({ updated: 1, propagated: subs.length }));
+        }
+        return of({ updated: 1 });
+      })
+    );
+  }
 }

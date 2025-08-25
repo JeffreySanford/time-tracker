@@ -43,54 +43,155 @@
     </div>
   </div>
 
-  <!-- Summary Cards -->
-  <!-- Table Controls -->
-  <div class="table-controls">
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Search by project, description or date" />
-    </mat-form-field>
+  <!-- Inline Git Commit Analytics Summary -->
+  <div class="commit-analytics-inline" *ngIf="!selectedProject || selectedProject.isCodeProject !== false">
+    <div class="commit-analytics-header">
+      <h2>Git Activity (30d)</h2>
+      <div class="actions">
+        <button mat-stroked-button color="primary" (click)="refreshCommits()">Refresh</button>
+        <a mat-button routerLink="/commit-analytics">Full View →</a>
+      </div>
+    </div>
+    <div class="commit-widgets">
+      <ng-container *ngIf="(commitAvailable$ | async) as gitOk">
+        <div *ngIf="gitOk; else gitUnavailable">
+          <div class="heatmap-wrapper" *ngIf="(commitDays$ | async) as days">
+            <!-- $any() cast ensures template type checker doesn't flag unknown from async pipe under strict mode -->
+            <app-commit-heatmap [days]="$any(days)"></app-commit-heatmap>
+          </div>
+          <div class="categories-wrapper" *ngIf="(commitCategories$ | async) as cats">
+            <app-commit-category-bar [categories]="$any(cats)"></app-commit-category-bar>
+          </div>
+        </div>
+        <ng-template #gitUnavailable>
+          <div class="git-unavailable-msg">
+            Git analytics unavailable (backend not running or no data ingested yet).
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
   </div>
 
-  <!-- Material Table -->
-  <div class="reports-table">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+  <!-- Summary Cards -->
+  <!-- Weekly Summary Block -->
+  <div class="weekly-summary glass-card">
+    <div class="weekly-header">
+      <h2>This Week</h2>
+      <span class="daterange">Last 7 days</span>
+    </div>
+    <div class="weekly-metrics">
+      <div class="metric">
+        <div class="label">Git (est)</div>
+        <div class="value">{{ formatMinutesCompact(weeklyCommitMinutes) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Manual Logged</div>
+        <div class="value">{{ formatMinutesCompact(weeklyManualMinutesRounded) }}</div>
+      </div>
+      <div class="metric emphasis">
+        <div class="label">Combined</div>
+        <div class="value">{{ formatMinutesCompact(weeklyCombinedMinutes) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Avg / Day</div>
+        <div class="value">{{ formatMinutesCompact(weeklyAverageMinutesRounded) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Sessions</div>
+        <div class="value">{{ weeklySessionsCount }}</div>
+      </div>
+    </div>
+    <div class="weekly-mini-bars">
+      <div class="bar" *ngFor="let d of commitDays$ | async" [class.recent]="true" [style.height.%]="(d.minutes / (weeklyCommitMinutes || 1)) * 100" [title]="d.date + ': ' + d.minutes + 'm'">
+      </div>
+    </div>
+  </div>
 
-      <!-- Date Column -->
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-        <td mat-cell *matCellDef="let element">{{ formatDate(element.date) }}</td>
-      </ng-container>
+  <!-- Weekly Billing Card -->
+  <div class="weekly-billing glass-card" [class.disabled]="selectedProject && selectedProject.isBillable === false">
+    <div class="header">
+      <h3>Billing (This Week)
+        <span class="billable-badge" *ngIf="selectedProject && selectedProject.isBillable !== false">💰</span>
+        <span class="billable-badge non" *ngIf="selectedProject && selectedProject.isBillable === false">🧾</span>
+      </h3>
+      <div class="rate-edit">
+        <label class="rate-label" for="weeklyRateInput">Rate:</label>
+        <input id="weeklyRateInput" type="number" [(ngModel)]="hourlyRate" min="0" />
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="label">Billable</div>
+        <div class="value">{{ formatMinutesCompact(weeklyBillableMinutes) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Non‑Billable</div>
+        <div class="value">{{ formatMinutesCompact(weeklyNonBillableMinutes) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Billable %</div>
+        <div class="value">{{ weeklyBillablePercent | number:'1.0-1' }}%</div>
+      </div>
+      <div class="metric">
+        <div class="label">Amount</div>
+        <div class="value">{{ formatCurrency(weeklyBillableAmount) }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">Effective Rate</div>
+        <div class="value">{{ formatCurrency(weeklyEffectiveRate) }}/hr</div>
+      </div>
+    </div>
+    <div class="bar" *ngIf="weeklyCombinedMinutes > 0">
+      <div class="billable" [style.width.%]="weeklyBillablePercent"></div>
+      <div class="non" [style.width.%]="100 - weeklyBillablePercent"></div>
+    </div>
+  </div>
 
-      <!-- Project Column -->
-      <ng-container matColumnDef="project">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
-        <td mat-cell *matCellDef="let element">{{ getProjectName(element.project) }}</td>
-      </ng-container>
-
-      <!-- Description Column -->
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>Description</th>
-        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
-      </ng-container>
-
-      <!-- Time Column -->
-      <ng-container matColumnDef="timeSpent">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
-        <td mat-cell *matCellDef="let element">{{ formatTime(element.timeSpent) }}</td>
-      </ng-container>
-
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-  <td mat-cell *matCellDef="let element">{{ getTaskStatus(element.id) }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons aria-label="Select page"></mat-paginator>
+  <!-- Weekly Activity Table (Manual + Git Sessions) -->
+  <div class="weekly-table-container">
+    <div class="table-controls">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search entries" />
+      </mat-form-field>
+    </div>
+    <div class="reports-table">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let element">{{ formatDate(element.date) }}</td>
+        </ng-container>
+        <!-- Source Column -->
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Source</th>
+          <td mat-cell *matCellDef="let element">{{ element.source }}</td>
+        </ng-container>
+        <!-- Project Column -->
+        <ng-container matColumnDef="project">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
+          <td mat-cell *matCellDef="let element">{{ getProjectName(element.project) }}</td>
+        </ng-container>
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+        </ng-container>
+        <!-- Time Column -->
+        <ng-container matColumnDef="timeSpent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+          <td mat-cell *matCellDef="let element">{{ formatTime(element.timeSpent) }}</td>
+        </ng-container>
+        <!-- Status Column (only for manual/task entries) -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">{{ element.source === 'Git' ? '-' : getTaskStatus(element.id) }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons aria-label="Select page"></mat-paginator>
+    </div>
   </div>
   <!-- Prominent period clock (total time for selected range) -->
   <div class="period-clock">
@@ -178,6 +279,19 @@
           </div>
           <div class="bar-legend">{{ d.billable }}m / {{ d.nonBillable }}m</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Billing Summary (all billable projects, only when no project selected) -->
+  <div class="global-billing glass-card" *ngIf="!selectedProject">
+    <div class="header"><h3>Global Billing ({{ periodLabel }})</h3></div>
+    <div class="metrics" *ngIf="projectBreakdown.length > 0">
+      <div class="metric" *ngFor="let item of projectBreakdown" [class.nonbillable]="!getProjectBillable(item.project)">
+        <div class="label">{{ getProjectName(item.project) }}</div>
+        <div class="value">{{ formatTime(item.time) }}</div>
+        <div class="sub" *ngIf="getProjectBillable(item.project); else nb">{{ formatCurrency(((item.time/3600) * (projectRates[item.project] || hourlyRate))) }}</div>
+        <ng-template #nb><div class="sub muted">Non-billable</div></ng-template>
       </div>
     </div>
   </div>

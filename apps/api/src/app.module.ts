@@ -21,6 +21,10 @@ import { TimeEntry, TimeEntrySchema } from './timeentry.schema';
 import { KanbanColumnsController } from './kanbancolumns.controller';
 import { TimeEntriesController } from './timeentries.controller';
 import { SeedingStateService } from './seeding-state.service';
+import { CommitWorkLog, CommitWorkLogSchema } from './commitworklog.schema';
+import { CommitSession, CommitSessionSchema } from './commitsession.schema';
+import { GitIngestService } from './git-ingest.service';
+import { GitIngestController } from './git-ingest.controller';
 
 @Module({
   imports: [
@@ -58,6 +62,8 @@ import { SeedingStateService } from './seeding-state.service';
   { name: Tag.name, schema: TagSchema },
       { name: KanbanColumn.name, schema: KanbanColumnSchema },
       { name: TimeEntry.name, schema: TimeEntrySchema },
+      { name: CommitWorkLog.name, schema: CommitWorkLogSchema },
+      { name: CommitSession.name, schema: CommitSessionSchema },
     ]),
   ],
   controllers: [
@@ -66,6 +72,7 @@ import { SeedingStateService } from './seeding-state.service';
     TasksController,
     KanbanColumnsController,
     TimeEntriesController,
+    GitIngestController,
   ],
   providers: [
     ProjectsService,
@@ -75,6 +82,7 @@ import { SeedingStateService } from './seeding-state.service';
     KanbanColumnsService,
     TimeEntriesService,
     SeedingStateService,
+    GitIngestService,
   ],
 })
 export class AppModule {}

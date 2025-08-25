@@ -117,6 +117,47 @@
   gap: 1rem;
 }
 
+  // Code flag toggle button
+  .code-flag-toggle {
+    margin-top: 0.25rem;
+    background: linear-gradient(135deg,#6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding: 0.35rem 0.55rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.4);
+    transition: background .25s, transform .2s;
+    &:hover { background: linear-gradient(135deg,#4f46e5 0%, #7c3aed 100%); transform: translateY(-1px); }
+    &:active { transform: translateY(0); }
+  }
+
+  .billable-flag-toggle {
+    margin-left: .4rem;
+    margin-top: 0.25rem;
+    background: linear-gradient(135deg,#10b981 0%, #059669 100%);
+    color: #fff;
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding: 0.35rem 0.55rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.35);
+    transition: background .25s, transform .2s;
+    &:hover { background: linear-gradient(135deg,#0d9d71 0%, #047857 100%); transform: translateY(-1px); }
+    &:active { transform: translateY(0); }
+  }
 /* Timer + Project row layout: ensure on mobile the timer (with tag underneath)
    sits on the left and the project selector on the right in a single flex row */
 .timer-project-row {
