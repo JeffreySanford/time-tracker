@@ -17,17 +17,17 @@
   <div class="nav-arrows">
     <button 
       class="nav-arrow left" 
-      *ngIf="showLeftArrow"
-      (click)="handleLeftClick()"
-      [attr.aria-label]="currentView === 'home' ? 'Go to Planning' : 'Go to Home'">
+  *ngIf="(currentView === 'home' && showLeftArrow) || currentView === 'reports'"
+    (click)="handleLeftClick()"
+    [attr.aria-label]="currentView === 'home' ? 'Go to Planning' : 'Back to Home'">
       ←
     </button>
     
     <button 
       class="nav-arrow right" 
-      *ngIf="showRightArrow"
-      (click)="handleRightClick()"
-      [attr.aria-label]="currentView === 'home' ? 'Go to Reports' : 'Go to Home'">
+  *ngIf="(currentView === 'home' && showRightArrow) || currentView === 'planning'"
+    (click)="handleRightClick()"
+    [attr.aria-label]="currentView === 'home' ? 'Go to Reports' : 'Back to Home'">
       →
     </button>
   </div>

@@ -35,6 +35,37 @@
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Panel back buttons */
+.panel-back-btn {
+  position: absolute;
+  top: 1rem;
+  z-index: 20;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: .4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #374151;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  transition: background .2s ease, transform .2s ease;
+  &:hover { background: #fff; transform: translateY(-2px); }
+  &:active { transform: translateY(0); }
+}
+.reports-back { left: 1rem; }
+.planning-back { right: 1rem; }
+
+@media (max-width: 768px) {
+  .panel-back-btn { font-size: 0.75rem; padding: 0.5rem 0.75rem; }
 }
 
 // Navigation Arrows (Desktop Only)
@@ -86,6 +117,21 @@
     }
   }
 }
+
+/* Inline back arrows inside panels (reuse nav-arrow style but smaller) */
+.inline-back {
+  position: absolute;
+  top: 1rem;
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  animation: none;
+  opacity: 1;
+  transform: translateY(0);
+}
+.view-panel.reports .inline-back.left { left: 1rem; }
+.view-panel.planning .inline-back.right { right: 1rem; }
 
 // View Indicators (Mobile)
 .view-indicators {

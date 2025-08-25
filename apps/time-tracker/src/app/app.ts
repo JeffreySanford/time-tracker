@@ -310,14 +310,30 @@ export class App implements OnInit {
   // Navigation methods
   navigateToReports() {
     this.currentView = 'reports';
+  // Clear hover arrows when leaving home so they don't linger
+  this.showLeftArrow = false;
+  this.showRightArrow = false;
   }
 
   navigateToHome() {
     this.currentView = 'home';
+  // Reset; hover logic will decide whether to show
+  this.showLeftArrow = false;
+  this.showRightArrow = false;
   }
 
   navigateToPlanning() {
     this.currentView = 'planning';
+  this.showLeftArrow = false;
+  this.showRightArrow = false;
+  }
+
+  // Global keyboard shortcuts
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.currentView !== 'home') {
+      this.currentView = 'home';
+    }
   }
 
   // Touch event handlers
@@ -374,11 +390,21 @@ export class App implements OnInit {
 
   // Public methods for template access
   handleLeftClick() {
-    this.handleSwipeRight();
+    // If on planning, left arrow returns to home. Otherwise delegate to swipe-right (home->planning or reports->home)
+    if (this.currentView === 'planning') {
+      this.navigateToHome();
+    } else {
+      this.handleSwipeRight();
+    }
   }
 
   handleRightClick() {
-    this.handleSwipeLeft();
+    // If on reports, right arrow returns to home. Otherwise delegate to swipe-left (home->reports or planning->home)
+    if (this.currentView === 'reports') {
+      this.navigateToHome();
+    } else {
+      this.handleSwipeLeft();
+    }
   }
 
   // Mouse events for desktop navigation arrows
@@ -387,9 +413,15 @@ export class App implements OnInit {
     if (window.innerWidth > 768) { // Only on desktop
       const windowWidth = window.innerWidth;
       const edgeThreshold = 100; // px from edge
-      
-      this.showLeftArrow = event.clientX < edgeThreshold && this.currentView !== 'reports';
-      this.showRightArrow = event.clientX > (windowWidth - edgeThreshold) && this.currentView !== 'planning';
+
+      // Only show hover arrows while on the center (home) view so side panels have a single inward arrow
+      if (this.currentView === 'home') {
+        this.showLeftArrow = event.clientX < edgeThreshold;
+        this.showRightArrow = event.clientX > (windowWidth - edgeThreshold);
+      } else {
+        this.showLeftArrow = false;
+        this.showRightArrow = false;
+      }
     }
   }
 
