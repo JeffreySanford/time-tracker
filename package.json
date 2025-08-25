@@ -27,6 +27,7 @@
     "lint:all": "nx run-many --target=lint --all",
     "lint:md": "git ls-files -z -- \"*.md\" | xargs -0 -n 50 npx markdownlint-cli2 -c .markdownlint.json --ignore 'node_modules/**'",
     "lint:md:fix": "git ls-files -z -- \"*.md\" | xargs -0 -n 50 npx markdownlint-cli2 --fix -c .markdownlint.json --ignore 'node_modules/**'"
+  ,"backfill:projects": "cross-env GIT_BACKFILL_ENABLED=true ts-node scripts/backfill-project-ids.ts"
   },
   "private": true,
   "dependencies": {

@@ -10,19 +10,36 @@
             {{ timerActive ? 'Recording' : 'Stopped' }}
           </div>
         </div>
-        
+        <!-- Stacked status filter buttons -->
+        <div class="status-filter-stack">
+          <button type="button"
+                  class="filter-btn backlog"
+                  [class.active]="showBacklog"
+                  (click)="toggleShowBacklog()"
+                  [attr.aria-pressed]="showBacklog">
+            {{ showBacklog ? 'Hide Backlog' : 'Show Backlog' }}
+          </button>
+          <button type="button"
+                  class="filter-btn completed"
+                  [class.active]="showCompleted"
+                  (click)="toggleShowCompleted()"
+                  [attr.aria-pressed]="showCompleted">
+            {{ showCompleted ? 'Hide Completed' : 'Show Completed' }}
+          </button>
+        </div>
+
         <div class="project-selector-compact">
           <button 
             class="selected-project" 
             (click)="toggleProjectSelector()"
-            [style.background]="selectedProject.bgColor"
-            [style.border-color]="selectedProject.color">
-            <span class="project-icon" [style.background]="selectedProject.color">
-              {{ selectedProject.name.charAt(0) }}
+            [style.background]="currentSelectedProject.bgColor"
+            [style.border-color]="currentSelectedProject.color">
+            <span class="project-icon" [style.background]="currentSelectedProject.color">
+              {{ currentSelectedProject.name.charAt(0) }}
             </span>
             <div class="project-info">
-              <div class="project-name">{{ selectedProject.name.substring(2) }}</div>
-              <div class="project-desc">{{ selectedProject.description }}</div>
+              <div class="project-name">{{ currentSelectedProject.name.substring(2) }}</div>
+              <div class="project-desc">{{ currentSelectedProject.description }}</div>
             </div>
             <span class="dropdown-arrow">▼</span>
           </button>
@@ -86,9 +103,9 @@
       </div>
       
       <!-- Quick Tags -->
-      <div class="quick-tags" *ngIf="(selectedProject.suggestedTags?.length ?? 0) > 0">
+  <div class="quick-tags" *ngIf="(currentSelectedProject.suggestedTags?.length ?? 0) > 0">
         <button 
-          *ngFor="let tag of selectedProject.suggestedTags ?? []" 
+          *ngFor="let tag of currentSelectedProject.suggestedTags ?? []" 
           class="quick-tag"
           [style.background]="tag.color"
           (click)="addTag(tag)">
@@ -116,31 +133,39 @@
       <div class="tasks-table-section">
         <!-- Project Header -->
         <div class="project-tasks-header">
-          <div class="project-title-section">
-            <span class="project-icon-large" [style.background]="selectedProject.color">
-              {{ selectedProject.name.charAt(0) }}
+          <div class="project-title-row">
+            <span class="project-icon-giant" [style.background]="currentSelectedProject.color">
+              {{ currentSelectedProject.name.charAt(0) }}
             </span>
-            <div class="project-title-info">
-              <h2 class="project-title">
-                Project 
-                <span class="project-name" [style.color]="selectedProject.color">
-                  ({{ selectedProject.name.substring(2) }})
-                </span>
-                Tasks
-              </h2>
-              <p class="project-description">{{ selectedProject.description }}</p>
-                <button type="button" class="code-flag-toggle" (click)="toggleCodeFlag()">
-                  <span *ngIf="selectedProject.isCodeProject !== false">💻 Code Project</span>
-                  <span *ngIf="selectedProject.isCodeProject === false">📄 Non-code (Enable Git)</span>
-                </button>
-                <button type="button" class="billable-flag-toggle" (click)="toggleBillableFlag()">
-                  <span *ngIf="selectedProject.isBillable !== false">💰 Billable</span>
-                  <span *ngIf="selectedProject.isBillable === false">🧾 Non-billable</span>
-                </button>
+            <h2 class="project-title-inline">
+              Project <span class="project-name" [style.color]="currentSelectedProject.color">({{ currentSelectedProject.name.substring(2) }})</span> Tasks
+            </h2>
+            <div class="task-count-badge large" [style.background]="currentSelectedProject.bgColor" [style.border-color]="currentSelectedProject.color">
+              {{ activeTaskCount }} Active
             </div>
           </div>
-          <div class="task-count-badge" [style.background]="selectedProject.bgColor" [style.border-color]="selectedProject.color">
-            {{ tasks.length }} task{{ tasks.length !== 1 ? 's' : '' }}
+          <div class="project-subrow">
+            <p class="project-description">{{ currentSelectedProject.description }}</p>
+            <div class="project-flags">
+              <button type="button" class="code-flag-toggle" (click)="toggleCodeFlag()" [disabled]="!currentSelectedProject.id">
+                <span *ngIf="currentSelectedProject.isCodeProject !== false">💻 Code Project</span>
+                <span *ngIf="currentSelectedProject.isCodeProject === false">📄 Non-code (Enable Git)</span>
+              </button>
+              <button type="button" class="billable-flag-toggle" (click)="toggleBillableFlag()" [disabled]="!currentSelectedProject.id">
+                <span *ngIf="currentSelectedProject.isBillable !== false">💰 Billable</span>
+                <span *ngIf="currentSelectedProject.isBillable === false">🧾 Non-billable</span>
+              </button>
+            </div>
+          </div>
+          <!-- Tag Legend (flush right) -->
+          <div class="tag-legend" *ngIf="showTagLegend && legendTag">
+            <div class="legend-header">
+              <span class="legend-color" [style.background]="getTagColor(legendTag)"></span>
+              <span class="legend-title">{{ legendTag }} ({{ tasksForLegend.length }})</span>
+            </div>
+            <ul class="legend-list">
+              <li *ngFor="let t of tasksForLegend">{{ t.title }}</li>
+            </ul>
           </div>
         </div>
         
@@ -163,16 +188,25 @@
                   <div class="task-description" *ngIf="task.description">{{ task.description }}</div>
                 </td>
                 <td>
-                  <div class="assignee-display">{{ resolveAssignees(task._meta?.assignees) }}</div>
+                  <button type="button" class="assignee-display-btn" (click)="toggleAssignee(task)" [attr.aria-expanded]="assigneeExpanded[task.id]">
+                    {{ getAssigneeDisplay(task) }}
+                  </button>
                 </td>
                 <td>
                   <div class="task-tags">
-                    <span 
+                    <button
                       *ngFor="let tag of task.tags"
+                      type="button"
                       class="task-tag"
-                      [style.background-color]="getTagColor(tag)">
+                      [style.background-color]="getTagColor(tag)"
+                      (click)="toggleTagLegend(tag)"
+                      (keyup.enter)="toggleTagLegend(tag)"
+                      (keyup.space)="toggleTagLegend(tag)"
+                      [attr.aria-pressed]="legendTag === tag && showTagLegend"
+                      [class.legend-active]="legendTag === tag && showTagLegend"
+                      title="Toggle tag legend for {{ tag }}">
                       {{ tag }}
-                    </span>
+                    </button>
                   </div>
                 </td>
                 <td>

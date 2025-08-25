@@ -22,6 +22,10 @@ export class CommitWorkLog extends Document {
   @Prop({ default: 'time-tracker' })
   repository!: string;
 
+  // Derived owning project id (heuristic based on path prefixes)
+  @Prop({ required: false })
+  projectId?: string;
+
   @Prop({ default: 0 })
   additions!: number;
 
@@ -48,3 +52,4 @@ export class CommitWorkLog extends Document {
 }
 
 export const CommitWorkLogSchema = SchemaFactory.createForClass(CommitWorkLog);
+CommitWorkLogSchema.index({ projectId: 1, timestamp: -1 });

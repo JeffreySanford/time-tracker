@@ -39,6 +39,11 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   @Input() tagsList: Array<{id: string; name: string; color?: string}> = [];
   // Accept the common runtime shape: array of assignee ids (or undefined/null)
   @Input() resolveAssignees: (assignees?: string[] | null) => string = () => '';
+  // Currently selected project (set externally or defaulted on init)
+  @Input() selectedProject: Project | undefined;
+  @Output() projectChange = new EventEmitter<Project>();
+  @Output() taskUpdate = new EventEmitter<Task>();
+  @Output() taskDelete = new EventEmitter<string>();
 
   // When older tasks still have legacy label UIDs, fall back to tagsList resolution.
   getTagName(work: {id?: string; name?: string; color?: string} | string | undefined): string {
@@ -52,36 +57,12 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   getTagColor(work: {id?: string; name?: string; color?: string} | string | undefined): string {
     if (!work) return '#ddd';
     if (typeof work === 'string') {
-      return this.tagsList.find(l => l.id === work)?.color || '#ddd';
+      const explicit = this.tagsList.find(l => l.id === work || l.name === work)?.color;
+      if (explicit) return explicit;
+      return this.getStandardTagColor(work);
     }
-    return work.color || (work.id ? (this.tagsList.find(l => l.id === work.id)?.color || '#ddd') : '#ddd');
+    return work.color || (work.id ? (this.tagsList.find(l => l.id === work.id)?.color || this.getStandardTagColor(work.name || work.id)) : this.getStandardTagColor(work.name || ''));
   }
-
-  // Normalize task tag data for templates: prefer migrated `_meta.tags` (objects), fall back to legacy label id array
-  getTaskTags(task: Task): Array<{id?: string; name?: string; color?: string} | string> {
-    const meta = task._meta as Record<string, unknown> | undefined;
-    if (!meta) return [];
-    const maybeTags = meta['tags'] as unknown;
-    if (Array.isArray(maybeTags)) return maybeTags as Array<{id?: string; name?: string; color?: string} | string>;
-    const legacy = meta['labels'] as unknown; // legacy field name in some seeded JSON
-    if (Array.isArray(legacy)) return legacy as string[];
-    return [];
-  }
-  @Input() selectedProject: Project = {
-    id: '',
-    name: '',
-    color: '',
-    bgColor: '',
-    description: '',
-    suggestedTags: []
-  };
-  
-  // Outputs to parent
-  @Output() projectChange = new EventEmitter<Project>();
-  @Output() taskUpdate = new EventEmitter<Task>();
-  @Output() taskDelete = new EventEmitter<string>();
-
-  todayString: string;
 
   // Timer properties
   timerActive = false;
@@ -91,6 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   timerSessionId: string | null = null;
   isPaused = false;
   pausedTime = 0;
+  todayString = '';
 
   // Task properties
   currentTaskDescription = '';
@@ -101,6 +83,25 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   // Task management
   tasks: Task[] = []; // Filtered tasks for current project
   displayedColumns: string[] = ['title', 'tags', 'timeSpent', 'status', 'actions'];
+  // Status visibility toggles (initially only show active tasks)
+  showBacklog = false;
+  showCompleted = false;
+  // Tag legend + standardized colors
+  private tagColorMap: Record<string, string> = {};
+  private readonly defaultTagPalette: string[] = ['#3b82f6','#10b981','#f59e0b','#ef4444','#6366f1','#14b8a6','#f472b6','#8b5cf6','#84cc16','#06b6d4'];
+  private paletteIndex = 0;
+  showTagLegend = false;
+  legendTag: string | null = null;
+
+  // Default assignee details for time-forge project
+  private readonly defaultAssignee = {
+    id: '66c1f0e3a1c9f0b1d0012001',
+    short: 'Jeffrey S.',
+    full: 'Jeffrey Sanford',
+    employeeNo: 'EMP-0001'
+  };
+  // Track per-task expanded state for assignee display
+  assigneeExpanded: Record<string, boolean> = {};
 
   startSubject = new Subject<void>();
   stopSubject = new Subject<void>();
@@ -116,6 +117,12 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
+    // If no selectedProject provided yet, default to first available project
+    if (!this.selectedProject && this.projects.length > 0) {
+      this.selectedProject = this.projects[0];
+      this.currentProject = this.selectedProject.id;
+      this.filterTasksForProject(this.currentProject);
+    }
     this.subscriptions.push(
       this.startSubject.subscribe(() => {
         this.timerActive = true;
@@ -188,6 +195,8 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
     if (changes['selectedProject'] && this.selectedProject) {
       this.currentProject = this.selectedProject.id;
       this.filterTasksForProject(this.currentProject);
+      this.showTagLegend = false;
+      this.legendTag = null;
     }
   }
 
@@ -227,6 +236,11 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
     this.showProjectSelector = !this.showProjectSelector;
   }
 
+  // Safe accessor used in template binding
+  get currentSelectedProject(): Project {
+    return this.selectedProject ?? { id: '', name: '', color: '#ccc', bgColor: '#f8fafc', description: '', suggestedTags: [] } as Project;
+  }
+
   selectProject(project: Project) {
     this.selectedProject = project;
     this.currentProject = project.id;
@@ -250,7 +264,16 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
 
   // Task management methods
   filterTasksForProject(projectId: string): void {
-    this.tasks = this.allTasks.filter(task => task.project === projectId);
+  const projectTasks = this.allTasks.filter(task => task.project === projectId);
+  // Ensure default assignee for time-forge tasks
+  projectTasks.forEach(t => this.ensureDefaultAssignee(t));
+    // Apply status visibility filters: always show active; optionally backlog/completed
+    this.tasks = projectTasks.filter(task => {
+      if (task.status === 'active') return true;
+      if (task.status === 'backlog') return this.showBacklog;
+      if (task.status === 'completed') return this.showCompleted;
+      return true; // fallback
+    });
   }
 
   loadTasksForProject(projectId: string): void {
@@ -274,7 +297,10 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
         timeSpent: durationSeconds ?? 0,
         startTime: startTime,
         endTime: endTime,
-        createdAt: new Date()
+        createdAt: new Date(),
+        _meta: {
+          assignees: this.currentProject === 'time-forge' ? [this.defaultAssignee.id] : []
+        }
       };
 
       // Emit task update to parent (parent manages the task arrays)
@@ -285,6 +311,27 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
       this.currentTaskDescription = '';
       this.currentTags = [];
     }
+  }
+
+  private ensureDefaultAssignee(task: Task): void {
+    if (task.project !== 'time-forge') return;
+    if (!task._meta) task._meta = {};
+    if (!Array.isArray(task._meta.assignees)) task._meta.assignees = [];
+    if (!task._meta.assignees.includes(this.defaultAssignee.id)) {
+      task._meta.assignees.push(this.defaultAssignee.id);
+    }
+  }
+
+  toggleAssignee(task: Task): void {
+    this.assigneeExpanded[task.id] = !this.assigneeExpanded[task.id];
+  }
+
+  getAssigneeDisplay(task: Task): string {
+    if (task.project !== 'time-forge') {
+      return this.resolveAssignees(task._meta?.assignees || null);
+    }
+    const expanded = !!this.assigneeExpanded[task.id];
+    return expanded ? `${this.defaultAssignee.full} (${this.defaultAssignee.employeeNo})` : this.defaultAssignee.short;
   }
 
   // Always return HH:MM:SS zero-padded for the live timer display and most UI
@@ -307,6 +354,20 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
     const nextIndex = (currentIndex + 1) % statuses.length;
     task.status = statuses[nextIndex];
     this.taskUpdate.emit(task);
+    // Re-apply filter so task may disappear if toggled to a hidden status
+    this.filterTasksForProject(this.currentProject);
+  }
+
+  // Toggle visibility of backlog tasks
+  toggleShowBacklog(): void {
+    this.showBacklog = !this.showBacklog;
+    this.filterTasksForProject(this.currentProject);
+  }
+
+  // Toggle visibility of completed tasks
+  toggleShowCompleted(): void {
+    this.showCompleted = !this.showCompleted;
+    this.filterTasksForProject(this.currentProject);
   }
 
   deleteTask(taskId: string): void {
@@ -317,7 +378,7 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   toggleCodeFlag(): void {
     if (!this.selectedProject?.id) return;
     const next = !(this.selectedProject.isCodeProject !== false);
-    this.http.patch(`/projects/${this.selectedProject.id}`, { isCodeProject: next }).subscribe({
+  this.http.patch(`/api/projects/${this.selectedProject.id}`, { isCodeProject: next }).subscribe({
       next: () => {
         this.selectedProject = { ...this.selectedProject, isCodeProject: next } as Project;
         this.projectChange.emit(this.selectedProject);
@@ -330,13 +391,42 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.selectedProject?.id) return;
     const current = !(this.selectedProject.isBillable === false);
     const next = !current; // invert
-    this.http.patch(`/projects/${this.selectedProject.id}`, { isBillable: next }).subscribe({
+  this.http.patch(`/api/projects/${this.selectedProject.id}`, { isBillable: next }).subscribe({
       next: () => {
         this.selectedProject = { ...this.selectedProject, isBillable: next } as Project;
         this.projectChange.emit(this.selectedProject);
       },
       error: (err) => console.error('Failed to update project billable flag', err)
     });
+  }
+  // Assign or retrieve a deterministic standard color for a tag (single implementation)
+  private getStandardTagColor(tag: string): string {
+    if (!tag) return '#ddd';
+    const key = tag.toLowerCase();
+    if (this.tagColorMap[key]) return this.tagColorMap[key];
+    const color = this.defaultTagPalette[this.paletteIndex % this.defaultTagPalette.length];
+    this.tagColorMap[key] = color;
+    this.paletteIndex++;
+    return color;
+  }
+
+  toggleTagLegend(tag: string): void {
+    if (this.legendTag === tag && this.showTagLegend) {
+      this.showTagLegend = false;
+      this.legendTag = null;
+    } else {
+      this.legendTag = tag;
+      this.showTagLegend = true;
+    }
+  }
+
+  get tasksForLegend(): Task[] {
+    if (!this.legendTag) return [];
+    return this.tasks.filter(t => t.tags.includes(this.legendTag!));
+  }
+
+  get activeTaskCount(): number {
+    return this.tasks.reduce((acc, t) => acc + (t.status === 'active' ? 1 : 0), 0);
   }
 
   ngOnDestroy() {

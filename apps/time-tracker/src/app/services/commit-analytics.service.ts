@@ -6,7 +6,7 @@ import { tap, catchError } from 'rxjs/operators';
 export interface CommitDay { date: string; minutes: number; }
 export interface CategorySummary { category: string; minutes: number; }
 export interface SummaryResponse { byDay: { _id: string; minutes: number }[]; byCategory: { _id: string; minutes: number }[]; }
-export interface CommitSessionDto { id: string; authorEmail: string; startTs: string; endTs: string; totalEstimatedMinutes: number; commitCount: number; categoriesSummary: Record<string, number>; tasksSummary?: Record<string, number>; }
+export interface CommitSessionDto { id: string; authorEmail: string; startTs: string; endTs: string; totalEstimatedMinutes: number; commitCount: number; categoriesSummary: Record<string, number>; tasksSummary?: Record<string, number>; commitMessages?: string[]; projectId?: string; }
 
 @Injectable({ providedIn: 'root' })
 export class CommitAnalyticsService {
@@ -21,8 +21,9 @@ export class CommitAnalyticsService {
   readonly sessions$: Observable<CommitSessionDto[] | null> = this.sessionsSubject.asObservable();
   readonly available$: Observable<boolean> = this.availableSubject.asObservable();
 
-  refresh(days = 30): Observable<SummaryResponse> {
-    return this.http.get<SummaryResponse>(`/api/git/summary?days=${days}`).pipe(
+  refresh(days = 30, projectId?: string): Observable<SummaryResponse> {
+    const qp = projectId ? `&projectId=${encodeURIComponent(projectId)}` : '';
+    return this.http.get<SummaryResponse>(`/api/git/summary?days=${days}${qp}`).pipe(
       tap(res => {
         this.daySubject.next(res.byDay.map(d => ({ date: d._id, minutes: d.minutes })));
         this.catSubject.next(res.byCategory.map(c => ({ category: c._id, minutes: c.minutes })));
@@ -36,8 +37,9 @@ export class CommitAnalyticsService {
     );
   }
 
-  loadSessions(days = 7): Observable<CommitSessionDto[]> {
-    return this.http.get<CommitSessionDto[]>(`/api/git/sessions?days=${days}`).pipe(
+  loadSessions(days = 7, projectId?: string): Observable<CommitSessionDto[]> {
+    const qp = projectId ? `&projectId=${encodeURIComponent(projectId)}` : '';
+    return this.http.get<CommitSessionDto[]>(`/api/git/sessions?days=${days}${qp}`).pipe(
       tap(s => this.sessionsSubject.next(s)),
       catchError(err => {
         this.availableSubject.next(false);

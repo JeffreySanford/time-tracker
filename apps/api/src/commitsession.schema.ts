@@ -26,6 +26,13 @@ export class CommitSession extends Document {
 
   @Prop({ type: Object, default: {} })
   tasksSummary!: Record<string, number>; // taskToken -> minutes aggregated
+
+  @Prop({ type: [String], default: [] })
+  commitMessages!: string[]; // ordered commit subjects in session
+
+  @Prop({ required: false })
+  projectId?: string; // dominant project for this session (heuristic)
 }
 
 export const CommitSessionSchema = SchemaFactory.createForClass(CommitSession);
+CommitSessionSchema.index({ projectId: 1, startTs: -1 });

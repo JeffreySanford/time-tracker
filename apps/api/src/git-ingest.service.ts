@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CommitWorkLog } from './commitworklog.schema';
 import { CommitSession } from './commitsession.schema';
+import { Project } from './project.schema';
 import * as crypto from 'crypto';
 import { execSync } from 'child_process';
 import * as path from 'path';
@@ -23,8 +24,21 @@ export interface ParsedCommit {
 export class GitIngestService {
   constructor(
     @InjectModel(CommitWorkLog.name) private worklogModel: Model<CommitWorkLog>,
-    @InjectModel(CommitSession.name) private sessionModel: Model<CommitSession>
+    @InjectModel(CommitSession.name) private sessionModel: Model<CommitSession>,
+    @InjectModel(Project.name) private projectModel: Model<Project>
   ) {}
+
+  private projectsCache: string[] | null = null;
+  private projectsCacheLoadedAt = 0;
+
+  private async ensureProjectCache(force = false) {
+    const STALE_MS = 5 * 60 * 1000; // 5 minutes
+    if (force || !this.projectsCache || (Date.now() - this.projectsCacheLoadedAt) > STALE_MS) {
+      const projects = await this.projectModel.find({}, { id: 1, _id: 0 }).lean().exec();
+      this.projectsCache = projects.map(p => (p as any).id);
+      this.projectsCacheLoadedAt = Date.now();
+    }
+  }
 
   classify(subject: string, files: string[]): string {
     const lower = (subject || '').toLowerCase();
@@ -38,8 +52,41 @@ export class GitIngestService {
     return 'general';
   }
 
+  private deriveProjectIdFromPaths(paths: string[]): string | undefined {
+    if (!paths || !paths.length) return undefined;
+    // Common monorepo app roots -> project ids
+    const mapTable: { prefix: string; project: string }[] = [
+      { prefix: 'apps/time-tracker/', project: 'time-forge' },
+      { prefix: 'apps/api/', project: 'api' },
+      { prefix: 'apps/time-forge/', project: 'time-forge' },
+      { prefix: 'packages/shared/', project: 'shared' },
+    ];
+    for (const { prefix, project } of mapTable) {
+      if (paths.some(p => p.startsWith(prefix))) return project;
+    }
+    // Heuristic: take first path segment after apps/ as project id
+    const appMatch = paths.find(p => p.startsWith('apps/'));
+    if (appMatch) {
+      const seg = appMatch.split('/')[1];
+      if (seg) {
+        // If we have a dynamic projects cache, prefer returning seg only if known
+        if (this.projectsCache && this.projectsCache.includes(seg)) return seg;
+        return seg;
+      }
+    }
+
+    // Try dynamic match: any cached project id occurring in path segments
+    if (this.projectsCache) {
+      for (const id of this.projectsCache) {
+        if (paths.some(p => p.includes('/' + id + '/') || p.startsWith(id + '/'))) return id;
+      }
+    }
+    return undefined;
+  }
+
   async ingest(parsed: ParsedCommit[]): Promise<{ inserted: number; updated: number; sessions: number }> {
     if (!parsed.length) return { inserted: 0, updated: 0, sessions: 0 };
+  await this.ensureProjectCache().catch(() => {/* ignore cache errors */});
     // Upsert commit docs
     let inserted = 0, updated = 0;
     for (const c of parsed) {
@@ -55,22 +102,24 @@ export class GitIngestService {
         existing.filesChanged = c.filesChanged;
         existing.paths = c.files.map(f => f.path);
         existing.category = category;
+  if (!existing.projectId) existing.projectId = this.deriveProjectIdFromPaths(c.files.map(f => f.path));
         existing.raw = c;
         await existing.save();
         updated++;
       } else {
         await this.worklogModel.create({
           hash: c.hash,
-            authorEmail: c.authorEmail.toLowerCase(),
-            authorName: c.authorName,
-            timestamp: new Date(c.ts),
-            message: c.subject,
-            additions: c.additions,
-            deletions: c.deletions,
-            filesChanged: c.filesChanged,
-            paths: c.files.map(f => f.path),
-            category,
-            raw: c,
+          authorEmail: c.authorEmail.toLowerCase(),
+          authorName: c.authorName,
+          timestamp: new Date(c.ts),
+          message: c.subject,
+          additions: c.additions,
+          deletions: c.deletions,
+          filesChanged: c.filesChanged,
+          paths: c.files.map(f => f.path),
+          category,
+          projectId: this.deriveProjectIdFromPaths(c.files.map(f => f.path)),
+          raw: c,
         });
         inserted++;
       }
@@ -124,6 +173,13 @@ export class GitIngestService {
           }
           return acc;
         }, {});
+        const commitMessages = bucket.map(c => c.message || '').filter(Boolean);
+        // Determine dominant projectId among commits (mode)
+        const projectCounts = bucket.reduce<Record<string, number>>((acc,c) => {
+          if (c.projectId) acc[c.projectId] = (acc[c.projectId] || 0) + c.estimatedMinutes;
+          return acc;
+        }, {});
+        const projectId = Object.entries(projectCounts).sort((a,b) => b[1]-a[1])[0]?.[0];
         await this.sessionModel.create({
           id: sessionId,
           authorEmail: author,
@@ -133,6 +189,8 @@ export class GitIngestService {
           commitCount: bucket.length,
           categoriesSummary,
           tasksSummary,
+          commitMessages,
+          projectId,
         });
         created++;
       };
@@ -154,24 +212,28 @@ export class GitIngestService {
     return created;
   }
 
-  async recentSummary(days = 30) {
+  async recentSummary(days = 30, projectId?: string) {
     const since = new Date(Date.now() - days * 24 * 3600 * 1000);
+    const match: any = { timestamp: { $gte: since } };
+    if (projectId) match.projectId = projectId;
     const byDay = await this.worklogModel.aggregate([
-      { $match: { timestamp: { $gte: since } } },
+      { $match: match },
       { $group: { _id: { $dateToString: { date: '$timestamp', format: '%Y-%m-%d' } }, minutes: { $sum: '$estimatedMinutes' } } },
       { $sort: { _id: 1 } }
     ]).exec();
     const byCategory = await this.worklogModel.aggregate([
-      { $match: { timestamp: { $gte: since } } },
+      { $match: match },
       { $group: { _id: '$category', minutes: { $sum: '$estimatedMinutes' } } },
       { $sort: { minutes: -1 } }
     ]).exec();
     return { byDay, byCategory };
   }
 
-  async recentSessions(days = 7) {
+  async recentSessions(days = 7, projectId?: string) {
     const since = new Date(Date.now() - days * 24 * 3600 * 1000);
-    return this.sessionModel.find({ startTs: { $gte: since } }).sort({ startTs: 1 }).limit(500).lean().exec();
+  const query: any = { startTs: { $gte: since } };
+  if (projectId) query.projectId = projectId;
+  return this.sessionModel.find(query).sort({ startTs: 1 }).limit(500).lean().exec();
   }
 
   /**
@@ -229,5 +291,32 @@ export class GitIngestService {
     } catch (err) {
       return { error: 'Failed to run git log', message: String(err) };
     }
+  }
+
+  /**
+   * Backfill projectId on existing commit work logs and sessions (idempotent).
+   * 1. Load all worklogs missing projectId, derive and update.
+   * 2. For authors affected, re-sessionize to persist projectId onto sessions.
+   */
+  async backfillProjectIds(): Promise<{ updatedCommits: number; regeneratedSessions: number; totalCommits: number }> {
+    await this.ensureProjectCache(true).catch(()=>{});
+    const missing = await this.worklogModel.find({ $or: [ { projectId: { $exists: false } }, { projectId: null } ] }).exec();
+    let updatedCommits = 0;
+    const affectedAuthors = new Set<string>();
+    for (const wl of missing) {
+      const proj = this.deriveProjectIdFromPaths(wl.paths || []);
+      if (proj) {
+        wl.projectId = proj;
+        await wl.save();
+        updatedCommits++;
+        if (wl.authorEmail) affectedAuthors.add(wl.authorEmail.toLowerCase());
+      }
+    }
+    let regeneratedSessions = 0;
+    if (affectedAuthors.size) {
+      regeneratedSessions = await this.sessionizeAuthors(Array.from(affectedAuthors));
+    }
+    const totalCommits = await this.worklogModel.estimatedDocumentCount();
+    return { updatedCommits, regeneratedSessions, totalCommits };
   }
 }

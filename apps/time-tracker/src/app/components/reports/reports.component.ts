@@ -134,6 +134,10 @@ export class ReportsComponent implements AfterViewInit, OnChanges, OnInit {
     // update the table whenever inputs change
     if (changes['tasks'] || changes['reportPeriod'] || changes['selectedProject']) {
       this.updateTable();
+      if (changes['selectedProject'] && !changes['selectedProject'].firstChange) {
+        // reload commit analytics for new project scope
+        this.refreshCommits();
+      }
     }
   }
 
@@ -141,14 +145,24 @@ export class ReportsComponent implements AfterViewInit, OnChanges, OnInit {
     const manualRows: Array<TimeEntry & { source: string }> = this.filteredTimeEntries.map(e => ({ ...e, source: 'Manual' }));
     // Map commit sessions into pseudo-entries (weekly scope handled by filter later if we limit)
     const sessionRows: Array<TimeEntry & { source: string }> = this.commitSessionsSnapshot.map(s => {
-      const tasks = s.tasksSummary ? Object.keys(s.tasksSummary) : [];
-      const taskPart = tasks.length ? tasks.slice(0,4).join(', ') + (tasks.length>4?'…':'') : `${s.commitCount} commit${s.commitCount===1?'':'s'}`;
+      const messages = s.commitMessages && s.commitMessages.length ? s.commitMessages : [];
+      let desc: string;
+      if (messages.length === 1) {
+        desc = messages[0];
+      } else if (messages.length > 1) {
+        // Show first message + count of remaining
+        desc = messages[0] + ` (+${messages.length - 1} more)`;
+      } else {
+        // fallback to tasks or commit count
+        const tasks = s.tasksSummary ? Object.keys(s.tasksSummary) : [];
+        desc = tasks.length ? tasks.slice(0,4).join(', ') + (tasks.length>4?'…':'') : `${s.commitCount} commit${s.commitCount===1?'':'s'}`;
+      }
       return {
         id: s.id,
         date: new Date(s.startTs),
-        project: this.selectedProject ? this.selectedProject.id : '',
+        project: s.projectId || (this.selectedProject ? this.selectedProject.id : ''),
         timeSpent: (s.totalEstimatedMinutes || 0) * 60,
-        description: taskPart,
+        description: desc,
         source: 'Git'
       };
     });
@@ -158,17 +172,18 @@ export class ReportsComponent implements AfterViewInit, OnChanges, OnInit {
   }
 
   public refreshCommits(): void {
-  const days = parseInt(this.reportPeriod, 10) || 30;
-  const windowDays = Math.max(days, 7); // always fetch at least 7 days so weekly summary can compute
-    // Dev convenience: trigger local ingestion first (non-blocking) then refresh summary & sessions
-  this.commitSvc.ingestLocal(windowDays).subscribe({
+    const days = parseInt(this.reportPeriod, 10) || 30;
+    const windowDays = Math.max(days, 7); // always fetch at least 7 days so weekly summary can compute
+    const projectId = this.selectedProject?.id;
+    // Dev convenience: trigger local ingestion first (non-blocking) then refresh summary & sessions (filtered)
+    this.commitSvc.ingestLocal(windowDays).subscribe({
       next: () => {
-    this.commitSvc.refresh(windowDays).subscribe();
-    this.commitSvc.loadSessions(Math.min(windowDays, 30)).subscribe();
+        this.commitSvc.refresh(windowDays, projectId).subscribe();
+        this.commitSvc.loadSessions(Math.min(windowDays, 30), projectId).subscribe();
       },
       error: () => {
-    this.commitSvc.refresh(windowDays).subscribe();
-    this.commitSvc.loadSessions(Math.min(windowDays, 30)).subscribe();
+        this.commitSvc.refresh(windowDays, projectId).subscribe();
+        this.commitSvc.loadSessions(Math.min(windowDays, 30), projectId).subscribe();
       }
     });
   }
