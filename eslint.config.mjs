@@ -6,9 +6,11 @@ export default [
   ...nx.configs['flat/javascript'],
   {
     ignores: [
-      '**/dist',
-      '**/vite.config.*.timestamp*',
-      '**/vitest.config.*.timestamp*',
+  '**/dist',
+  '**/vite.config.*.timestamp*',
+  '**/vitest.config.*.timestamp*',
+  // Ensure editor/IDE and the Nx eslint executor don't try to lint installed packages
+  '**/node_modules/**',
     ],
   },
   {

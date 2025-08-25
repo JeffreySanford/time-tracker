@@ -1,0 +1,13 @@
+# Ignore node modules and build output from linting
+node_modules/
+dist/
+
+# Nx cache and generated workspace files
+.nx/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
