@@ -1,9 +1,9 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Capacitor } from '@capacitor/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { switchMap, catchError, mapTo, tap, take } from 'rxjs/operators';
+import { switchMap, catchError, mapTo, tap, take, retryWhen, delayWhen, scan } from 'rxjs/operators';
 
 import { Project } from './models/project.model';
 import { TaskApiService } from './services/task-api.service';
@@ -108,18 +108,33 @@ export class App implements OnInit {
 
   // Initialize with Time Forge project
   this.selectedProject = this.projects.find(p => p.id === 'time-forge') || this.projects[0];
-  // Kick off load of tasks (populate TaskApiService hot cache) and then restore any
-  // in-session edits from sessionStorage so UI changes survive a reload in the same session.
-  // Populate the server cache and then subscribe to its hot stream so the app stays in sync
-  this.api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
-    complete: () => this.restoreSessionTasks(),
-    error: () => this.restoreSessionTasks()
+  // Wait for backend readiness (Mongo seeded) before first refresh to avoid empty flash
+  this.waitForBackendReady().pipe(take(1)).subscribe({
+    next: () => {
+      this.api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+        complete: () => this.restoreSessionTasks(),
+        error: () => this.restoreSessionTasks()
+      });
+    },
+    error: () => {
+      // On persistent failure just attempt refresh and fall back
+      this.api.refresh(this.selectedProject?.id).pipe(take(1)).subscribe({
+        complete: () => this.restoreSessionTasks(),
+        error: () => this.restoreSessionTasks()
+      });
+    }
   });
 
   // Keep `allTasks` in sync with TaskApiService's hot cache
   this.api.tasks$.subscribe((list: import('./services/task-api.service').TaskDto[] | null) => {
     if (Array.isArray(list)) {
-      this.allTasks = (list as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
+      // If API returned tasks, map them. If it returned an empty array, fall back to local sample JSON
+      if (list.length > 0) {
+        this.allTasks = (list as Array<Record<string, unknown>>).map(t => this.mapRawToTask(t));
+      } else if (!this.allTasks || this.allTasks.length === 0) {
+        // Fallback only if we don't already have tasks (avoid overwriting user-created tasks later)
+        this.loadTasksFromJson();
+      }
     }
   });
     
@@ -155,6 +170,29 @@ export class App implements OnInit {
       console.error('Failed to load tasks from JSON', e);
       this.allTasks = [];
     }
+  }
+
+  // Poll /api/ready until backend indicates seeding complete (max ~10s)
+  private waitForBackendReady(): Observable<boolean> {
+    const attempt = () => fromFetch('/api/ready').pipe(
+      switchMap(res => {
+        if (!res.ok) throw new Error('not ok');
+        return res.json();
+      }),
+      mapTo(true),
+      catchError(() => of(false))
+    );
+    return attempt().pipe(
+      switchMap(ok => ok ? of(true) : of(false).pipe(
+        switchMap(() => attempt().pipe(
+          retryWhen(errs => errs.pipe(
+            scan((acc) => acc + 1, 0),
+            delayWhen(i => timer(300 + i * 300)),
+            take(10)
+          ))
+        ))
+      ))
+    );
   }
 
   private tryLoadTasks(): Observable<void> {

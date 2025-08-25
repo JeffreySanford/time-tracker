@@ -20,6 +20,7 @@ import { TimeEntriesService } from './timeentries.service';
 import { TimeEntry, TimeEntrySchema } from './timeentry.schema';
 import { KanbanColumnsController } from './kanbancolumns.controller';
 import { TimeEntriesController } from './timeentries.controller';
+import { SeedingStateService } from './seeding-state.service';
 
 @Module({
   imports: [
@@ -70,9 +71,10 @@ import { TimeEntriesController } from './timeentries.controller';
     ProjectsService,
     TaskService,
     UsersService,
-  TagsService,
+    TagsService,
     KanbanColumnsService,
     TimeEntriesService,
+    SeedingStateService,
   ],
 })
 export class AppModule {}

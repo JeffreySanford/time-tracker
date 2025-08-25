@@ -6,6 +6,10 @@ import { UsersService } from './users.service';
 import { TagsService } from './tags.service';
 import { KanbanColumnsService } from './kanbancolumns.service';
 import { TimeEntriesService } from './timeentries.service';
+import { SeedingStateService } from './seeding-state.service';
+import { firstValueFrom, Observable } from 'rxjs';
+
+interface Seedable { seedFromFileIfEmpty(path: string): Observable<void>; }
 
 async function bootstrap() {
   let mongoUri = 'mongodb://localhost:27017/time-tracker';
@@ -19,14 +23,16 @@ async function bootstrap() {
     } else {
       console.log(`[MongoDB] Using persistent MongoDB at: ${mongoUri}`);
     }
-    const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
+  const seedingState = app.get(SeedingStateService);
+  seedingState.markStarted();
 
     // If running in development with an in-memory MongoDB, seed projects collection from the frontend JSON
   if (process.env.NODE_ENV === 'development') {
       try {
     // get the ProjectsService instance
-    const projectsService = app.get(ProjectsService) as ProjectsService | null;
-    if (projectsService && typeof projectsService.seedFromFileIfEmpty === 'function') {
+  const projectsService = app.get(ProjectsService) as (ProjectsService & Seedable) | null;
+  if (projectsService && typeof projectsService.seedFromFileIfEmpty === 'function') {
           const projectsJsonPath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'projects.json');
           // the path above may not exist from api package; try relative to repo root fallback
           const fs = require('fs');
@@ -34,26 +40,26 @@ async function bootstrap() {
           if (!fs.existsSync(filePath)) {
             filePath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'projects.json');
           }
-          await projectsService.seedFromFileIfEmpty(filePath);
+          try { await firstValueFrom(projectsService.seedFromFileIfEmpty(filePath)); } catch (e) { console.warn('Project seed error', e); }
         }
         // seed users and tags first so tasks can reference user IDs
         try {
-          const usersService = app.get(UsersService) as UsersService | null;
-          const tagsService = app.get(TagsService) as TagsService | null;
+          const usersService = app.get(UsersService) as (UsersService & Seedable) | null;
+          const tagsService = app.get(TagsService) as (TagsService & Seedable) | null;
           const fs3 = require('fs');
           if (usersService && typeof usersService.seedFromFileIfEmpty === 'function') {
             let usersPath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'users.json');
             if (!fs3.existsSync(usersPath)) {
               usersPath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'users.json');
             }
-            await usersService.seedFromFileIfEmpty(usersPath);
+            try { await firstValueFrom(usersService.seedFromFileIfEmpty(usersPath)); } catch (e) { console.warn('Users seed error', e); }
           }
           if (tagsService && typeof tagsService.seedFromFileIfEmpty === 'function') {
             let tagsPath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'tags.json');
             if (!fs3.existsSync(tagsPath)) {
               tagsPath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'tags.json');
             }
-            await tagsService.seedFromFileIfEmpty(tagsPath);
+            try { await firstValueFrom(tagsService.seedFromFileIfEmpty(tagsPath)); } catch (e) { console.warn('Tags seed error', e); }
           }
         } catch (err) {
           console.warn('Users/Tags seeding skipped due to error:', String(err));
@@ -61,7 +67,7 @@ async function bootstrap() {
 
         // seed tasks as well using the TaskService if available (after users/tags)
         try {
-          const taskService = app.get(TaskService) as TaskService | null;
+          const taskService = app.get(TaskService) as (TaskService & Seedable) | null;
           if (taskService && typeof taskService.seedFromFileIfEmpty === 'function') {
             const tasksJsonPath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'tasks.json');
             const fs2 = require('fs');
@@ -69,29 +75,29 @@ async function bootstrap() {
             if (!fs2.existsSync(tasksFilePath)) {
               tasksFilePath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'tasks.json');
             }
-            await taskService.seedFromFileIfEmpty(tasksFilePath);
+            try { await firstValueFrom(taskService.seedFromFileIfEmpty(tasksFilePath)); } catch (e) { console.warn('Tasks seed error', e); }
           }
         } catch (err) {
           console.warn('Task seeding skipped due to error:', String(err));
         }
         // seed kanban columns and time entries
         try {
-          const kcSvc = app.get(KanbanColumnsService) as KanbanColumnsService | null;
-          const teSvc = app.get(TimeEntriesService) as TimeEntriesService | null;
+          const kcSvc = app.get(KanbanColumnsService) as (KanbanColumnsService & Seedable) | null;
+          const teSvc = app.get(TimeEntriesService) as (TimeEntriesService & Seedable) | null;
           const fs4 = require('fs');
           if (kcSvc && typeof kcSvc.seedFromFileIfEmpty === 'function') {
             let kcPath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'kanbanColumns.json');
             if (!fs4.existsSync(kcPath)) {
               kcPath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'kanbanColumns.json');
             }
-            await kcSvc.seedFromFileIfEmpty(kcPath);
+            try { await firstValueFrom(kcSvc.seedFromFileIfEmpty(kcPath)); } catch (e) { console.warn('Kanban seed error', e); }
           }
           if (teSvc && typeof teSvc.seedFromFileIfEmpty === 'function') {
             let tePath = require('path').resolve(__dirname, '..', 'time-tracker', 'src', 'assets', 'timeEntries.json');
             if (!fs4.existsSync(tePath)) {
               tePath = require('path').resolve(process.cwd(), 'apps', 'time-tracker', 'src', 'assets', 'timeEntries.json');
             }
-            await teSvc.seedFromFileIfEmpty(tePath);
+            try { await firstValueFrom(teSvc.seedFromFileIfEmpty(tePath)); } catch (e) { console.warn('TimeEntries seed error', e); }
           }
         } catch (err) {
           console.warn('Kanban/TimeEntries seeding skipped due to error:', String(err));
@@ -125,7 +131,8 @@ async function bootstrap() {
       credentials: true,
     });
     
-    await app.listen(3000);
+  seedingState.markCompleted();
+  await app.listen(3000);
     console.log(`[NestJS] Server started on http://localhost:3000`);
   } catch (err) {
     console.error('[MongoMemoryServer] Failed to start in-memory MongoDB:', err);

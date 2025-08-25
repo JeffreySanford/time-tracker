@@ -1,4 +1,23 @@
 {
     "nxConsole.generateAiAgentRules": true,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    // Exclude dependency packages (like @capacitor/android inside node_modules) from Java LS project import
+    "java.import.exclusions": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/.nx/**"
+    ],
+    // Additional resource filter so Java treats these as non-project roots
+    "java.project.resourceFilter": "node_modules|dist|.nx|out",
+    // Prevent file watcher + search noise
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/.nx/**": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.nx": true
+    }
 }
