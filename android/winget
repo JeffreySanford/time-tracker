@@ -1,0 +1,15 @@
+      PID    PPID    PGID     WINPID   TTY         UID    STIME COMMAND
+     5791       1    5791      29788  cons0     197609 11:02:39 /usr/bin/bash
+     1684       1    1684      20484  ?         197609   Sep 14 /usr/bin/ssh-agent
+     5786       1    5786      37896  ?         197609 09:42:18 /usr/bin/ssh-agent
+     1283       1    1283      24440  ?         197609   Sep 14 /usr/bin/ssh-agent
+     5445    5444    5445      28860  pty2      197609   Sep 15 /usr/bin/bash
+     5765       1    5765       2132  ?         197609 09:42:14 /usr/bin/mintty
+     5324       1    5324      15280  ?         197609   Sep 15 /usr/bin/ssh-agent
+     5465       1    5465      29984  ?         197609   Sep 15 /usr/bin/ssh-agent
+     5892       1    5891      42400  cons0     197609 11:53:55 /usr/bin/ps
+     5766    5765    5766      14824  pty1      197609 09:42:15 /usr/bin/bash
+     1721       1    1721      30792  ?         197609   Sep 14 /usr/bin/ssh-agent
+     5444       1    5444      15908  ?         197609   Sep 15 /usr/bin/mintty
+     5891    5791    5891      32248  cons0     197609 11:52:17 /c/WINDOWS/System32/cmd
+     5758    5445    5758      44884  pty2      197609 09:35:44 /c/Program Files/nodejs/node

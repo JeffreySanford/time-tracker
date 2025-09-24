@@ -1,6 +1,6 @@
 {
     "nxConsole.generateAiAgentRules": true,
-    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.configuration.updateBuildConfiguration": "automatic",
     // Exclude dependency packages (like @capacitor/android inside node_modules) from Java LS project import
     "java.import.exclusions": [
         "**/node_modules/**",

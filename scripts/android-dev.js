@@ -7,7 +7,7 @@ const path = require('path');
 // Set up environment variables for Android development
 const env = { ...process.env };
 
-// Set JAVA_HOME to Android Studio's bundled JDK
+// Set JAVA_HOME to Android Studio's bundled JDK (Java 21)
 if (os.platform() === 'win32') {
   env.JAVA_HOME = 'C:\\Program Files\\Android\\Android Studio\\jbr';
   env.ANDROID_HOME = path.join(os.homedir(), 'AppData', 'Local', 'Android', 'Sdk');
