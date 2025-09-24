@@ -8,6 +8,7 @@
    - styles/_legacy.scss (reference snapshot)
 */
 
+// Inter now loaded via external stylesheet link in index.html. Local self-hosted fonts import removed to avoid duplication.
 @use 'variables' as *;
 @use 'home-helpers' as *;
 @use 'base' as *;
