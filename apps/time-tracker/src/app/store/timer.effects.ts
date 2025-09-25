@@ -20,7 +20,10 @@ export class TimerEffects {
       ofType(TimerActions.startTimer),
       mergeMap(() =>
         this.timeWorked.start('demo-user').pipe(
-          map((session: TimeWorkedSessionDto | void) => TimerActions.timerStarted({ sessionId: session?._id ?? '' })),
+          map((session: TimeWorkedSessionDto | void) => {
+            if (!session) return TimerActions.timerStarted({ sessionId: '' });
+            return TimerActions.timerStarted({ sessionId: session._id });
+          }),
           catchError(() => of(TimerActions.timerStopped({ sessionId: '' })))
         )
       )

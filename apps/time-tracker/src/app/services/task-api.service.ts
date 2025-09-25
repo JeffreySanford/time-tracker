@@ -44,7 +44,8 @@ export class TaskApiService {
     if (!task || !task.id) {
       return this.http.post<TaskDto>('/api/tasks', task).pipe(
         tap(created => {
-          const current = this.subject.getValue() || [];
+          if (!created) return;
+          const current = (this.subject.getValue() || []).filter(Boolean) as TaskDto[];
           this.subject.next([...current, created]);
         })
       );
@@ -52,8 +53,9 @@ export class TaskApiService {
 
     return this.http.patch<TaskDto>(`/api/tasks/${encodeURIComponent(task.id)}`, task).pipe(
       tap(updated => {
-        const current = this.subject.getValue() || [];
-        const next = current.map(t => (t.id === updated.id ? updated : t));
+        if (!updated) return;
+        const current = (this.subject.getValue() || []).filter(Boolean) as TaskDto[];
+        const next = current.map(t => (t && t.id === updated.id ? updated : t)).filter(Boolean) as TaskDto[];
         this.subject.next(next);
       })
     );
