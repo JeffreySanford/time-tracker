@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
 import { Capacitor } from '@capacitor/core';
 import { Observable, of, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -7,6 +8,8 @@ import { switchMap, catchError, mapTo, tap, take, retryWhen, delayWhen, scan } f
 
 import { Project } from './models/project.model';
 import { TaskApiService } from './services/task-api.service';
+import * as TimerActions from './store/timer.actions';
+import { TimerState } from './store/timer.reducer';
 import projectsData from '../assets/projects.json';
 import tasksData from '../assets/tasks.json';
 import usersData from '../assets/users.json';
@@ -37,6 +40,7 @@ export class App implements OnInit {
   title = 'Time Forge';
   private api = inject(TaskApiService);
   private snackBar = inject(MatSnackBar);
+  private store = inject(Store<{ timer: TimerState }>);
   
   // Navigation state
   currentView: 'reports' | 'home' | 'planning' = 'home';
@@ -60,7 +64,11 @@ export class App implements OnInit {
   unreadMessages = 3;
   showUserMenu = false;
   
-  // Footer properties
+  // Footer properties - now from store
+  isConnected$ = this.store.select(state => state.timer.isConnected);
+  pingTime$ = this.store.select(state => state.timer.pingTime);
+  
+  // Sync values for template (temporary until we make template async)
   isConnected = true;
   pingTime: number | null = null;
   
@@ -147,8 +155,22 @@ export class App implements OnInit {
       day: 'numeric' 
     });
     
-    // Test initial connection
-    this.pingServer();
+    // Subscribe to connection status from store
+    this.isConnected$.subscribe(isConnected => {
+      this.isConnected = isConnected;
+    });
+    
+    this.pingTime$.subscribe(pingTime => {
+      this.pingTime = pingTime;
+    });
+    
+    // Test initial connection using store action
+    this.store.dispatch(TimerActions.pingServer());
+    
+    // Set up periodic health checks every 30 seconds
+    timer(30000, 30000).subscribe(() => {
+      this.store.dispatch(TimerActions.pingServer());
+    });
 
     // Toggle Android platform class so we can apply small OS-specific CSS fixes
     try {
@@ -326,6 +348,21 @@ export class App implements OnInit {
     this.currentView = 'planning';
   this.showLeftArrow = false;
   this.showRightArrow = false;
+  }
+
+  // Handle view changes from system status component
+  onViewChange(view: 'reports' | 'home' | 'planning') {
+    switch (view) {
+      case 'reports':
+        this.navigateToReports();
+        break;
+      case 'home':
+        this.navigateToHome();
+        break;
+      case 'planning':
+        this.navigateToPlanning();
+        break;
+    }
   }
 
   // Global keyboard shortcuts
@@ -514,13 +551,6 @@ export class App implements OnInit {
 
   // Footer methods
   pingServer() {
-    const start = performance.now();
-    fromFetch('/api/health').pipe(
-      switchMap(res => of(res.status === 200)),
-      catchError(() => of(false))
-    ).subscribe((connected) => {
-      this.isConnected = connected;
-      this.pingTime = Math.round(performance.now() - start);
-    });
+    this.store.dispatch(TimerActions.pingServer());
   }
 }

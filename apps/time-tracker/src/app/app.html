@@ -71,30 +71,11 @@
     
   </div>
 
-  <!-- View Indicator Dots (Mobile) -->
-  <div class="view-indicators">
-    <button 
-      class="indicator" 
-      [class.active]="currentView === 'reports'"
-      (click)="navigateToReports()"
-      aria-label="Reports">
-      📊
-    </button>
-    <button 
-      class="indicator" 
-      [class.active]="currentView === 'home'"
-      (click)="navigateToHome()"
-      aria-label="Home">
-      🏠
-    </button>
-    <button 
-      class="indicator" 
-      [class.active]="currentView === 'planning'"
-      (click)="navigateToPlanning()"
-      aria-label="Planning">
-      📋
-    </button>
-  </div>
+  <!-- System Status Component -->
+  <app-system-status 
+    [currentView]="currentView"
+    (viewChange)="onViewChange($event)">
+  </app-system-status>
 
   <app-footer 
     [isConnected]="isConnected"

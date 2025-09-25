@@ -6,6 +6,10 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
+// NgRx
+import { StoreModule } from '@ngrx/store';
+import { timerReducer } from './store/timer.reducer';
+
 // Angular Material
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +36,7 @@ import { CommitCategoryBarComponent } from './components/commit-category-bar/com
 import { CommitSessionsTimelineComponent } from './components/commit-sessions-timeline/commit-sessions-timeline.component';
 import { PlanningComponent } from './components/planning/planning.component';
 import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-edit-drawer.component';
+import { SystemStatusComponent } from './components/system-status/system-status.component';
 
 @NgModule({
   declarations: [
@@ -40,11 +45,12 @@ import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-e
     HeaderComponent,
     FooterComponent,
     ReportsComponent,
-  PlanningComponent,
-  CommitAnalyticsComponent,
-  CommitHeatmapComponent,
-  CommitCategoryBarComponent,
-  CommitSessionsTimelineComponent
+    PlanningComponent,
+    CommitAnalyticsComponent,
+    CommitHeatmapComponent,
+    CommitCategoryBarComponent,
+    CommitSessionsTimelineComponent,
+    SystemStatusComponent
   ],
   imports: [
     BrowserModule,
@@ -65,6 +71,7 @@ import { QuickEditDrawerComponent } from './components/quick-edit-drawer/quick-e
     MatTooltipModule,
     MatSnackBarModule,
     DragDropModule,
+    StoreModule.forRoot({ timer: timerReducer }),
     RouterModule.forRoot([
       { path: '', component: HomeComponent },
       { path: 'commit-analytics', component: CommitAnalyticsComponent }

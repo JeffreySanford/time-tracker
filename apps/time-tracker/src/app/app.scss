@@ -44,6 +44,7 @@
   top: 1rem;
   z-index: 20;
   background: rgba(255,255,255,0.9);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(0,0,0,0.08);
   padding: 0.55rem 0.9rem;
@@ -81,9 +82,10 @@
   .nav-arrow {
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     background: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    border: none;
     border: none;
     width: 60px;
     height: 60px;
@@ -133,43 +135,7 @@
 .view-panel.reports .inline-back.left { left: 1rem; }
 .view-panel.planning .inline-back.right { right: 1rem; }
 
-// View Indicators (Mobile)
-.view-indicators {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  
-  .indicator {
-    background: none;
-    border: none;
-  font-size: var(--font-large, 1.25rem);
-    padding: 0.5rem;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    opacity: 0.5;
-    
-    &:hover {
-      background: rgba(102, 126, 234, 0.1);
-      transform: scale(1.1);
-    }
-    
-    &.active {
-      opacity: 1;
-      background: rgba(102, 126, 234, 0.2);
-      transform: scale(1.1);
-    }
-  }
-}
+// View Indicators styles moved to SystemStatusComponent
 
 // Animations
 @keyframes fadeInArrow {
@@ -184,27 +150,12 @@
 }
 
 // Responsive Design
-@media (max-width: 768px) {
-  // Hide navigation arrows on mobile
-  .nav-arrows {
-    display: none;
-  }
-  
-  // Show view indicators on mobile
-  .view-indicators {
-    display: flex;
-  }
-}
+// Mobile styles moved to mobile.scss
 
 @media (min-width: 769px) {
   // Show navigation arrows on desktop when hovering
   .nav-arrows {
     display: block;
-  }
-  
-  // Hide view indicators on desktop
-  .view-indicators {
-    display: none;
   }
 }
 
@@ -232,13 +183,7 @@
   }
 }
 
-// Touch-friendly improvements
-@media (pointer: coarse) {
-  .view-indicators .indicator {
-    padding: 0.75rem;
-  font-size: var(--font-xlarge, 1.5rem);
-  }
-}
+// Touch-friendly improvements moved to mobile.scss
 
 // Prevent accidental selection only on explicit drag zones instead of whole app
 // .app-container global no-select removed to allow copy/paste

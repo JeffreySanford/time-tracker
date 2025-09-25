@@ -1,7 +1,10 @@
-import { Component, Input, Output, EventEmitter, ViewChildren, QueryList, AfterViewInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChildren, QueryList, AfterViewInit, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { KanbanColumnsService } from '../../services/kanban-columns.service';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
 import { Project } from '../../models/project.model';
+import * as TimerActions from '../../store/timer.actions';
+import { TimerState } from '../../store/timer.reducer';
 
 interface Task {
   id: string;
@@ -30,7 +33,7 @@ interface Column {
   styleUrls: ['./planning.component.scss'],
   standalone: false
 })
-export class PlanningComponent implements OnChanges, AfterViewInit {
+export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
   @Input() projects: Project[] = [];
   @Input() allTasks: Task[] = [];
   @Input() selectedProject!: Project; // Will always be provided by parent
@@ -64,6 +67,14 @@ export class PlanningComponent implements OnChanges, AfterViewInit {
 
   get kanbanColumns(): Column[] {
     return this._kanbanColumns;
+  }
+
+  ngOnInit(): void {
+    // Trigger health check when kanban/planning page loads to update connection status
+    this.store.dispatch(TimerActions.pingServer());
+    
+    // Load kanban columns from API to ensure we have fresh data
+    this.kanbanService.refresh().subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -127,6 +138,7 @@ export class PlanningComponent implements OnChanges, AfterViewInit {
   }
 
   private kanbanService = inject(KanbanColumnsService);
+  private store = inject(Store<{ timer: TimerState }>);
 
   get dropListIds(): string[] {
     return this.connectedDropListIds;

@@ -1,8 +1,11 @@
 import { Component, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Store } from '@ngrx/store';
 import { TimeWorkedApiService, TimeWorkedSessionDto } from './services/timeworked-api.service';
 import { Project, ProjectTag } from './models/project.model';
 import { Subject, Subscription } from 'rxjs';
+import * as TimerActions from './store/timer.actions';
+import { TimerState } from './store/timer.reducer';
 
 // Use shared Project and ProjectTag types from models/project.model.ts
 
@@ -109,6 +112,7 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
 
   private http = inject(HttpClient);
   private timeWorked = inject(TimeWorkedApiService);
+  private store = inject(Store<{ timer: TimerState }>);
 
   constructor() {
     const today = new Date();
@@ -117,6 +121,9 @@ export class HomeComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
+    // Trigger health check when home page loads to update connection status
+    this.store.dispatch(TimerActions.pingServer());
+    
     // If no selectedProject provided yet, default to first available project
     if (!this.selectedProject && this.projects.length > 0) {
       this.selectedProject = this.projects[0];

@@ -3,7 +3,7 @@
     <div class="header-left">
   <h1 class="app-title">⚡ Time Forge</h1>
       <div class="date-range-compact">
-        <select class="range-dropdown" [(ngModel)]="selectedRange" (change)="onRangeChange()">
+        <select class="range-dropdown" [(ngModel)]="selectedRange" (change)="onRangeChange()" title="Select date range">
           <option value="1">Today</option>
           <option value="3">3 Days</option>
           <option value="7">Week</option>

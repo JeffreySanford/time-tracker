@@ -1,0 +1,145 @@
+// System Status (View Indicators) Component Styles
+
+// Base styles for the view indicators container
+.view-indicators {
+  position: fixed;
+  bottom: 20px;
+  display: none; // Hidden by default, shown via media queries
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  
+  .indicator {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: scale(1.1);
+    }
+    
+    &.active {
+      opacity: 1;
+      background: rgba(102, 126, 234, 0.2);
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Mobile-specific styles
+@media (max-width: 768px) {
+  .view-indicators {
+    display: flex;
+    left: 0.5rem;
+    right: 0.5rem;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    min-height: 50px;
+    
+    .indicator {
+      font-size: 1.1rem;
+      padding: 0.4rem;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 10px;
+      
+      &:active {
+        transform: scale(0.95);
+        background: rgba(102, 126, 234, 0.2);
+      }
+      
+      &.active {
+        opacity: 1;
+        background: rgba(102, 126, 234, 0.15);
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+// Touch-friendly improvements for mobile devices
+@media (pointer: coarse) and (max-width: 768px) {
+  .view-indicators .indicator {
+    padding: 0.6rem;
+    font-size: 1.3rem;
+    min-width: 46px;
+    min-height: 46px;
+    
+    // Enhanced touch feedback
+    &:active {
+      transform: scale(0.9);
+      transition: transform 0.1s ease;
+    }
+  }
+}
+
+// Mobile orientation specific adjustments
+@media (max-width: 768px) and (orientation: portrait) {
+  .view-indicators {
+    bottom: 15px; // Closer to bottom edge in portrait
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .view-indicators {
+    bottom: 10px; // Even closer in landscape due to smaller height
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+// Web/Desktop-specific styles
+@media (min-width: 769px) {
+  .view-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 2rem;
+    left: 2rem;
+    right: 2rem;
+    min-height: 70px;
+    
+    .indicator {
+      font-size: 1.5rem;
+      padding: 0.75rem;
+      min-width: 50px;
+      min-height: 50px;
+      border-radius: 15px;
+      
+      &:hover {
+        background: rgba(102, 126, 234, 0.15);
+        transform: scale(1.15);
+        opacity: 0.8;
+      }
+      
+      &.active {
+        opacity: 1;
+        background: rgba(102, 126, 234, 0.25);
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+    }
+    
+    // Web-specific hover effects for the container
+    &:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+  }
+}

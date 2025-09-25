@@ -486,3 +486,11 @@ p, span, div { font-size: 0.75rem; } /* Default 14px for most text */
   .toolbar { flex-wrap: wrap; gap: .5rem; }
   .buttons { width: 100%; }
 }
+
+/* ===== MOBILE NAVIGATION STYLING ===== */
+@media (max-width: 768px) {
+  // Hide navigation arrows on mobile
+  .nav-arrows {
+    display: none;
+  }
+}

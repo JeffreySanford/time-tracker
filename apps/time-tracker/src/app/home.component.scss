@@ -699,6 +699,7 @@
     .tag-legend {
       margin-left: auto;
       background: rgba(255,255,255,0.9);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(0,0,0,0.08);
       border-radius: 16px;
@@ -946,13 +947,13 @@
 // High DPI / Retina Display Support
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .home-header {
-    backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
   }
 
   .timer-card {
-    backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
   }
 }
 
