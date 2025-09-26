@@ -358,17 +358,29 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
 
   // Get total count of all tasks across all projects (for the banner)
   getTotalTasks(): number {
-    return this.allTasks.length;
+    return this.getRelevantTasks().length;
   }
 
   // Get count of tasks in a specific column/status across all projects (for the banner)
   getTotalColumnCount(status: string): number {
-    return this.allTasks.filter((task) => task.status === status).length;
+    return this.getRelevantTasks().filter((task) => task.status === status)
+      .length;
   }
 
   // Get all unique statuses that exist across all tasks
   getAllStatuses(): string[] {
-    return Array.from(new Set(this.allTasks.map((task) => task.status)));
+    return Array.from(
+      new Set(this.getRelevantTasks().map((task) => task.status))
+    );
+  }
+
+  // Helper: tasks to consider for banner/status summary. If a project is selected
+  // we scope to that project's tasks; otherwise use all tasks.
+  private getRelevantTasks(): Task[] {
+    if (this.selectedProject?.id) {
+      return this.allTasks.filter((t) => t.project === this.selectedProject.id);
+    }
+    return this.allTasks;
   }
 
   // Get statuses to display in the banner based on showExtendedColumns setting

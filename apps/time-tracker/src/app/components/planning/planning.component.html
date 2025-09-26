@@ -84,7 +84,13 @@
     <div class="overview-stats">
       <div class="overview-header">
         <h3 class="totals-title">📊 System Overview</h3>
-        <p class="totals-subtitle">Task distribution across all projects</p>
+        <p class="totals-subtitle">
+          Task distribution
+          <ng-container *ngIf="selectedProject; else allProjects">
+            for {{ selectedProject.name.substring(2) }}
+          </ng-container>
+          <ng-template #allProjects>across all projects</ng-template>
+        </p>
       </div>
       <div class="totals-stats">
         <app-status-summary [items]="bannerStatuses"></app-status-summary>
