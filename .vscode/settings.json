@@ -19,5 +19,44 @@
         "**/node_modules": true,
         "**/dist": true,
         "**/.nx": true
-    }
+    },
+    // Explicitly associate TypeScript files for Angular
+    "files.associations": {
+        "*.ts": "typescript",
+        "*.component.html": "html",
+        "*.component.scss": "scss",
+        "*.component.css": "css"
+    },
+    // Angular-specific TypeScript configuration
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.suggest.completeFunctionCalls": true,
+    "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+    // Angular Language Service configuration
+    "angular.enable-strict-mode-prompt": false,
+    "angular.experimental-ivy": true,
+    "angular.enableTracing": false,
+    // HTML formatting for Angular templates
+    "html.format.wrapAttributes": "force-aligned",
+    "html.format.wrapLineLength": 120,
+    "html.format.indentInnerHtml": true,
+    // Emmet for Angular templates
+    "emmet.includeLanguages": {
+        "typescript": "html",
+        "angular": "html"
+    },
+    "emmet.triggerExpansionOnTab": true,
+    // Auto-save and format settings for Angular development
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll.eslint": "explicit"
+    },
+    // Angular file watching optimization
+    "typescript.tsc.autoDetect": "on",
+    "typescript.preferences.quoteStyle": "single",
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.java.home": "C:/Program Files/Android/Android Studio/jbr",
+    "java.import.gradle.version": "wrapper"    // (if this key exists, ensure it's not a fixed version)
 }

@@ -4,19 +4,45 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-  "moduleResolution": "node",
-  "resolveJsonModule": true,
-  "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
+    "paths": {
+      "@time-tracker/shared-ui": [
+        "libs/shared/shared-ui/src/index.ts"
+      ]
+    }
   },
-  "exclude": ["node_modules", "tmp", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": [
+    "node_modules",
+    "tmp",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }

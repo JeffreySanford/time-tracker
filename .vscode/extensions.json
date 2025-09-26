@@ -1,8 +1,12 @@
 {
   "recommendations": [
     "nrwl.angular-console",
+    "angular.ng-template",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "ms-playwright.playwright"
+    "ms-playwright.playwright",
+    "johnpapa.angular2",
+    "cyrilletuzi.angular-schematics",
+    "mikael.angular-beastcode"
   ]
 }

@@ -3,17 +3,17 @@
     <h3>Edit Task</h3>
     <mat-form-field appearance="outline" class="full">
       <mat-label>Title</mat-label>
-      <input matInput [(ngModel)]="task.title" />
+      <input matInput [(ngModel)]="task.title" placeholder="Enter task title" title="Task Title" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Time (seconds)</mat-label>
-      <input matInput type="number" [(ngModel)]="task.timeSpent" />
+      <input matInput type="number" [(ngModel)]="task.timeSpent" placeholder="Enter time in seconds" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Status</mat-label>
-      <select matNativeControl [(ngModel)]="task.status">
+      <select matNativeControl [(ngModel)]="task.status" title="Task Status">
         <option value="active">Active</option>
         <option value="backlog">Backlog</option>
         <option value="completed">Completed</option>

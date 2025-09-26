@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class KanbanColumn extends Document {
   @Prop({ required: true })
-  id?: string;
+  override id?: string;
 
   @Prop()
   name?: string;

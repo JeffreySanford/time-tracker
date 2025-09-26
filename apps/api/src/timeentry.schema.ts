@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class TimeEntry extends Document {
   @Prop({ required: true })
-  id?: string;
+  override id?: string;
 
   @Prop()
   taskId?: string;

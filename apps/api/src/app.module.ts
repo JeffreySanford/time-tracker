@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TimeWorkedModule } from './timeworked.module';
 import { HealthController } from './health.controller';
@@ -31,10 +30,10 @@ import { GitIngestController } from './git-ingest.controller';
     MongooseModule.forRootAsync({
       useFactory: async () => {
         // Prefer explicit MONGO_URI when provided
-        let uri = process.env.MONGO_URI;
+        let uri = process.env['MONGO_URI'];
         if (uri) {
           // use provided URI
-           console.log('[MongoDB] Using MONGO_URI from environment');
+          console.log('[MongoDB] Using MONGO_URI from environment');
           return { uri };
         }
 
@@ -42,14 +41,19 @@ import { GitIngestController } from './git-ingest.controller';
         const local = 'mongodb://localhost:27017/time-tracker';
         // If we cannot rely on a local mongod, start an in-memory server for dev
         try {
-           console.log('[MongoDB] No MONGO_URI provided; starting in-memory MongoDB for development...');
+          console.log(
+            '[MongoDB] No MONGO_URI provided; starting in-memory MongoDB for development...'
+          );
           const mongod = await MongoMemoryServer.create();
           uri = mongod.getUri();
-           console.log('[MongoDB] Using in-memory MongoDB at:', uri);
+          console.log('[MongoDB] Using in-memory MongoDB at:', uri);
           return { uri };
         } catch (err) {
           // fallback to localhost if in-memory cannot be started
-          console.warn('[MongoDB] Failed to start in-memory MongoDB, falling back to localhost:', err);
+          console.warn(
+            '[MongoDB] Failed to start in-memory MongoDB, falling back to localhost:',
+            err
+          );
           return { uri: local };
         }
       },
@@ -59,7 +63,7 @@ import { GitIngestController } from './git-ingest.controller';
       { name: Project.name, schema: ProjectSchema },
       { name: Task.name, schema: TaskSchema },
       { name: User.name, schema: UserSchema },
-  { name: Tag.name, schema: TagSchema },
+      { name: Tag.name, schema: TagSchema },
       { name: KanbanColumn.name, schema: KanbanColumnSchema },
       { name: TimeEntry.name, schema: TimeEntrySchema },
       { name: CommitWorkLog.name, schema: CommitWorkLogSchema },

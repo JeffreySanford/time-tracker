@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema({ collection: 'commit_sessions', timestamps: true })
 export class CommitSession extends Document {
   @Prop({ required: true, unique: true })
-  id!: string; // UUID
+  override id!: string; // UUID
 
   @Prop({ required: true })
   authorEmail!: string;

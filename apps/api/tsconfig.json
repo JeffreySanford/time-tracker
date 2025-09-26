@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "commonjs",
+    // Switch to CommonJS so ts-node can resolve extension-less relative imports (e.g. './app.module')
+    // without requiring explicit .js extensions under ESM. This isolates change to API only.
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "target": "es2017",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -11,6 +14,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

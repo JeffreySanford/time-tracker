@@ -1,10 +1,28 @@
-import { Component, Input, Output, EventEmitter, ViewChildren, QueryList, AfterViewInit, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChildren,
+  QueryList,
+  AfterViewInit,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { KanbanColumnsService } from '../../services/kanban-columns.service';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 import { Project } from '../../models/project.model';
 import * as TimerActions from '../../store/timer.actions';
 import { TimerState } from '../../store/timer.reducer';
+import { StatusSummaryItem } from '@time-tracker/shared-ui';
 
 interface Task {
   id: string;
@@ -31,7 +49,7 @@ interface Column {
   selector: 'app-planning',
   templateUrl: './planning.component.html',
   styleUrls: ['./planning.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
   @Input() projects: Project[] = [];
@@ -53,11 +71,13 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
     description: '',
     tags: [],
     priority: 'medium',
-    estimatedTime: 3600 // 1 hour default
+    estimatedTime: 3600, // 1 hour default
   };
 
   get filteredTasks(): Task[] {
-    return this.allTasks.filter(task => task.project === this.selectedProject.id);
+    return this.allTasks.filter(
+      (task) => task.project === this.selectedProject.id
+    );
   }
 
   // Stable kanban columns array used by the template. Must be kept stable
@@ -69,25 +89,35 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
     return this._kanbanColumns;
   }
 
+  // Expose banner statuses array for use in template and StatusSummaryComponent
+  bannerStatuses: StatusSummaryItem[] = [];
+
   ngOnInit(): void {
     // Trigger health check when kanban/planning page loads to update connection status
     this.store.dispatch(TimerActions.pingServer());
-    
+
     // Load kanban columns from API to ensure we have fresh data
     this.kanbanService.refresh().subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     // Rebuild columns whenever relevant inputs change
-    if (changes['allTasks'] || changes['selectedProject'] || changes['showExtendedColumns']) {
+    if (
+      changes['allTasks'] ||
+      changes['selectedProject'] ||
+      changes['showExtendedColumns']
+    ) {
       this.buildKanbanColumns();
+      this.computeBannerStatuses();
     }
   }
 
   private buildKanbanColumns() {
     const baseOrder = ['backlog', 'active', 'completed'];
 
-    const extraStatuses = Array.from(new Set(this.filteredTasks.map(t => t.status))).filter(s => !baseOrder.includes(s));
+    const extraStatuses = Array.from(
+      new Set(this.filteredTasks.map((t) => t.status))
+    ).filter((s) => !baseOrder.includes(s));
 
     const order = [...baseOrder];
     if (this.showExtendedColumns && extraStatuses.length) {
@@ -99,7 +129,10 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
       if (s === 'backlog') return 'Backlog';
       if (s === 'active') return 'Active';
       if (s === 'completed') return 'Completed';
-      return s.split(/-|_/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      return s
+        .split(/-|_/)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ');
     };
 
     const colorFor = (s: string) => {
@@ -110,11 +143,22 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
     };
 
     // Build stable arrays for each column's tasks
-    this._kanbanColumns = order.map(id => ({
+    this._kanbanColumns = order.map((id) => ({
       id,
       title: titleFor(id),
-      tasks: this.filteredTasks.filter(task => task.status === id),
-      color: colorFor(id)
+      tasks: this.filteredTasks.filter((task) => task.status === id),
+      color: colorFor(id),
+    }));
+  }
+
+  private computeBannerStatuses() {
+    const statuses = this.getBannerStatuses();
+    this.bannerStatuses = statuses.map((s) => ({
+      id: s.id,
+      label: s.label,
+      color: s.color,
+      count: s.count,
+      cssClass: this.getStatusCssClass(s.id),
     }));
   }
 
@@ -128,13 +172,19 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
 
   ngAfterViewInit(): void {
     const build = () => {
-      this.connectedDropListIds = this.dropLists.toArray().map(dl => dl.id).filter(Boolean);
+      this.connectedDropListIds = this.dropLists
+        .toArray()
+        .map((dl) => dl.id)
+        .filter(Boolean);
     };
 
     build();
     this.dropLists.changes.subscribe(build);
-  // Debug: print connected drop lists so dev can confirm CDK wiring
-  console.log('PlanningComponent ngAfterViewInit connectedDropLists:', this.connectedDropLists.map(d => d.id));
+    // Debug: print connected drop lists so dev can confirm CDK wiring
+    console.log(
+      'PlanningComponent ngAfterViewInit connectedDropLists:',
+      this.connectedDropLists.map((d) => d.id)
+    );
   }
 
   private kanbanService = inject(KanbanColumnsService);
@@ -154,7 +204,7 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
 
   // Helper used by templates to get task counts safely by status id
   getColumnCount(status: string): number {
-    const col = this.kanbanColumns.find(c => c.id === status);
+    const col = this.kanbanColumns.find((c) => c.id === status);
     return col ? col.tasks.length : 0;
   }
 
@@ -185,7 +235,7 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
       description: '',
       tags: [],
       priority: 'medium',
-      estimatedTime: 3600
+      estimatedTime: 3600,
     };
   }
 
@@ -202,7 +252,7 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
       timeSpent: 0,
       createdAt: new Date(),
       priority: this.newTask.priority || 'medium',
-      estimatedTime: this.newTask.estimatedTime || 3600
+      estimatedTime: this.newTask.estimatedTime || 3600,
     };
 
     this.taskUpdate.emit(task);
@@ -219,7 +269,11 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
   // a column or between columns and emit an updated task with the new status.
   onCdkDrop(event: CdkDragDrop<Task[]>, targetStatus: string) {
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
       return;
     }
 
@@ -241,9 +295,9 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
       this.taskUpdate.emit(updated);
       // Persist new order of columns to server (best-effort)
       try {
-        const orderIds = this.kanbanColumns.map(c => c.id);
+        const orderIds = this.kanbanColumns.map((c) => c.id);
         this.kanbanService.updateOrder(orderIds).subscribe({
-          error: (err) => console.error('Failed to persist kanban order', err)
+          error: (err) => console.error('Failed to persist kanban order', err),
         });
       } catch (e) {
         console.error('Error while persisting kanban order', e);
@@ -258,7 +312,7 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
   formatTime(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
@@ -275,15 +329,19 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
 
   getPriorityColor(priority: string): string {
     switch (priority) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#6b7280';
+      case 'high':
+        return '#ef4444';
+      case 'medium':
+        return '#f59e0b';
+      case 'low':
+        return '#10b981';
+      default:
+        return '#6b7280';
     }
   }
 
   getProjectColor(projectId: string): string {
-    const project = this.projects.find(p => p.id === projectId);
+    const project = this.projects.find((p) => p.id === projectId);
     return project ? project.color ?? '#667eea' : '#667eea';
   }
 
@@ -294,6 +352,104 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   removeTag(tagName: string) {
-    this.newTask.tags = this.newTask.tags?.filter(tag => tag !== tagName) || [];
+    this.newTask.tags =
+      this.newTask.tags?.filter((tag) => tag !== tagName) || [];
+  }
+
+  // Get total count of all tasks across all projects (for the banner)
+  getTotalTasks(): number {
+    return this.allTasks.length;
+  }
+
+  // Get count of tasks in a specific column/status across all projects (for the banner)
+  getTotalColumnCount(status: string): number {
+    return this.allTasks.filter((task) => task.status === status).length;
+  }
+
+  // Get all unique statuses that exist across all tasks
+  getAllStatuses(): string[] {
+    return Array.from(new Set(this.allTasks.map((task) => task.status)));
+  }
+
+  // Get statuses to display in the banner based on showExtendedColumns setting
+  getBannerStatuses(): Array<{
+    id: string;
+    label: string;
+    color: string;
+    count: number;
+  }> {
+    const baseStatuses = ['backlog', 'active', 'completed'];
+    const allStatuses = this.getAllStatuses();
+
+    // Always show base statuses, add extended ones if enabled and they have tasks
+    let statusesToShow = [...baseStatuses];
+
+    if (this.showExtendedColumns) {
+      const extraStatuses = allStatuses.filter(
+        (s) => !baseStatuses.includes(s) && this.getTotalColumnCount(s) > 0
+      );
+      statusesToShow.push(...extraStatuses);
+    }
+
+    return statusesToShow.map((status) => ({
+      id: status,
+      label: this.getStatusLabel(status),
+      color: this.getStatusColor(status),
+      count: this.getTotalColumnCount(status),
+    }));
+  }
+
+  // Convert status ID to human-readable label
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'backlog':
+        return 'Backlog';
+      case 'active':
+        return 'Active';
+      case 'completed':
+        return 'Done';
+      default:
+        // Convert kebab-case or snake_case to Title Case
+        return status
+          .split(/-|_/)
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+    }
+  }
+
+  // Get color for status
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'backlog':
+        return '#f59e0b';
+      case 'active':
+        return '#3b82f6';
+      case 'completed':
+        return '#10b981';
+      case 'in-review':
+        return '#8b5cf6';
+      case 'testing':
+        return '#f97316';
+      case 'blocked':
+        return '#ef4444';
+      case 'on-hold':
+        return '#6b7280';
+      default:
+        return '#64748b'; // Default gray for unknown statuses
+    }
+  }
+
+  // Get CSS class for status styling
+  getStatusCssClass(status: string): string {
+    switch (status) {
+      case 'backlog':
+        return 'backlog';
+      case 'active':
+        return 'active';
+      case 'completed':
+        return 'done';
+      default:
+        return 'extended';
+    }
   }
 }

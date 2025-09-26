@@ -8,7 +8,8 @@
         <select 
           class="period-selector" 
           [(ngModel)]="reportPeriod" 
-          (ngModelChange)="onPeriodChange()">
+          (ngModelChange)="onPeriodChange()"
+          title="Select time period for report">
           <option value="1">Today</option>
           <option value="7">This Week</option>
           <option value="30">This Month</option>
@@ -209,7 +210,7 @@
       <div class="billable-amount">Amount: {{ billableAmount | currency:'USD' }}</div>
       <mat-form-field appearance="outline" class="rate-field">
         <mat-label>Rate</mat-label>
-        <input matInput type="number" [(ngModel)]="hourlyRate" />
+        <input matInput type="number" [(ngModel)]="hourlyRate" placeholder="Enter hourly rate" />
       </mat-form-field>
     </div>
   </div>
