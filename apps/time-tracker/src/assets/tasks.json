@@ -4,162 +4,195 @@
     "title": "Design portfolio landing page",
     "description": "Create an engaging hero section and layout",
     "project": "portfolio",
-  "tags": ["design", "frontend"],
+    "tags": [
+      "design",
+      "frontend"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 7200,
     "estimatedTime": 14400,
     "status": "completed",
     "priority": "high",
-  "createdAt": "2025-08-18T00:00:00.000Z",
-  "updatedAt": "2025-08-18T00:00:00.000Z"
+    "createdAt": "2025-08-18T00:00:00.000Z",
+    "updatedAt": "2025-08-18T00:00:00.000Z"
   },
   {
     "id": "2",
     "title": "Implement responsive navigation",
     "description": "Add mobile-friendly navigation menu",
     "project": "portfolio",
-  "tags": ["frontend", "responsive"],
+    "tags": [
+      "frontend",
+      "responsive"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 3600,
     "estimatedTime": 7200,
     "status": "active",
     "priority": "medium",
-  "createdAt": "2025-08-19T00:00:00.000Z",
-  "updatedAt": "2025-08-19T00:00:00.000Z"
+    "createdAt": "2025-08-19T00:00:00.000Z",
+    "updatedAt": "2025-08-19T00:00:00.000Z"
   },
   {
     "id": "3",
     "title": "Optimize portfolio images",
     "description": "Compress and optimize all portfolio images",
     "project": "portfolio",
-  "tags": ["optimization", "images"],
+    "tags": [
+      "optimization",
+      "images"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 1800,
     "estimatedTime": 3600,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "low",
-  "createdAt": "2025-08-17T00:00:00.000Z",
-  "updatedAt": "2025-08-17T00:00:00.000Z"
+    "createdAt": "2025-08-17T00:00:00.000Z",
+    "updatedAt": "2025-08-17T00:00:00.000Z"
   },
   {
     "id": "4",
     "title": "Build analytics dashboard",
     "description": "Create comprehensive data visualization dashboard",
     "project": "true-north-insights",
-  "tags": ["analytics", "dashboard"],
+    "tags": [
+      "analytics",
+      "dashboard"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 14400,
     "estimatedTime": 28800,
     "status": "active",
     "priority": "high",
-  "createdAt": "2025-08-16T00:00:00.000Z",
-  "updatedAt": "2025-08-16T00:00:00.000Z"
+    "createdAt": "2025-08-16T00:00:00.000Z",
+    "updatedAt": "2025-08-16T00:00:00.000Z"
   },
   {
     "id": "5",
     "title": "Implement data pipeline",
     "description": "Set up automated data collection and processing",
     "project": "true-north-insights",
-  "tags": ["backend", "data"],
+    "tags": [
+      "backend",
+      "data"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 10800,
     "estimatedTime": 14400,
     "status": "completed",
     "priority": "high",
-  "createdAt": "2025-08-15T00:00:00.000Z",
-  "updatedAt": "2025-08-15T00:00:00.000Z"
+    "createdAt": "2025-08-15T00:00:00.000Z",
+    "updatedAt": "2025-08-15T00:00:00.000Z"
   },
   {
     "id": "6",
     "title": "Add real-time notifications",
     "description": "Implement WebSocket-based alert system",
     "project": "true-north-insights",
-  "tags": ["realtime", "notifications"],
+    "tags": [
+      "realtime",
+      "notifications"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 5400,
     "estimatedTime": 7200,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "medium",
-  "createdAt": "2025-08-14T00:00:00.000Z",
-  "updatedAt": "2025-08-14T00:00:00.000Z"
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z"
   },
   {
     "id": "7",
     "title": "Design kanban board interface",
     "description": "Create drag-and-drop task management interface",
     "project": "forge-board",
-  "tags": ["design", "ui"],
+    "tags": [
+      "design",
+      "ui"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 9000,
     "estimatedTime": 14400,
     "status": "active",
     "priority": "high",
-  "createdAt": "2025-08-13T00:00:00.000Z",
-  "updatedAt": "2025-08-13T00:00:00.000Z"
+    "createdAt": "2025-08-13T00:00:00.000Z",
+    "updatedAt": "2025-08-13T00:00:00.000Z"
   },
   {
     "id": "8",
     "title": "Implement team collaboration features",
     "description": "Add commenting and assignment functionality",
     "project": "forge-board",
-  "tags": ["collaboration", "features"],
+    "tags": [
+      "collaboration",
+      "features"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 12600,
     "estimatedTime": 21600,
     "status": "completed",
     "priority": "medium",
-  "createdAt": "2025-08-13T00:00:00.000Z",
-  "updatedAt": "2025-08-13T00:00:00.000Z"
+    "createdAt": "2025-08-13T00:00:00.000Z",
+    "updatedAt": "2025-08-13T00:00:00.000Z"
   },
   {
     "id": "9",
     "title": "Setup project structure",
     "description": "Initialize the project with proper folder structure",
     "project": "time-forge",
-  "tags": ["setup", "architecture"],
+    "tags": [
+      "setup",
+      "architecture"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 3600,
     "estimatedTime": 7200,
     "status": "completed",
     "priority": "high",
-  "createdAt": "2025-08-18T00:00:00.000Z",
-  "updatedAt": "2025-08-18T00:00:00.000Z"
+    "createdAt": "2025-08-18T00:00:00.000Z",
+    "updatedAt": "2025-08-18T00:00:00.000Z"
   },
   {
     "id": "10",
     "title": "Implement user authentication",
     "description": "Add login and registration functionality",
     "project": "time-forge",
-  "tags": ["auth", "security"],
+    "tags": [
+      "auth",
+      "security"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 7200,
     "estimatedTime": 14400,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "high",
-  "createdAt": "2025-08-17T00:00:00.000Z",
-  "updatedAt": "2025-08-17T00:00:00.000Z"
+    "createdAt": "2025-08-17T00:00:00.000Z",
+    "updatedAt": "2025-08-17T00:00:00.000Z"
   },
   {
     "id": "11",
     "title": "Design database schema",
     "description": "Plan and create the database structure",
     "project": "time-forge",
-  "tags": ["database", "design"],
+    "tags": [
+      "database",
+      "design"
+    ],
     "assignees": [],
     "points": null,
     "timeSpent": 5400,
     "estimatedTime": 10800,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "medium",
     "createdAt": "2025-08-18T00:00:00.000Z",
     "updatedAt": "2025-08-18T00:00:00.000Z"
@@ -169,8 +202,12 @@
     "title": "Initialize NX workspace & libs",
     "description": "Create NX workspace, apps/frontend, apps/backend; shared DTO lib.",
     "project": "time-forge",
-  "tags": ["setup"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "setup"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 2,
     "timeSpent": null,
     "estimatedTime": null,
@@ -184,8 +221,12 @@
     "title": "TimeEntry schema & DTO",
     "description": "Define TimeEntry DTO (start, end, minutes, billable, task link).",
     "project": "time-forge",
-  "tags": ["backend"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "backend"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 3,
     "timeSpent": null,
     "estimatedTime": null,
@@ -199,12 +240,17 @@
     "title": "Material 3 shell + Kanban board",
     "description": "MD3 layout, columns, drag & drop; persistence to in-memory Mongo.",
     "project": "time-forge",
-  "tags": ["UI", "ux"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "UI",
+      "ux"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 5,
     "timeSpent": null,
     "estimatedTime": null,
-  "status": "active",
+    "status": "active",
     "priority": "high",
     "createdAt": "2025-08-13T14:00:00.000Z",
     "updatedAt": "2025-08-18T19:10:00.000Z"
@@ -214,12 +260,16 @@
     "title": "WebSocket logger (hot observable)",
     "description": "Bidirectional logs; reconnect w/ fixed retry; DTO-based.",
     "project": "time-forge",
-  "tags": ["backend"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "backend"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 3,
     "timeSpent": null,
     "estimatedTime": null,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "medium",
     "createdAt": "2025-08-14T15:00:00.000Z",
     "updatedAt": "2025-08-18T16:25:00.000Z"
@@ -229,12 +279,16 @@
     "title": "Auth: JWT handshake after WS connect",
     "description": "Send JWT after initial WS connect; separate API keys.",
     "project": "time-forge",
-  "tags": ["security"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "security"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 3,
     "timeSpent": null,
     "estimatedTime": null,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "high",
     "createdAt": "2025-08-14T18:30:00.000Z",
     "updatedAt": "2025-08-14T18:30:00.000Z"
@@ -244,12 +298,16 @@
     "title": "Time tracker UI (start/stop/pause)",
     "description": "Floating control + keyboard shortcuts; billable toggle.",
     "project": "time-forge",
-  "tags": ["UI"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "UI"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 5,
     "timeSpent": null,
     "estimatedTime": null,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "high",
     "createdAt": "2025-08-15T14:15:00.000Z",
     "updatedAt": "2025-08-18T21:40:00.000Z"
@@ -259,90 +317,226 @@
     "title": "Export: JSONL & Markdown",
     "description": "Session export for invoices and changelogs.",
     "project": "time-forge",
-  "tags": ["backend"],
-    "assignees": ["66c1f0e3a1c9f0b1d0012001"],
+    "tags": [
+      "backend"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
     "points": 2,
     "timeSpent": null,
     "estimatedTime": null,
-  "status": "backlog",
+    "status": "backlog",
     "priority": "medium",
     "createdAt": "2025-08-16T15:00:00.000Z",
     "updatedAt": "2025-08-16T15:00:00.000Z"
+  },
+  {
+    "id": "12",
+    "title": "Add backlog/completed filter toggles",
+    "description": "UI controls to show/hide backlog & completed tasks (stacked buttons).",
+    "project": "time-forge",
+    "tags": [
+      "UI",
+      "productivity"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
+    "points": 2,
+    "timeSpent": 0,
+    "estimatedTime": 3600,
+    "status": "active",
+    "priority": "medium",
+    "createdAt": "2025-08-25T09:00:00.000Z",
+    "updatedAt": "2025-08-25T09:00:00.000Z"
+  },
+  {
+    "id": "13",
+    "title": "Refine timer pause/resume UX",
+    "description": "Improve visual feedback & state handling around paused timer sessions.",
+    "project": "time-forge",
+    "tags": [
+      "UX",
+      "timer"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
+    "points": 3,
+    "timeSpent": 0,
+    "estimatedTime": 5400,
+    "status": "active",
+    "priority": "high",
+    "createdAt": "2025-08-25T09:10:00.000Z",
+    "updatedAt": "2025-08-25T09:10:00.000Z"
+  },
+  {
+    "id": "14",
+    "title": "Task search & quick filter",
+    "description": "Add client-side fuzzy search & tag filter to tasks list.",
+    "project": "time-forge",
+    "tags": [
+      "search",
+      "frontend"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
+    "points": 5,
+    "timeSpent": 0,
+    "estimatedTime": 10800,
+    "status": "active",
+    "priority": "high",
+    "createdAt": "2025-08-25T09:20:00.000Z",
+    "updatedAt": "2025-08-25T09:20:00.000Z"
+  },
+  {
+    "id": "15",
+    "title": "Persist tasks to local storage",
+    "description": "Fallback persistence layer when API is offline.",
+    "project": "time-forge",
+    "tags": [
+      "offline",
+      "storage"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
+    "points": 3,
+    "timeSpent": 0,
+    "estimatedTime": 7200,
+    "status": "active",
+    "priority": "medium",
+    "createdAt": "2025-08-25T09:30:00.000Z",
+    "updatedAt": "2025-08-25T09:30:00.000Z"
+  },
+  {
+    "id": "16",
+    "title": "Project color theming for tasks table",
+    "description": "Apply selected project color accents to headers & badges.",
+    "project": "time-forge",
+    "tags": [
+      "theming",
+      "UI"
+    ],
+    "assignees": [
+      "66c1f0e3a1c9f0b1d0012001"
+    ],
+    "points": 2,
+    "timeSpent": 0,
+    "estimatedTime": 3600,
+    "status": "active",
+    "priority": "low",
+    "createdAt": "2025-08-25T09:40:00.000Z",
+    "updatedAt": "2025-08-25T09:40:00.000Z"
+  },
+  {
+    "id": "17",
+    "title": "Seed: Architecture & domain model",
+    "description": "Define high-level modules, bounded contexts, and entities for portfolio seed app.",
+    "project": "portfolio",
+    "tags": [
+      "planning",
+      "architecture"
+    ],
+    "assignees": [],
+    "points": 3,
+    "timeSpent": 0,
+    "estimatedTime": 10800,
+    "status": "active",
+    "priority": "high",
+    "createdAt": "2025-09-20T10:00:00.000Z",
+    "updatedAt": "2025-09-20T10:00:00.000Z"
+  },
+  {
+    "id": "18",
+    "title": "Seed: UI/UX design system baseline",
+    "description": "Establish tokens (color, spacing, typography) & component guidelines (MD3 adaptation).",
+    "project": "portfolio",
+    "tags": [
+      "design",
+      "ui"
+    ],
+    "assignees": [],
+    "points": 5,
+    "timeSpent": 0,
+    "estimatedTime": 14400,
+    "status": "backlog",
+    "priority": "medium",
+    "createdAt": "2025-09-20T11:00:00.000Z",
+    "updatedAt": "2025-09-20T11:00:00.000Z"
+  },
+  {
+    "id": "19",
+    "title": "Seed: Core backend scaffolding",
+    "description": "Set up API service (routing, health, config, logging) and initial DTOs.",
+    "project": "portfolio",
+    "tags": [
+      "backend",
+      "setup"
+    ],
+    "assignees": [],
+    "points": 8,
+    "timeSpent": 0,
+    "estimatedTime": 21600,
+    "status": "backlog",
+    "priority": "high",
+    "createdAt": "2025-09-21T13:00:00.000Z",
+    "updatedAt": "2025-09-21T13:00:00.000Z"
+  },
+  {
+    "id": "20",
+    "title": "Seed: Frontend layout & routing shell",
+    "description": "Implement app shell, primary navigation, dark/light theme switch, and route guards.",
+    "project": "portfolio",
+    "tags": [
+      "frontend",
+      "layout"
+    ],
+    "assignees": [],
+    "points": 5,
+    "timeSpent": 0,
+    "estimatedTime": 14400,
+    "status": "backlog",
+    "priority": "high",
+    "createdAt": "2025-09-21T14:00:00.000Z",
+    "updatedAt": "2025-09-21T14:00:00.000Z"
+  },
+  {
+    "id": "21",
+    "title": "Seed: Integration tests (API endpoints)",
+    "description": "Add initial integration tests for health, auth placeholder, and config endpoints.",
+    "project": "portfolio",
+    "tags": [
+      "testing",
+      "backend"
+    ],
+    "assignees": [],
+    "points": 3,
+    "timeSpent": 0,
+    "estimatedTime": 10800,
+    "status": "backlog",
+    "priority": "medium",
+    "createdAt": "2025-09-22T09:00:00.000Z",
+    "updatedAt": "2025-09-22T09:00:00.000Z"
+  },
+  {
+    "id": "22",
+    "title": "Seed: CI config & quality gates",
+    "description": "Configure lint, type check, unit test, and build tasks (Nx target wiring).",
+    "project": "portfolio",
+    "tags": [
+      "devops",
+      "quality"
+    ],
+    "assignees": [],
+    "points": 3,
+    "timeSpent": 0,
+    "estimatedTime": 7200,
+    "status": "backlog",
+    "priority": "medium",
+    "createdAt": "2025-09-22T10:00:00.000Z",
+    "updatedAt": "2025-09-22T10:00:00.000Z"
   }
-    ,
-    {
-      "id": "12",
-      "title": "Add backlog/completed filter toggles",
-      "description": "UI controls to show/hide backlog & completed tasks (stacked buttons).",
-      "project": "time-forge",
-      "tags": ["UI", "productivity"],
-      "assignees": ["66c1f0e3a1c9f0b1d0012001"],
-      "points": 2,
-      "timeSpent": 0,
-      "estimatedTime": 3600,
-      "status": "active",
-      "priority": "medium",
-      "createdAt": "2025-08-25T09:00:00.000Z",
-      "updatedAt": "2025-08-25T09:00:00.000Z"
-    },
-    {
-      "id": "13",
-      "title": "Refine timer pause/resume UX",
-      "description": "Improve visual feedback & state handling around paused timer sessions.",
-      "project": "time-forge",
-      "tags": ["UX", "timer"],
-      "assignees": ["66c1f0e3a1c9f0b1d0012001"],
-      "points": 3,
-      "timeSpent": 0,
-      "estimatedTime": 5400,
-      "status": "active",
-      "priority": "high",
-      "createdAt": "2025-08-25T09:10:00.000Z",
-      "updatedAt": "2025-08-25T09:10:00.000Z"
-    },
-    {
-      "id": "14",
-      "title": "Task search & quick filter",
-      "description": "Add client-side fuzzy search & tag filter to tasks list.",
-      "project": "time-forge",
-      "tags": ["search", "frontend"],
-      "assignees": ["66c1f0e3a1c9f0b1d0012001"],
-      "points": 5,
-      "timeSpent": 0,
-      "estimatedTime": 10800,
-      "status": "active",
-      "priority": "high",
-      "createdAt": "2025-08-25T09:20:00.000Z",
-      "updatedAt": "2025-08-25T09:20:00.000Z"
-    },
-    {
-      "id": "15",
-      "title": "Persist tasks to local storage",
-      "description": "Fallback persistence layer when API is offline.",
-      "project": "time-forge",
-      "tags": ["offline", "storage"],
-      "assignees": ["66c1f0e3a1c9f0b1d0012001"],
-      "points": 3,
-      "timeSpent": 0,
-      "estimatedTime": 7200,
-      "status": "active",
-      "priority": "medium",
-      "createdAt": "2025-08-25T09:30:00.000Z",
-      "updatedAt": "2025-08-25T09:30:00.000Z"
-    },
-    {
-      "id": "16",
-      "title": "Project color theming for tasks table",
-      "description": "Apply selected project color accents to headers & badges.",
-      "project": "time-forge",
-      "tags": ["theming", "UI"],
-      "assignees": ["66c1f0e3a1c9f0b1d0012001"],
-      "points": 2,
-      "timeSpent": 0,
-      "estimatedTime": 3600,
-      "status": "active",
-      "priority": "low",
-      "createdAt": "2025-08-25T09:40:00.000Z",
-      "updatedAt": "2025-08-25T09:40:00.000Z"
-    }
 ]
