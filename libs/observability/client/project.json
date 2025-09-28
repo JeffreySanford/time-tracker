@@ -1,0 +1,16 @@
+{
+  "name": "observability-client",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/observability/client/src",
+  "tags": ["type:client", "scope:observability"],
+  "targets": {
+    "lint": { "executor": "@nx/eslint:lint" },
+    "test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/observability/client"
+      }
+    }
+  }
+}

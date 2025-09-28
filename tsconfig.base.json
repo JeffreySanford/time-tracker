@@ -30,6 +30,15 @@
     "paths": {
       "@time-tracker/shared-ui": [
         "libs/shared/shared-ui/src/index.ts"
+      ],
+      "@time-tracker/observability-server": [
+        "libs/observability/server/src/index.ts"
+      ],
+      "@time-tracker/observability-shared": [
+        "libs/observability/shared/src/index.ts"
+      ],
+      "@time-tracker/observability-client": [
+        "libs/observability/client/src/index.ts"
       ]
     }
   },

@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     // Switch to CommonJS so ts-node can resolve extension-less relative imports (e.g. './app.module')
     // without requiring explicit .js extensions under ESM. This isolates change to API only.
     "module": "CommonJS",

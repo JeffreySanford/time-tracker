@@ -24,9 +24,11 @@ import { CommitWorkLog, CommitWorkLogSchema } from './commitworklog.schema';
 import { CommitSession, CommitSessionSchema } from './commitsession.schema';
 import { GitIngestService } from './git-ingest.service';
 import { GitIngestController } from './git-ingest.controller';
+import { ObservabilityModule } from '@time-tracker/observability-server';
 
 @Module({
   imports: [
+    ObservabilityModule,
     MongooseModule.forRootAsync({
       useFactory: async () => {
         // Prefer explicit MONGO_URI when provided
@@ -42,7 +44,7 @@ import { GitIngestController } from './git-ingest.controller';
         // If we cannot rely on a local mongod, start an in-memory server for dev
         try {
           console.log(
-            '[MongoDB] No MONGO_URI provided; starting in-memory MongoDB for development...'
+            '[MongoDB] No MONGO_URI provided; starting in-memory MongoDB for development...',
           );
           const mongod = await MongoMemoryServer.create();
           uri = mongod.getUri();
@@ -52,7 +54,7 @@ import { GitIngestController } from './git-ingest.controller';
           // fallback to localhost if in-memory cannot be started
           console.warn(
             '[MongoDB] Failed to start in-memory MongoDB, falling back to localhost:',
-            err
+            err,
           );
           return { uri: local };
         }
