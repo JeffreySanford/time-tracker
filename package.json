@@ -71,7 +71,7 @@
     "@angular/language-service": "~20.1.0",
     "@capacitor/cli": "^7.4.2",
     "@eslint/js": "^9.8.0",
-    "@nx/angular": "21.3.11",
+    "@nx/angular": "21.6.10",
     "@nx/devkit": "21.3.11",
     "@nx/eslint": "21.3.11",
     "@nx/eslint-plugin": "21.3.11",
