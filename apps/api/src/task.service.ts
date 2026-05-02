@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from './task.schema';
@@ -48,10 +48,20 @@ export class TaskService {
                 createdAt: t.createdAt ? new Date(t.createdAt) : new Date(),
                 priority: t.priority,
                 estimatedTime: t.estimatedTime,
-                userId: Array.isArray(t.assignees) && t.assignees.length ? t.assignees[0] : (t.userId || fallbackUserId || '')
+                userId: String(
+                  Array.isArray(t.assignees) && t.assignees.length
+                    ? t.assignees[0]
+                    : (t.userId || fallbackUserId || '')
+                ).trim()
               }));
 
-              return from(this.taskModel.insertMany(docs)).pipe(mapTo(undefined));
+              const validDocs = docs.filter((d: any) => d.userId);
+              if (validDocs.length === 0) {
+                console.warn('Task seed skipped: no valid userId found for any task.');
+                return of(undefined);
+              }
+
+              return from(this.taskModel.insertMany(validDocs)).pipe(mapTo(undefined));
             })
           );
         } catch (err) {
@@ -69,8 +79,30 @@ export class TaskService {
   }
 
   createTask(taskData: Partial<Task>): Observable<Task> {
-    const task = new this.taskModel(taskData);
-    return from(task.save());
+    const incomingUserId =
+      typeof taskData.userId === 'string' ? taskData.userId.trim() : '';
+
+    if (incomingUserId) {
+      const task = new this.taskModel({ ...taskData, userId: incomingUserId });
+      return from(task.save());
+    }
+
+    return from(this.userModel.findOne().lean().exec()).pipe(
+      mergeMap(firstUser => {
+        const fallbackUserId = firstUser
+          ? String(firstUser.id || (firstUser as any)._id || '').trim()
+          : '';
+
+        if (!fallbackUserId) {
+          throw new BadRequestException(
+            'userId is required when creating a task and no default user exists.'
+          );
+        }
+
+        const task = new this.taskModel({ ...taskData, userId: fallbackUserId });
+        return from(task.save());
+      })
+    );
   }
 
   findAllByUser(userId: string): Observable<Task[]> {

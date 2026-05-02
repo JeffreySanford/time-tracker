@@ -28,6 +28,7 @@ interface Task {
   id: string;
   title: string;
   description: string;
+  userId?: string;
   project: string;
   tags: string[];
   status: 'active' | 'completed' | 'backlog';
@@ -246,6 +247,7 @@ export class PlanningComponent implements AfterViewInit, OnInit, OnChanges {
       id: Date.now().toString(),
       title: this.newTask.title,
       description: this.newTask.description || '',
+      userId: '',
       project: this.selectedProject.id,
       tags: this.newTask.tags || [],
       status: 'active',

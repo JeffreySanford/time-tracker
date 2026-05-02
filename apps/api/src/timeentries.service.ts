@@ -44,6 +44,6 @@ export class TimeEntriesService {
   }
 
   findAll(): Observable<TimeEntry[]> {
-    return from(this.teModel.find().lean().exec());
+    return from(this.teModel.find().exec());
   }
 }

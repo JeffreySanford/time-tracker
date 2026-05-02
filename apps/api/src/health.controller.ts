@@ -1,5 +1,9 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { SeedingStateService } from './seeding-state.service';
 
 @Controller('api')
@@ -7,15 +11,19 @@ export class HealthController {
   constructor(private readonly seeding: SeedingStateService) {}
 
   @Get('health')
-  health(@Res() res: Response) {
+  @HttpCode(200)
+  health() {
     const s = this.seeding.snapshot;
-    return res.status(200).json({ status: 'ok', seeding: s });
+    return { status: 'ok', seeding: s };
   }
 
   @Get('ready')
-  ready(@Res() res: Response) {
+  ready() {
     const s = this.seeding.snapshot;
     const ready = s.completed && s.errors.length === 0;
-    return res.status(ready ? 200 : 503).json({ ready, seeding: s });
+    if (!ready) {
+      throw new ServiceUnavailableException({ ready, seeding: s });
+    }
+    return { ready, seeding: s };
   }
 }

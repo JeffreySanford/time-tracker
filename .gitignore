@@ -113,3 +113,6 @@ coverage/
 .eslintcache
 .prettiercache
 .stylelintcache
+.nx/polygraph
+.claude/worktrees
+.claude/settings.local.json

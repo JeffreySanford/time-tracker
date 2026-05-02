@@ -37,6 +37,6 @@ export class KanbanColumnsService {
   }
 
   findAll(): Observable<KanbanColumn[]> {
-    return from(this.colModel.find().lean().exec());
+    return from(this.colModel.find().exec());
   }
 }

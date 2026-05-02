@@ -28,6 +28,7 @@ interface Task {
   id: string;
   title: string;
   description: string;
+  userId?: string;
   project: string;
   tags: string[];
   status: 'active' | 'completed' | 'backlog';
@@ -220,6 +221,11 @@ export class App implements OnInit {
     }
   }
 
+  private getDefaultUserId(): string {
+    const first = this.users.find((u) => !!u.id && String(u.id).trim().length > 0);
+    return first ? String(first.id).trim() : '';
+  }
+
   // snackBar provided via constructor injection
 
   private loadTasksFromJson(): void {
@@ -367,6 +373,13 @@ export class App implements OnInit {
       id: String(t['id'] ?? t['_id'] ?? ''),
       title: String(t['title'] ?? t['key'] ?? ''),
       description: String(t['description'] ?? ''),
+      userId: String(
+        t['userId'] ??
+          (Array.isArray(t['assignees']) && (t['assignees'] as unknown[]).length
+            ? (t['assignees'] as unknown[])[0]
+            : this.getDefaultUserId()) ??
+          ''
+      ),
       project: String(
         t['project'] ??
           (t['projectId'] === '66c1f0a0a1c9f0b1d0011001'
@@ -597,6 +610,7 @@ export class App implements OnInit {
                   const dto: {
                     title: string;
                     description: string;
+                    userId: string;
                     project: string;
                     status: string;
                     timeSpent: number;
@@ -606,6 +620,7 @@ export class App implements OnInit {
                   } = {
                     title: String(t['title'] || ''),
                     description: String(t['description'] || ''),
+                    userId: this.getDefaultUserId(),
                     project: projectId,
                     status: ['active', 'completed', 'backlog'].includes(
                       String(t['status']),
@@ -643,6 +658,10 @@ export class App implements OnInit {
   }
 
   onTaskUpdate(task: Task) {
+    if (!task.userId) {
+      task = { ...task, userId: this.getDefaultUserId() };
+    }
+
     const existingIndex = this.allTasks.findIndex((t) => t.id === task.id);
     if (existingIndex >= 0) {
       this.allTasks[existingIndex] = task;

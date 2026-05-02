@@ -1,13 +1,20 @@
-import { Controller, Post, Body, Get, Patch, Param } from '@nestjs/common';
-import { Response } from 'express';
-import { Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { TimeWorkedService } from './timeworked.service';
 
 @Controller('api/timeworked')
 export class TimeWorkedController {
   @Get('/health')
-  health(@Res() res: Response) {
-    return res.status(200).json({ status: 'ok' });
+  @HttpCode(200)
+  health() {
+    return { status: 'ok' };
   }
   constructor(private readonly service: TimeWorkedService) {}
 
