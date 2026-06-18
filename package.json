@@ -63,7 +63,7 @@
     "@analogjs/vitest-angular": "~1.19.1",
     "@angular-devkit/core": "~20.1.0",
     "@angular-devkit/schematics": "~20.1.0",
-    "@angular/build": "~20.1.0",
+    "@angular/build": "~20.3.6",
     "@angular/cli": "~20.1.0",
     "@angular/compiler-cli": "~20.1.0",
     "@angular/language-service": "~20.1.0",
@@ -105,7 +105,7 @@
     "tslib": "^2.3.0",
     "typescript": "5.8.3",
     "typescript-eslint": "^8.29.0",
-    "vite": "^6.0.0",
+    "vite": "^6.4.1",
     "vitest": "^3.0.0"
   }
 }
